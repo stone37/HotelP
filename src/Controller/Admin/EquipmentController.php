@@ -5,53 +5,41 @@ namespace App\Controller\Admin;
 use App\Entity\Equipment;
 use App\Event\AdminCRUDEvent;
 use App\Form\EquipmentType;
-use App\Form\Filter\AdminEquipmentType;
-use App\Model\EquipmentSearch;
 use App\Repository\EquipmentRepository;
+use JetBrains\PhpStorm\ArrayShape;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class EquipmentController extends AbstractController
 {
-    private EquipmentRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-
     public function __construct(
-        EquipmentRepository $repository,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher
+        private EquipmentRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher
     )
     {
-        $this->repository = $repository;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
     }
 
-    #[Route(path: '/admin/equipments', name: 'app_admin_equipment_index')]
-    public function index(Request $request)
+    #[Route(path: '/equipments', name: 'app_admin_equipment_index')]
+    public function index(Request $request): Response
     {
-        $search = new EquipmentSearch();
-        $form = $this->createForm(AdminEquipmentType::class, $search);
-
-        $form->handleRequest($request);
-        $qb = $this->repository->getAdmins($search);
+        $qb = $this->repository->findBy([], ['position' => 'asc']);
 
         $equipments = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
 
-        return $this->render('admin/equipment/index.html.twig', [
-            'equipments' => $equipments,
-            'searchForm' => $form->createView(),
-        ]);
+        return $this->render('admin/equipment/index.html.twig', ['equipments' => $equipments]);
     }
 
-    #[Route(path: '/admin/equipments/create', name: 'app_admin_equipment_create')]
-    public function create(Request $request)
+    #[Route(path: '/equipments/create', name: 'app_admin_equipment_create')]
+    public function create(Request $request): RedirectResponse|Response
     {
         $equipment = new Equipment();
 
@@ -79,8 +67,8 @@ class EquipmentController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/equipments/{id}/edit', name: 'app_admin_equipment_edit', requirements: ['id' => '\d+'])]
-    public function edit(Request $request, Equipment $equipment)
+    #[Route(path: '/equipments/{id}/edit', name: 'app_admin_equipment_edit', requirements: ['id' => '\d+'])]
+    public function edit(Request $request, Equipment $equipment): RedirectResponse|Response
     {
         $form = $this->createForm(EquipmentType::class, $equipment);
 
@@ -107,8 +95,8 @@ class EquipmentController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/equipments/{id}/move', name: 'app_admin_equipment_move', requirements: ['id' => '\d+'])]
-    public function move(Request $request, Equipment $equipment)
+    #[Route(path: '/equipments/{id}/move', name: 'app_admin_equipment_move', requirements: ['id' => '\d+'])]
+    public function move(Request $request, Equipment $equipment): RedirectResponse
     {
         if ($request->query->has('pos')) {
             $pos = ($equipment->getPosition() + (int)$request->query->get('pos'));
@@ -124,8 +112,8 @@ class EquipmentController extends AbstractController
         return $this->redirectToRoute('app_admin_equipment_index');
     }
 
-    #[Route(path: '/admin/equipments/{id}/delete', name: 'app_admin_equipment_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Equipment $equipment)
+    #[Route(path: '/equipments/{id}/delete', name: 'app_admin_equipment_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, Equipment $equipment): RedirectResponse|JsonResponse
     {
        $form = $this->deleteForm($equipment);
 
@@ -137,7 +125,7 @@ class EquipmentController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($equipment);
+                $this->repository->remove($equipment, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -148,14 +136,12 @@ class EquipmentController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cet équipement ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $equipment,
             'message' => $message,
@@ -167,13 +153,14 @@ class EquipmentController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/equipments/bulk/delete', name: 'app_admin_equipment_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/equipments/bulk/delete', name: 'app_admin_equipment_bulk_delete', options: ['expose' => true])]
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
-        if ($request->query->has('data'))
+        if ($request->query->has('data')) {
             $request->getSession()->set('data', $ids);
+        }
 
         $form = $this->deleteMultiForm();
 
@@ -201,17 +188,16 @@ class EquipmentController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' équipements ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cet équipement ?';
+        }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
@@ -223,21 +209,21 @@ class EquipmentController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(Equipment $equipment)
+    private function deleteForm(Equipment $equipment): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_equipment_delete', ['id' => $equipment->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_equipment_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

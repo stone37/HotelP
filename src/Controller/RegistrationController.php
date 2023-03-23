@@ -22,30 +22,15 @@ use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 class RegistrationController extends AbstractController
 {
-    private EventDispatcherInterface $dispatcher;
-    private UserPasswordHasherInterface $passwordHasher;
-    private UserAuthenticatorInterface $userAuthenticator;
-    private SocialLoginService $socialLoginService;
-    private TokenGeneratorService $tokenGenerator;
-    private Authenticator $authenticator;
-    private UserRepository $repository;
-
     public function __construct(
-        UserPasswordHasherInterface $passwordHasher,
-        UserAuthenticatorInterface $userAuthenticator,
-        SocialLoginService $socialLoginService,
-        TokenGeneratorService $tokenGenerator,
-        EventDispatcherInterface $dispatcher,
-        UserRepository $repository,
-        Authenticator $authenticator)
+        private UserPasswordHasherInterface $passwordHasher,
+        private UserAuthenticatorInterface $userAuthenticator,
+        private SocialLoginService $socialLoginService,
+        private TokenGeneratorService $tokenGenerator,
+        private EventDispatcherInterface $dispatcher,
+        private UserRepository $repository,
+        private Authenticator $authenticator)
     {
-        $this->dispatcher = $dispatcher;
-        $this->userAuthenticator = $userAuthenticator;
-        $this->passwordHasher = $passwordHasher;
-        $this->socialLoginService = $socialLoginService;
-        $this->tokenGenerator = $tokenGenerator;
-        $this->authenticator = $authenticator;
-        $this->repository = $repository;
     }
 
     #[Route(path: '/register', name: 'app_register')]
@@ -62,7 +47,7 @@ class RegistrationController extends AbstractController
 
         $rootErrors = [];
         // Si l'utilisateur provient de l'oauth, on préremplit ses données
-        $isOauthUser = $request->get('oauth') ? $this->socialLoginService->hydrate($user) : false;
+        $isOauthUser = $request->get('oauth') && $this->socialLoginService->hydrate($user);
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
@@ -85,10 +70,10 @@ class RegistrationController extends AbstractController
                 $this->addFlash('success', 'Votre compte a été créé avec succès');
 
                 return $this->userAuthenticator->authenticateUser($user, $this->authenticator, $request)
-                    ?: $this->redirectToRoute('app_dashboard_index');
+                    ?: $this->redirectToRoute('app_user_index');
             }
 
-            $this->addFlash(
+            $this->addFlash( 
                 'success',
                 'Un message avec un lien de confirmation vous a été envoyé par mail. Veuillez suivre ce lien pour activer votre compte.'
             );

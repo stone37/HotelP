@@ -9,15 +9,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class BookingSessionStorage
 {
-    private const BOOKING_KEY_NAME = 'booking_data';
-
-    private RequestStack $request;
-    private SettingsManager $manager;
-
-    public function __construct(SettingsManager $manager, RequestStack $request)
+    public function __construct(private SettingsManager $manager, private RequestStack $request)
     {
-        $this->manager = $manager;
-        $this->request = $request;
     }
 
     public function set(BookingData $data): void
@@ -32,12 +25,12 @@ class BookingSessionStorage
             'room_nbr' => $entity->roomNumber
         ];
 
-        $this->request->getSession()->set(self::BOOKING_KEY_NAME, $data);
+        $this->request->getSession()->set($this->provideKey(), $data);
     }
 
     public function remove(): void
     {
-        $this->request->getSession()->remove(self::BOOKING_KEY_NAME);
+        $this->request->getSession()->remove($this->provideKey());
     }
 
 
@@ -52,12 +45,12 @@ class BookingSessionStorage
 
     public function has(): bool
     {
-        return $this->request->getSession()->has(self::BOOKING_KEY_NAME);
+        return $this->request->getSession()->has($this->provideKey());
     }
 
     public function get(): ?array
     {
-        return $this->request->getSession()->get(self::BOOKING_KEY_NAME);
+        return $this->request->getSession()->get($this->provideKey());
     }
 
     private function adjustDate(BookingData $data): BookingData
@@ -92,13 +85,18 @@ class BookingSessionStorage
         return $data;
     }
 
-    public function getCheckinMin()
+    public function getCheckinMin(): float|int
     {
         return (((int) $this->manager->get()->getCheckinTime()->format('H') * 60) + (int) $this->manager->get()->getCheckinTime()->format('i'));
     }
 
-    public function getCheckoutMin()
+    public function getCheckoutMin(): float|int
     {
         return (((int) $this->manager->get()->getCheckoutTime()->format('H') * 60) + (int) $this->manager->get()->getCheckoutTime()->format('i'));
+    }
+
+    private function provideKey(): string
+    {
+        return '_app_booking';
     }
 }

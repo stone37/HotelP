@@ -6,6 +6,7 @@ use App\Entity\Traits\PositionTrait;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\GalleryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,22 +19,22 @@ class Gallery
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $extension = '';
+    #[ORM\Column(length: 255)]
+    private ?string $extension = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $name = '';
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
 
     #[Assert\File(
         maxSize: '8000k',
-        maxSizeMessage: 'Le fichier excède 8000Ko',
         mimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'],
+        maxSizeMessage: 'Le fichier excède 8000Ko',
         mimeTypesMessage: 'Format non autorisés. Formats autorisés: png, jpeg, jpg, gif'
     )]
-    private ?File $file;
+    private ?File $file = null;
 
     private ?string $tempFilename;
 
@@ -122,12 +123,12 @@ class Gallery
     /**
      * Retourne le chemin relatif vers l'image pour le code PHP
      */
-    protected function getUploadRootDir(): string
+    #[Pure] protected function getUploadRootDir(): string
     {
         return __DIR__ . '/../../public/' . $this->getUploadDir();
     }
 
-    public function getWebPath()
+    #[Pure] public function getWebPath(): string
     {
         return $this->getUploadDir() . '/' . $this->getId() . '.' . $this->getExtension();
     }

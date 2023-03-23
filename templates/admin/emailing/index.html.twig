@@ -12,9 +12,9 @@
 {% endblock %}
 
 {% block app_body %}
-    {% include 'admin/emailing/index/_header.html.twig' %}
+    {{ include('admin/emailing/index/_header.html.twig') }}
 
-    {% include 'admin/emailing/index/_content.html.twig' %}
+    {{ include('admin/emailing/index/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}

@@ -1,34 +1,34 @@
 {% import 'site/promotion/macro/__list.html.twig' as __view %}
 
 {% if promotions|length > 0 %}
-    <section id="home-room-promotion" class="home-room-promotion">
+    <section id="home-room-promotion" class="container home-room-promotion mb-5">
         <div class="row px-md-0">
             <div class="col-12">
-                <div class="view content-data
-                    {% if promotions|length == 1 %}one
-                    {% elseif promotions|length == 2 %}two
-                    {% else %}three{% endif %}"
-                     style="background-image: url({{ asset('images/promotion.jpg') }});
-                             background-repeat: no-repeat;
-                             background-size: cover;">
-                    <div class="mask rgba-white-strong">
-                        <div class="row {#my-md-5#} mx-lg-3 px-3 px-lg-0 mt-4">
+                <div class="view content-data {% if promotions|length == 1 %}one{% elseif promotions|length == 2 %}two{% else %}three{% endif %}"
+                     style="background-image: url({{ asset('assets/img/promotion.jpg') }}); background-repeat: no-repeat; background-size: cover;">
+                    <div class="mask rgba-black-strong">
+                        <div class="row mx-lg-3 px-3 px-lg-0 mt-4">
                             <div class="col-12">
                                 <div class="row d-flex justify-content-start align-items-start">
                                     <div class="col-12 mx-lg-4">
                                         <div class="wow fadeIn">
-                                            <h1 class="h1-responsive font-weight-stone-600 text-primary text-center mb-4 pl-2">
-                                                <strong class="font-weight-bold">Nos promotions</strong>
+                                            <h1 class="h1-responsive font-weight-bold text-white text-center mb-3">
+                                                Nos offres promotionnelles du moment
                                             </h1>
+                                            <p class="font-weight-stone-500 text-white text-center mb-4">
+                                                Réservez dès maintenant et profitez de nos avantages exclusifs pour un séjour inoubliable.
+                                            </p>
                                         </div>
                                     </div>
 
                                     {% for promotion in promotions %}
-                                        {{ __view.homeList(promotion)}}
+                                        <div class="col-12 col-md-4 px-lg-4 px-md-1">
+                                            {{ include('site/promotion/_box.html.twig') }}
+                                        </div>
                                     {% endfor %}
 
                                     <div class="col-12 text-center mt-lg-2">
-                                        <a href="{{ path('app_promotion_index') }}" class="btn btn-primary btn-lg">Tous nos offres <i class="fas fa-angle-double-right ml-2"></i></a>
+                                        <a href="{{ path('app_promotion_index') }}" class="btn btn-primary">Tous nos offres <i class="fas fa-angle-double-right ml-2"></i></a>
                                     </div>
                                 </div>
                             </div>

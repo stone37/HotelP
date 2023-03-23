@@ -15,35 +15,35 @@ class Payment
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $price = 0;
+    #[ORM\Column(nullable: true)]
+    private ?int $price = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $discount = 0;
+    #[ORM\Column(nullable: true)]
+    private ?int $discount = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $taxe = null;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $refunded = false;
+    #[ORM\Column(nullable: true)]
+    private ?bool $refunded = false;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $firstname = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $firstname = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $lastname = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $lastname = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $address = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $address = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $country = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $country = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $city = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $city = null;
 
     #[ORM\OneToOne(mappedBy: 'payment', targetEntity: Commande::class, cascade: ['persist', 'remove'])]
     private ?Commande $commande = null;

@@ -16,7 +16,7 @@ class RoomEquipmentType extends AbstractType
         $builder
             ->add('name', TextType::class, ['label' => 'Nom'])
             ->add('description', TextareaType::class, [
-                'label' => 'Description',
+                'label' => 'Description (Facultatif)',
                 'attr'  => ['class' => 'form-control md-textarea', 'rows'  => 4],
                 'required' => false
             ]);

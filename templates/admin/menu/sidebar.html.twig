@@ -3,13 +3,13 @@
 
         <li class="logo-sn waves-effect py-3">
             <div class="text-center">
-                <a href="{{ path('app_admin_dashboard') }}" class="pl-0">
+                <a href="{{ path('app_admin_index') }}" class="pl-0">
                     <img src="{{ asset('images/logo/logo_write.png') }}" style="width: 180px !important;" alt="Logo du site" />
                 </a>
             </div>
         </li>
 
-        {% set dashboard = isActive('app_admin_dashboard') %}
+        {% set dashboard = isActive('app_admin_index') %}
 
         {# admin #}
         {% set admin_index = isActive('app_admin_admin_index') %}
@@ -34,12 +34,6 @@
         {% set review_index = isActive('app_admin_review_index') %}
         {% set review_edit = isActive('app_admin_review_edit') %}
         {# review #}
-
-        {# equipment group #}
-        {% set equipment_group_index = isActive('app_admin_equipment_group_index') %}
-        {% set equipment_group_edit  = isActive('app_admin_equipment_group_edit') %}
-        {% set equipment_group_new = isActive('app_admin_equipment_group_create') %}
-        {# equipment group #}
 
         {# equipment #}
         {% set equipment_index = isActive('app_admin_equipment_index') %}
@@ -76,12 +70,6 @@
         {% set supplement_edit  = isActive('app_admin_supplement_edit') %}
         {% set supplement_new = isActive('app_admin_supplement_create') %}
         {# supplement #}
-
-        {# option #}
-        {% set option_index = isActive('app_admin_option_index') %}
-        {% set option_edit  = isActive('app_admin_option_edit') %}
-        {% set option_new = isActive('app_admin_option_create') %}
-        {# option #}
 
         {# booking #}
         {% set booking_index = isActive('app_admin_booking_index') %}
@@ -141,7 +129,7 @@
         <li>
             <ul class="collapsible collapsible-accordion">
                 <li>
-                    <a href="{{ path('app_admin_dashboard') }}" class="waves-effect {% if dashboard %}active{% endif %} mb-2">
+                    <a href="{{ path('app_admin_index') }}" class="waves-effect {% if dashboard %}active{% endif %} mb-2">
                         <i class="sv-slim-icon fas fa-th-large"></i>
                         Tableau de bord
                     </a>
@@ -149,24 +137,16 @@
 
                 <li>
                     <a class="collapsible-header waves-effect arrow-r
-                        {% if equipment_index or equipment_edit or equipment_new or
-                        equipment_group_index or equipment_group_edit or equipment_group_new or
-                        gallery_index or gallery_add %}active{% endif %}">
+                        {% if equipment_index or equipment_edit or equipment_new or gallery_index or gallery_add %}active{% endif %}">
                         <i class="sv-slim-icon fas fa-hotel"></i> Établissements
                         <i class="fas fa-angle-down rotate-icon"></i>
                     </a>
                     <div class="collapsible-body">
                         <ul>
                             <li>
-                                <a href="{{ path('app_admin_equipment_group_index') }}" class="waves-effect
-                                    {% if equipment_group_index or equipment_group_edit or equipment_group_new %}active{% endif %}">
-                                    <span class="sv-normal">Groupe d'équipements</span>
-                                </a>
-                            </li>
-                            <li>
                                 <a href="{{ path('app_admin_equipment_index') }}" class="waves-effect
                                     {% if equipment_index or equipment_edit or equipment_new %}active{% endif %}">
-                                    <span class="sv-normal">Equipements de l'hotel</span>
+                                    <span class="sv-normal">Équipements de l'établissement</span>
                                 </a>
                             </li>
                             <li>
@@ -184,7 +164,6 @@
                         {% if room_index or room_show or room_new or room_simple_new or room_edit or
                         r_equipment_index or r_equipment_edit or r_equipment_new or
                         supplement_index or supplement_edit or supplement_new or
-                        option_index or option_edit or option_new or
                         room_gallery_index or room_gallery_add %}active{% endif %}">
                         <i class="sv-slim-icon fas fa-bed"></i> Hébergements
                         <i class="fas fa-angle-down rotate-icon"></i>
@@ -201,19 +180,13 @@
                             <li>
                                 <a href="{{ path('app_admin_room_equipment_index') }}" class="waves-effect
                                     {% if r_equipment_index or r_equipment_edit or r_equipment_new %}active{% endif %}">
-                                    <span class="sv-normal">Equipements</span>
+                                    <span class="sv-normal">Équipements</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ path('app_admin_supplement_index') }}" class="waves-effect
                                     {% if supplement_index or supplement_edit or supplement_new %}active{% endif %}">
                                     <span class="sv-normal">Suppléments</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ path('app_admin_option_index') }}" class="waves-effect
-                                    {% if option_index or option_edit or option_new %}active{% endif %}">
-                                    <span class="sv-normal">Options</span>
                                 </a>
                             </li>
                         </ul>
@@ -317,7 +290,7 @@
                             <li>
                                 <a href="{{ path('app_admin_discount_index') }}"
                                    class="waves-effect {% if discount_index or discount_new or discount_edit %}active{% endif %}">
-                                    <span class="sv-normal">Editer des codes de réduction</span>
+                                    <span class="sv-normal">Tous les codes de réduction</span>
                                 </a>
                             </li>
                         </ul>

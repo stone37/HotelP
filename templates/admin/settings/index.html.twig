@@ -3,9 +3,9 @@
 {% block title %}Configuration générale | {{ parent() }}{% endblock %}
 
 {% block app_body %}
-    {% include 'admin/settings/index/_header.html.twig' %}
+    {{ include('admin/settings/index/_header.html.twig') }}
 
-    {% include 'admin/settings/index/_content.html.twig' %}
+    {{ include('admin/settings/index/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}
@@ -15,5 +15,5 @@
 {% block javascripts %}
     {{ parent() }}
 
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/admin/create.js'} %}
+    {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/admin/create.js'}) }}
 {% endblock %}

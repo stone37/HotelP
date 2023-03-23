@@ -27,7 +27,7 @@
             </div>
         {% endif %}
 
-        {% include 'admin/emailing/form.html.twig' %}
+        {{ include('admin/emailing/form.html.twig') }}
 
         {{ form_widget(form._token) }}
 

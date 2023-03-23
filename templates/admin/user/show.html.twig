@@ -6,9 +6,9 @@
 {% endblock %}
 
 {% block app_body %}
-    {% include 'admin/user/show/_header.html.twig' %}
+    {{ include('admin/user/show/_header.html.twig') }}
 
-    {% include 'admin/user/show/_content.html.twig' %}
+    {{ include('admin/user/show/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}

@@ -1,12 +1,15 @@
 $(document).ready(function() {
 
+    silverCarousel();
+
+
     // Password view
-    $('.input-prefix.fa-eye').click(function () {
+    /*$('.input-prefix.fa-eye').click(function () {
         passwordView($(this));
-    });
+    });*/
 
     // Bouton top
-    $(window).scroll(function() {
+    /*$(window).scroll(function() {
         let scroll = $(window).scrollTop();
         let currScrollTop = $(this).scrollTop();
 
@@ -16,10 +19,10 @@ $(document).ready(function() {
             $('#btn-smooth-scroll').addClass('d-none').removeClass('animated fadeInRight');
 
         lastScrollTop = currScrollTop;
-    });
+    });*/
 
     // Time js
-    const terms = [
+    /*const terms = [
         {
             time: 45,
             divide: 60,
@@ -84,9 +87,9 @@ $(document).ready(function() {
         const date = new Date(timestamp);
 
         updateText(date, element, terms);
-    });
+    });*/
 
-    $('.carousel .carousel-inner.vv-3 .carousel-item').each(function () {
+    /*$('.carousel .carousel-inner.vv-3 .carousel-item').each(function () {
         var next = $(this).next();
         if (!next.length) {
             next = $(this).siblings(':first');
@@ -103,16 +106,17 @@ $(document).ready(function() {
         }
 
         $('.carousel').carousel('cycle');
-    });
+    });*/
 
     // Newsletter
-    newsletter($('#newsletter-form'));
+    /*newsletter($('#newsletter-form'));*/
 
 
 
 
 });
 
+/*
 function updateText(date, element, terms) {
     const seconds = (new Date().getTime() - date.getTime()) / 1000;
     let term = null;
@@ -130,6 +134,7 @@ function updateText(date, element, terms) {
         element.innerHTML = `${prefix || 'Dans'} ${term.text.replace('%d', Math.round(Math.abs(seconds) / term.divide))}`
     }
 }
+*/
 
 /**
  * Affiche des notifications
@@ -139,13 +144,14 @@ function updateText(date, element, terms) {
  * @param options
  * @param type
  */
-function notification(titre, message, options, type) {
+/*function notification(titre, message, options, type) {
     if(typeof options == 'undefined') options = {};
     if(typeof type == 'undefined') type = "info";
 
     toastr[type](message, titre, options);
-}
+}*/
 
+/*
 let options = {
     "closeButton": false, // true/false
     "debug": false, // true/false
@@ -163,6 +169,7 @@ let options = {
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
 };
+*/
 
 /*function simpleModals(element, route, elementRacine) {
     element.click(function (e) {
@@ -217,6 +224,7 @@ function bulkModals(element, container, route, elementRacine) {
     });
 }*/
 
+/*
 function getMonthsShort (month) {
     let monthShortLists = ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'];
 
@@ -258,4 +266,5 @@ function newsletter(element) {
         })
     });
 }
+*/
 

@@ -7,92 +7,85 @@ use App\Repository\BookingRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 
 #[ORM\Entity(repositoryClass: BookingRepository::class)]
 class Booking
 {
-    const NEW = 'new';
-    const CONFIRMED = 'confirm';
-    const CANCELLED = 'cancel';
-    const OLD = 'old';
+    public const NEW = 'new';
+    public const CONFIRMED = 'confirm';
+    public const CANCELLED = 'cancel';
+    public const OLD = 'old';
 
-    use TimestampableTrait;
+    use TimestampableTrait; 
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $firstname = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $firstname = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $lastname = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $lastname = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $email = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $email = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $phone = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $phone = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $checkin;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $checkin = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $checkout;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $checkout = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $days = null;
 
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
-    private ?string $ip = '';
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $ip = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $message = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $message = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $adult = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $children = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $reference = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $number = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $country = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $country = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $city = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $city = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $confirmedAt;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $confirmedAt = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $cancelledAt;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $cancelledAt = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $roomNumber = null;
 
-    #[ORM\Column(type: 'string', length: 100, nullable: true)]
-    private ?string $status = self::NEW;
+    #[ORM\Column(nullable: true)]
+    private ?string $state = self::NEW;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $amount = null;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $taxeAmount = null;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $discountAmount = null;
 
     #[ORM\ManyToOne(targetEntity: Room::class, inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Room $room = null;
-
-    #[ORM\OneToMany(mappedBy: 'booking', targetEntity: RoomUser::class, cascade: ['persist', 'remove'])]
-    private $occupants = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'bookings')]
     private ?User $user = null;
@@ -100,7 +93,10 @@ class Booking
     #[ORM\OneToOne(mappedBy: 'booking', targetEntity: Commande::class, cascade: ['persist', 'remove'])]
     private ?Commande $commande = null;
 
-    public function __construct()
+    #[ORM\OneToMany(mappedBy: 'booking', targetEntity: RoomUser::class, cascade: ['persist', 'remove'])]
+    private Collection $occupants;
+
+    #[Pure] public function __construct()
     {
         $this->occupants = new ArrayCollection();
     }
@@ -242,18 +238,6 @@ class Booking
         return $this;
     }
 
-    public function getReference(): ?string
-    {
-        return $this->reference;
-    }
-
-    public function setReference(?string $reference): self
-    {
-        $this->reference = $reference;
-
-        return $this;
-    }
-
     public function getCountry(): ?string
     {
         return $this->country;
@@ -314,14 +298,26 @@ class Booking
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getState(): ?string
     {
-        return $this->status;
+        return $this->state;
     }
 
-    public function setStatus(?string $status): self
+    public function setState(?string $state): self
     {
-        $this->status = $status;
+        $this->state = $state;
+
+        return $this;
+    }
+
+    public function getNumber(): ?string
+    {
+        return $this->number;
+    }
+
+    public function setNumber(?string $number): self
+    {
+        $this->number = $number;
 
         return $this;
     }
@@ -338,30 +334,6 @@ class Booking
         return $this;
     }
 
-    public function getTaxeAmount(): ?int
-    {
-        return $this->taxeAmount;
-    }
-
-    public function setTaxeAmount(?int $taxeAmount): self
-    {
-        $this->taxeAmount = $taxeAmount;
-
-        return $this;
-    }
-
-    public function getDiscountAmount(): ?int
-    {
-        return $this->discountAmount;
-    }
-
-    public function setDiscountAmount(?int $discountAmount): self
-    {
-        $this->discountAmount = $discountAmount;
-
-        return $this;
-    }
-
     public function getRoom(): ?Room
     {
         return $this->room;
@@ -374,9 +346,6 @@ class Booking
         return $this;
     }
 
-    /**
-     * @return Collection<int, RoomUser>
-     */
     public function getOccupants(): ?Collection
     {
         return $this->occupants;

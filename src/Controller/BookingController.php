@@ -36,7 +36,6 @@ class BookingController extends AbstractController
     public function __construct(
         BookerService $booker,
         CartService $cartService,
-        OptionRepository $optionRepository,
         RoomService $roomService,
         EntityManagerInterface $em,
         OrderManager $orderManager,
@@ -45,7 +44,6 @@ class BookingController extends AbstractController
         $this->booker = $booker;
         $this->cartService = $cartService;
         $this->roomService = $roomService;
-        $this->optionRepository = $optionRepository;
         $this->em = $em;
         $this->manager = $orderManager;
         $this->breadcrumbs = $breadcrumbs;

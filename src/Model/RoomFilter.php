@@ -8,9 +8,9 @@ class RoomFilter
 
     public $checkout;
 
-    private $adult;
+    public ?int $adult = null;
 
-    private $children;
+    public ?int $children = null;
 
     private $room;
 

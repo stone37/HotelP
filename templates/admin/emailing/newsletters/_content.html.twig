@@ -3,33 +3,33 @@
         <div class="col-12">
             <table class="table table-responsive-sm">
                 <thead class="text-primary">
-                <tr>
-                    <th scope="col" class="font-weight-stone-500 text-center">Email</th>
-                    <th scope="col" class="font-weight-stone-500 text-center">Créer le</th>
-                    <th scope="col" class="font-weight-stone-500 text-center"></th>
-                </tr>
+                    <tr>
+                        <th scope="col" class="font-weight-stone-500 text-center">Adresse e-mail</th>
+                        <th scope="col" class="font-weight-stone-500 text-center">Créer le</th>
+                        <th scope="col" class="font-weight-stone-500 text-center"></th>
+                    </tr>
                 </thead>
                 <tbody id="list-checkbook-container">
-                {% for newsletter in newsletters %}
-                    <tr>
-                        <td class="text-center">{{ newsletter.email }}</td>
-                        <td class="text-center">{{ newsletter.createdAt|date('d/m/Y H:i') }}</td>
-                    </tr>
-                {% endfor %}
+                    {% for newsletter in newsletters %}
+                        <tr>
+                            <td class="text-center">{{ newsletter.email }}</td>
+                            <td class="text-center">{{ newsletter.createdAt|date('d/m/Y H:i') }}</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ newsletters.totalItemCount }} resultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ newsletters.totalItemCount }} résultats</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
-            {{ knp_pagination_render(newsletters, 'Ui/_pagination.html.twig') }}
+            {{ knp_pagination_render(newsletters, 'ui/_pagination.html.twig') }}
         </div>
     </div>
 {% else %}
     <div class="row app-user d-flex justify-content-center">
         <div class="col-12 col-md-8 text-center mt-3 mt-md-5">
-            <h3 class="text-primary h3-responsive font-weight-stone-600">
+            <h3 class="text-primary h3-responsive font-weight-stone-600 text-dark">
                 Vous n'avez aucune email dans la newsletters.
             </h3>
         </div>

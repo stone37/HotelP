@@ -1,9 +1,4 @@
 $(document).ready(function() {
-    /**
-     * ##############
-     * Upload File
-     * ##############
-     */
     function readURL(input) {
 
         let url = input.value;
@@ -23,17 +18,7 @@ $(document).ready(function() {
     $('#entity-image').change(function () { readURL(this)});
 
 
-    // Password view
-    $('.input-prefix.fa-eye').click(function () {
-        passwordView($(this));
-    });
 
-    // Password generate
-    $('#password-generate-btn').click(function(e){
-        e.preventDefault();
-
-        generatePassword($('#password-bulk').find('input'));
-    })
 });
 
 

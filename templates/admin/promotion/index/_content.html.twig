@@ -1,11 +1,13 @@
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-center justify-content-md-between">
         <div id="entity-list-delete-bulk-btn" class="mr-3 d-none entity-promotion-delete-bulk-btn">
-            {% include 'Ui/Grid/Action/delete.html.twig' with {'action': {'label': 'Supprimer'}} %}
+            <a id="entity-bulk-delete-btn" class="btn btn-danger btn-md" data-url="{{ path('app_admin_promotion_bulk_delete') }}">
+                <i class="fas fa-trash mr-1"></i> Supprimer
+            </a>
         </div>
         <div class="d-flex ml-auto">
             {% set path = path('app_admin_promotion_create') %}
-            {% include 'Ui/Grid/Action/create.html.twig' with {'path': path, 'action': {'label': 'Créer'}} %}
+            {{ include('ui/Grid/Action/create.html.twig', {'path': path, 'action': {'label': 'Créer'}}) }}
         </div>
     </div>
 </div>
@@ -15,22 +17,21 @@
         <div class="col-12">
             <table class="table table-responsive-sm">
                 <thead class="text-primary">
-                <tr>
-                    <th scope="col" class="text-center">
-                        <div class="" style="position: relative; right: 10px; top: 2px">
-                            <input type="checkbox" name="principal" class="form-check-input filled-in" id="principal-checkbox" value="" style="margin: 0 !important;" />
-                            <label class="form-check-label" for="principal-checkbox"
-                                   style="padding-left: 0!important; "></label>
-                        </div>
-                    </th>
-                    <th scope="col" class="font-weight-stone-500 text-center">Nom</th>
-                    <th scope="col" class="font-weight-stone-500 text-center">Debut</th>
-                    <th scope="col" class="font-weight-stone-500 text-center">Fin</th>
-                    <th scope="col" class="font-weight-stone-500 text-center">Hébergement</th>
-                    <th scope="col" class="font-weight-stone-500 text-center">Réduction</th>
-                    <th scope="col" class="font-weight-stone-500 text-center">Status</th>
-                    <th scope="col" class="font-weight-stone-500 text-center"></th>
-                </tr>
+                    <tr>
+                        <th scope="col" class="text-center">
+                            <div class="" style="position: relative; right: 10px; top: 2px">
+                                <input type="checkbox" name="principal" class="form-check-input filled-in" id="principal-checkbox" value="" style="margin: 0 !important;" />
+                                <label class="form-check-label" for="principal-checkbox" style="padding-left: 0!important; "></label>
+                            </div>
+                        </th>
+                        <th scope="col" class="font-weight-stone-500 text-center">Nom</th>
+                        <th scope="col" class="font-weight-stone-500 text-center">Debut</th>
+                        <th scope="col" class="font-weight-stone-500 text-center">Fin</th>
+                        <th scope="col" class="font-weight-stone-500 text-center">Hébergement</th>
+                        <th scope="col" class="font-weight-stone-500 text-center">Réduction</th>
+                        <th scope="col" class="font-weight-stone-500 text-center">Status</th>
+                        <th scope="col" class="font-weight-stone-500 text-center"></th>
+                    </tr>
                 </thead>
                 <tbody id="list-checkbook-container">
                 {% for promotion in promotions %}
@@ -46,8 +47,7 @@
                         <td class="text-center">{{ promotion.start|date('d/m/Y') }}</td>
                         <td class="text-center">{{ promotion.end|date('d/m/Y') }}</td>
                         <td class="text-center">
-                            <a href="{{ path('app_room_show', {'slug': promotion.room.slug}) }}"
-                               class="card-link">{{ promotion.room.name }}</a>
+                            <a href="{{ path('app_room_show', {'slug': promotion.room.slug}) }}" class="card-link">{{ promotion.room.name }}</a>
                         </td>
                         <td class="text-center">{{ promotion.discount }} %</td>
                         <td class="text-center">
@@ -69,7 +69,7 @@
                                         <i class="fas fa-eye mr-1"></i> Voir
                                     </a>
                                     <a href="{{ path('app_admin_promotion_edit', {'id': promotion.id}) }}" class="dropdown-item">
-                                        <i class="fas fa-pencil-alt mr-1"></i> Editer
+                                        <i class="fas fa-pencil-alt mr-1"></i> Éditer
                                     </a>
                                     <a href="{{ path('app_admin_promotion_move', {'id': promotion.id, 'pos': -1}) }}" class="dropdown-item">
                                         <i class="fas fa-arrow-up mr-1"></i> Monter
@@ -77,7 +77,8 @@
                                     <a href="{{ path('app_admin_promotion_move', {'id': promotion.id, 'pos': 1}) }}" class="dropdown-item">
                                         <i class="fas fa-arrow-down mr-1"></i> Descendre
                                     </a>
-                                    <a class="dropdown-item entity-promotion-delete" id="{{ promotion.id }}">
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ promotion.id }}"
+                                       data-url="{{ path('app_admin_promotion_delete', {'id': promotion.id}) }}">
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -89,16 +90,16 @@
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ promotions.totalItemCount }} resultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ promotions.totalItemCount }} résultats</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
-            {{ knp_pagination_render(promotions, 'Ui/_pagination.html.twig') }}
+            {{ knp_pagination_render(promotions, 'ui/_pagination.html.twig') }}
         </div>
     </div>
 {% else %}
     <div class="row app-user d-flex justify-content-center">
         <div class="col-12 col-md-8 text-center mt-3 mt-md-5">
-            <h3 class="h3-responsive font-weight-stone-600">
+            <h3 class="h3-responsive font-weight-stone-600 text-dark">
                 Vous n'avez aucune promotion.
             </h3>
         </div>

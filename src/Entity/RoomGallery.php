@@ -13,27 +13,27 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class RoomGallery
 {
-    use PositionTrait;
+    use PositionTrait; 
     use TimestampableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $name = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $extension = '';
+    #[ORM\Column(length: 255)]
+    private ?string $extension = null;
 
     #[Assert\File(
         maxSize: '8000k',
-        maxSizeMessage: 'Le fichier excède 8000Ko',
         mimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'],
+        maxSizeMessage: 'Le fichier excède 8000Ko',
         mimeTypesMessage: 'Format non autorisés. Formats autorisés: png, jpeg, jpg, gif'
     )]
-    private ?File $file;
+    private ?File $file = null;
 
     private ?string $tempFilename;
 

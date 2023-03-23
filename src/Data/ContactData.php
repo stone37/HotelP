@@ -8,17 +8,17 @@ class ContactData
 {
     #[Assert\NotBlank]
     #[Assert\Length(min: 3)]
-    public $name;
+    public ?string $name = null;
 
     #[Assert\NotBlank]
     #[Assert\Email]
-    public $email;
+    public ?string $email = null;
 
     #[Assert\NotBlank]
-    public $phone;
+    public ?string $phone = null;
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 10)]
-    public $content;
+    public ?string $content = null;
 }
 

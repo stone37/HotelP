@@ -3,12 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Promotion;
-use App\Entity\Room;
-use App\Repository\RoomRepository;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -26,28 +24,21 @@ class PromotionType extends AbstractType
                 'label' => false,
                 'config' => ['height' => '150', 'uiColor' => '#ffffff', 'toolbar' => 'basic']
             ])
-            ->add('start', DateType::class, [
-                'label' => 'Date de Debut',
-                'widget' => 'single_text',
-            ])
-            ->add('end', DateType::class, [
-                'label' => 'Date de Fin',
-                'widget' => 'single_text',
-            ])
+            ->add('start', DateType::class, ['label' => 'Date de Debut', 'widget' => 'single_text'])
+            ->add('end', DateType::class, ['label' => 'Date de Fin', 'widget' => 'single_text'])
             ->add('discount', IntegerType::class, ['label' => 'Reduction (En %)'])
-            ->add('enabled', CheckboxType::class, ['label' => 'Activé', 'required' => false])
-            ->add('room', EntityType::class, [
-                'class' => Room::class,
-                'choice_label' => 'name',
-                'query_builder' => function (RoomRepository $er) {
-                    return $er->roomListeQueryBuilder();
-                },
-                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-stone'],
+            ->add('enabled', ChoiceType::class, [
+                'choices' => ['Oui' => true, 'Non' => false],
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
+                'label' => 'Activée',
+                'placeholder' => 'Activée'
+            ])
+            ->add('room', RoomChoiceType::class, [
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
                 'label' => 'Hébergement',
                 'placeholder' => 'Hébergement'
             ])
-            ->add('file', VichFileType::class, ['label' => 'Logo du site', 'required' => false])
-        ;
+            ->add('file', VichFileType::class, ['required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

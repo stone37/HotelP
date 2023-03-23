@@ -7,7 +7,9 @@ use App\Entity\Traits\TimestampableTrait;
 use App\Repository\RoomEquipmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RoomEquipmentRepository::class)]
@@ -18,21 +20,21 @@ class RoomEquipment
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 100)]
-    private ?string $name = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = '';
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Room::class, mappedBy: 'equipments')]
-    private $rooms = null;
+    private Collection $rooms;
 
-    public function __construct()
+    #[Pure] public function __construct()
     {
         $this->rooms = new ArrayCollection();
     }

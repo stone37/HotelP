@@ -21,13 +21,11 @@ class RoomService
         RoomRepository $repository,
         CartService $service,
         PriceCalculator $calculator,
-        OptionRepository $optionRepository,
         PromotionManager $manager
     )
     {
         $this->repository = $repository;
         $this->service = $service;
-        $this->optionRepository = $optionRepository;
         $this->calculator = $calculator;
         $this->manager = $manager;
     }

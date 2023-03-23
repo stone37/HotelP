@@ -3,126 +3,32 @@
 {% block title 'Hôtel économique élégante à Yamoussoukro' %}
 
 {% block meta %}
-    {% set content = "Accès facile à toutes les attractions de la ville avec un jardin verdoyant sur le toit,
-                        un garde-manger public, une connexion Wi-Fi gratuite dans tout l'établissement.
-                        L'établissement propose de nombreux types de chambres, toutes dotées d'une salle
-                         de bains privative. Convient aux voyageurs de groupe." %}
-
+    {% set content = "Bienvenue à " ~ config.get.name ~ " ! Nous proposons des chambres confortables et bien équipées
+                pour votre séjour, avec des équipements supplémentaires tels qu'une piscine, une salle de sport
+                et un restaurant sur place. Notre équipe est à votre disposition pour répondre à tous vos besoins." %}
     <meta name="description" content="{{ content }}"/>
     <meta property="og:description" content="{{ content }}" />
 {% endblock %}
 
 {% block app_intro %}
-    <div id="carousel-home" class="carousel slide home d-none d-lg-block {#mx-3#}" data-ride="carousel">
-        <div class="carousel-inner carousel-fade" role="listbox">
-            {% for gallery in galleries %}
-                <div class="carousel-item {% if loop.first %}active{% endif %}">
-                    <div class="view" style="background-image: url({{ asset(gallery.webPath) }}); background-repeat: no-repeat; background-size: cover;">
-                        <div class="mask rgba-black-slight">
-                            <div class="row">
-                                <div class="col-lg-5 px-0">
-                                    <div class="view-content d-flex justify-content-center align-items-start">
-                                        <div class="wow fadeIn ml-4 pl-4 pr-3 text-secondary">
-                                            <h1 class="mt-4 py-2 display-4">
-                                                <strong class="font-weight-bold">
-                                                    Hôtel <span class="text-primary">économique</span>
-                                                    <span class="text-danger">élégante</span> à
-                                                    <span class="text-default">Yamoussoukro.</span>
-                                                </strong>
-                                            </h1>
-                                            <p class="small-9 font-weight-stone-500">
-                                                Accès facile à toutes les attractions de la ville avec un jardin verdoyant
-                                                sur le toit, un garde-manger public, une connexion Wi-Fi gratuite dans tout l'établissement.
-                                                L'établissement propose de nombreux types de chambres, toutes dotées d'une salle de bains
-                                                privative. Convient aux voyageurs de groupe.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="app-home-facilities">
-                                        <div class="facilitie d-flex">
-                                            Nos installations <i class="fas fa-arrow-alt-circle-right"></i>
-                                        </div>
-
-                                        <div class="facilitie-list text-white">
-                                            <div class="d-flex align-items-center">
-                                                <div class="pr-3"><i class="fas fa-wifi"></i></div>
-                                                <div class="">Wifi gratuit</div>
-                                            </div>
-                                            <div class="d-flex align-items-center py-3">
-                                                <div class="pr-3"><i class="fab fa-rev" style="font-size: 1.2rem;"></i></div>
-                                                <div class="">Climatisation auto réglable</div>
-                                            </div>
-                                            <div class="d-flex align-items-center">
-                                                <div class="pr-3"><i class="fas fa-tv"></i></div>
-                                                <div class="">Télévision par cable à écran plat avec chaine de sport</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <div id="carousel-mobile" class="carousel slide home d-block d-lg-none" data-ride="carousel">
-        <div class="carousel-inner carousel-fade" role="listbox">
-            {% for gallery in galleries %}
-                <div class="carousel-item {% if loop.first %}active{% endif %}">
-                    <div class="view" style="background-image: url({{ asset(gallery.webPath) }}); background-repeat: no-repeat; background-size: cover;">
-                        <div class="mask {#intro-gradient-rgba#} rgba-black-strong">
-                            <div class="container h-100 d-flex justify-content-center align-items-center mt-4 mt-md-0">
-                                <div class="row smooth-scroll">
-                                    <div class="col-12 col-md-12 text-left">
-                                        <div class="wow fadeInDown" data-wow-delay="0.2s">
-                                            <h1 class="h1-responsive intro text-white text-center mt-5">
-                                                <strong class="font-weight-bold">
-                                                    Hôtel <span class="text-primary">économique</span>
-                                                    <span class="text-danger">élégante</span> à
-                                                    <span class="text-default">Yamoussoukro.</span>
-                                                </strong>
-                                            </h1>
-                                            <p class="my-3 font-weight-stone-500 text-center small-9 text-white">
-                                                Accès facile à toutes les attractions de la ville avec un jardin verdoyant
-                                                sur le toit, un garde-manger public, une connexion Wi-Fi gratuite dans tout l'établissement.
-                                                L'établissement propose de nombreux types de chambres, toutes dotées d'une salle de bains
-                                                privative. Convient aux voyageurs de groupe.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="px-3">
-        {{ render(controller('App\\Controller\\BookingController::search')) }}
-        {{ include('site/booking/_mobile_btn.html.twig') }}
-    </div>
+    {{ include('site/layout/_intro.html.twig') }}
 {% endblock %}
 
 {% block app_body %}
-    {% include 'site/home/content.html.twig' %}
+    {{ include('site/home/content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-
-    {% include 'Ui/_stylesheets.html.twig' with {'path': 'assets/css/site/index.css'} %}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
 
-    <script type="text/javascript">
+    {#<script type="text/javascript">
         $('.booking-form-sticky').sticky({topSpacing: 70, zIndex: 999, stopper: ".sticky-stopper", stickyClass: 'active'});
-    </script>
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/site/booking.js'} %}
+    </script>#}
+
+    {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/site/booking.js'}) }}
 {% endblock %}
 

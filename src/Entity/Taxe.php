@@ -5,8 +5,9 @@ namespace App\Entity;
 use App\Entity\Traits\EnabledTrait;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\TaxeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TaxeRepository::class)]
@@ -17,22 +18,16 @@ class Taxe
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $name = '';
+    #[Assert\NotBlank]
+    #[ORM\Column(nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $value = null;
-
-    #[ORM\OneToMany(mappedBy: 'taxe', targetEntity: Room::class)]
-    private $rooms = null;
-
-    public function __construct()
-    {
-        $this->rooms = new ArrayCollection();
-    }
+    #[Assert\NotBlank]
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    private ?float $value = 0.0;
 
     public function getId(): ?int
     {
@@ -63,33 +58,8 @@ class Taxe
         return $this;
     }
 
-    /**
-     * @return Collection<int, Room>
-     */
-    public function getRooms(): Collection
+    #[Pure] public function getLabel(): ?string
     {
-        return $this->rooms;
-    }
-
-    public function addRoom(Room $room): self
-    {
-        if (!$this->rooms->contains($room)) {
-            $this->rooms[] = $room;
-            $room->setTaxe($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRoom(Room $room): self
-    {
-        if ($this->rooms->removeElement($room)) {
-            // set the owning side to null (unless already changed)
-            if ($room->getTaxe() === $this) {
-                $room->setTaxe(null);
-            }
-        }
-
-        return $this;
+        return sprintf('%s (%s%%)', $this->name, $this->getValue());
     }
 }

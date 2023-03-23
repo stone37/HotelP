@@ -7,9 +7,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Cache\CacheItemPoolInterface;
 
+#[Route('/admin')]
 class CacheController extends AbstractController
 {
-    #[Route(path: '/admin/cache/clean', name: 'app_admin_cache_clean')]
+    #[Route(path: '/cache/clean', name: 'app_admin_cache_clean')]
     public function clean(CacheItemPoolInterface $cache): RedirectResponse
     {
         $this->addFlash('success', 'Le cache a bien été supprimé');

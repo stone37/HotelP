@@ -11,18 +11,18 @@ class PasswordResetToken
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
     #[ORM\Column(type: 'datetime')]
     private ?DateTimeInterface $createdAt;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $token;
+    #[ORM\Column(length: 255)]
+    private ?string $token = null;
 
     #[ORM\OneToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
-    private ?User $user;
+    private ?User $user = null;
 
     public function getId(): ?int
     {

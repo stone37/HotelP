@@ -10,9 +10,11 @@ use App\Form\EmailingSenderType;
 use App\Form\EmailingType;
 use App\Repository\EmailingRepository;
 use App\Service\NewsletterService;
+use JetBrains\PhpStorm\ArrayShape;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,30 +22,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class EmailingController extends AbstractController
 {
-    private EmailingRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-    private EntityManagerInterface $em;
-    private NewsletterService $service;
-
     public function __construct(
-        EmailingRepository $repository,
-        EntityManagerInterface $em,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher,
-        NewsletterService $service)
+        private EmailingRepository $repository,
+        private EntityManagerInterface $em,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher,
+        private NewsletterService $service)
     {
-        $this->repository = $repository;
-        $this->em = $em;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
-        $this->service = $service;
     }
 
-    #[Route(path: '/admin/emailing/{type}/list', name: 'app_admin_emailing_index')]
-    public function index(Request $request, string $type)
+    #[Route(path: '/emailing/{type}/list', name: 'app_admin_emailing_index')]
+    public function index(Request $request, string $type): Response
     {
         $qb = $this->repository->getAdmin($type);
 
@@ -51,12 +43,12 @@ class EmailingController extends AbstractController
 
         return $this->render('admin/emailing/index.html.twig', [
             'emailings' => $emailings,
-            'type' => $type,
+            'type' => $type
         ]);
     }
 
-    #[Route(path: '/admin/emailing/create', name: 'app_admin_emailing_create')]
-    public function create(Request $request)
+    #[Route(path: '/emailing/create', name: 'app_admin_emailing_create')]
+    public function create(Request $request): RedirectResponse|Response
     {
         $emailing = new Emailing();
 
@@ -86,8 +78,8 @@ class EmailingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/emailing/{id}/resend/{type}', name: 'app_admin_emailing_resend', requirements: ['id' => '\d+'])]
-    public function resend(Request $request, Emailing $emailing, string $type)
+    #[Route(path: '/emailing/{id}/resend/{type}', name: 'app_admin_emailing_resend', requirements: ['id' => '\d+'])]
+    public function resend(Request $request, Emailing $emailing, string $type): RedirectResponse|Response
     {
         if ($emailing->getGroupe() == Emailing::GROUP_PARTICULIER) {
             $form = $this->createForm(EmailingSenderType::class, $emailing);
@@ -144,11 +136,11 @@ class EmailingController extends AbstractController
         return $this->render('admin/emailing/edit.html.twig', [
             'form' => $form->createView(),
             'emailing' => $emailing,
-            'type' => $type,
+            'type' => $type
         ]);
     }
 
-    #[Route(path: '/admin/emailing/create/user', name: 'app_admin_emailing_user')]
+    #[Route(path: '/emailing/create/user', name: 'app_admin_emailing_user')]
     public function user(Request $request): Response
     {
         $users = $this->em->getRepository(User::class)->findAllUsers();
@@ -177,12 +169,12 @@ class EmailingController extends AbstractController
 
         return $this->render('admin/emailing/user.html.twig', [
             'form' => $form->createView(),
-            'users' => $users,
+            'users' => $users
         ]);
     }
 
-    #[Route(path: '/admin/emailing/create/newsletter', name: 'app_admin_emailing_newsletter')]
-    public function newsletter(Request $request)
+    #[Route(path: '/emailing/create/newsletter', name: 'app_admin_emailing_newsletter')]
+    public function newsletter(Request $request): RedirectResponse|Response
     {
         $newsletters = $this->em->getRepository(NewsletterData::class)->findAll();
 
@@ -214,8 +206,8 @@ class EmailingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/emailing/newsletters', name: 'app_admin_emailing_newsletters')]
-    public function newsletters(Request $request)
+    #[Route(path: '/emailing/newsletters', name: 'app_admin_emailing_newsletters')]
+    public function newsletters(Request $request): Response
     {
         $qb = $this->em->getRepository(NewsletterData::class)->findBy([], ['createdAt' => 'desc']);
 
@@ -226,8 +218,8 @@ class EmailingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/emailing/{id}/delete', name: 'app_admin_emailing_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Emailing $emailing)
+    #[Route(path: '/emailing/{id}/delete', name: 'app_admin_emailing_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, Emailing $emailing): RedirectResponse|JsonResponse
     {
         $form = $this->deleteForm($emailing);
 
@@ -239,7 +231,7 @@ class EmailingController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($emailing);
+                $this->repository->remove($emailing, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -250,14 +242,12 @@ class EmailingController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cet mail ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $emailing,
             'message' => $message,
@@ -269,8 +259,8 @@ class EmailingController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/emailing/bulk/delete', name: 'app_admin_emailing_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/emailing/bulk/delete', name: 'app_admin_emailing_bulk_delete', options: ['expose' => true])]
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
@@ -303,15 +293,14 @@ class EmailingController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' mails ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cet mail ?';
+        }
 
         $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
@@ -325,21 +314,21 @@ class EmailingController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(Emailing $emailing)
+    private function deleteForm(Emailing $emailing): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_emailing_delete', ['id' => $emailing->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_emailing_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

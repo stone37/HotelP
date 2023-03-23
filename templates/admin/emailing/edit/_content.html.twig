@@ -8,9 +8,9 @@
         <P class="text-danger my-0">{{ form_errors(form) }}</P>
 
         {% if type == 1 %}
-            {% include 'admin/emailing/send_form.html.twig' %}
+            {{ include('admin/emailing/send_form.html.twig') }}
         {% else %}
-            {% include 'admin/emailing/form.html.twig' %}
+            {{ include('admin/emailing/form.html.twig') }}
         {% endif %}
 
         {{ form_widget(form._token) }}

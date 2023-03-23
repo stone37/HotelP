@@ -1,0 +1,71 @@
+{% if galleries|length > 0 %}
+    <div id="carousel-home" class="carousel slide home" data-ride="carousel">
+        <div class="carousel-inner" role="listbox">
+            {% for gallery in galleries %}
+                <div class="carousel-item {% if loop.first %}active{% endif %}">
+                    <div class="view" style="background-image: url({{ asset(gallery.webPath) }}); background-repeat: no-repeat; background-size: cover;">
+                        <div class="mask rgba-black-light"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+
+{% endif %}
+
+<section>
+    <div class="view-content d-flex justify-content-start">
+        <div class="wow fadeIn">
+            <h1 class="h2-responsive text-white font-weight-bold mb-2">
+                Bienvenue à notre hôtel, votre <span class="text-primary">maison</span> loin de
+                <span class="text-default">chez vous</span>.
+            </h1>
+            <p class="font-weight-normal text-white">
+                Bienvenue à {{ config.get.name }} ! Nous proposons des chambres confortables et bien équipées
+                pour votre séjour, avec des équipements supplémentaires tels qu'une piscine, une salle de sport
+                et un restaurant sur place. Notre équipe est à votre disposition pour répondre à tous vos besoins.
+            </p>
+        </div>
+    </div>
+</section>
+<section class="d-none d-md-block">
+    <div class="home-facilities">
+        <div class="title">
+            Nos installations <i class="fas fa-arrow-alt-circle-right"></i>
+        </div>
+
+        <div class="facility-list">
+            <div class="d-flex align-items-center mb-3">
+                <div class="pr-3"><i class="fas fa-wifi"></i></div>
+                <div class="">Wifi gratuit</div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+                <div class="pr-3"><i class="fab fa-rev" style="font-size: 1.2rem;"></i></div>
+                <div class="">Climatisation auto réglable</div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+                <div class="pr-3"><i class="fas fa-tv"></i></div>
+                <div>Télévision par cable à écran plat avec chaine de sport</div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+                <div class="pr-3"><i class="fas fa-utensils"></i></div>
+                <div>Restaurant</div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+                <div class="pr-3"><i class="fas fa-glass-cheers"></i></div>
+                <div>Boite de nuit</div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+                <div class="pr-3"><i class="fas fa-swimmer"></i></div>
+                <div>Piscine</div>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="pr-3"><i class="fas fa-pallet"></i></div>
+                <div>Salle de conférence</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{ render(controller('App\\Controller\\BookingController::search')) }}

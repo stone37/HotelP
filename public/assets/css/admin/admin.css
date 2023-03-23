@@ -4,7 +4,6 @@
     padding:0;
     min-width:5rem;
     border:0;
-    /*border-radius:.375rem;*/
     -webkit-box-shadow:0 50px 100px rgba(50,50,93,0.1),0 15px 35px rgba(50,50,93,0.15),0 5px 15px rgba(0,0,0,0.1);
     box-shadow:0 50px 100px rgba(50,50,93,0.1),0 15px 35px rgba(50,50,93,0.15),0 5px 15px rgba(0,0,0,0.1)
 }
@@ -15,43 +14,32 @@
         font-size: .64rem !important
     }
 
-    .skin-light .btn i {
-        display: none !important;
-    }
-
-}
-
-@media (min-width: 576px) {
-
-    .navbar {
-        /*min-height: 110px;*/
+    .skin-light .navbar {
         padding-left: 40px;
         padding-right: 40px;
     }
 }
 
-@media (max-width: 767px) {
-
-    .navbar {
-        /*min-height: 110px;*/
+@media (min-width: 576px) {
+    .skin-light .navbar {
         padding-left: 40px;
         padding-right: 40px;
     }
 }
 
 @media (min-width: 992px) {
-    .navbar {
-        background-color: rgba(255, 255, 255, .75) !important;
-        box-shadow: none;
+    .skin-light .navbar {
+        background-color: rgba(255, 255, 255, 1) !important;
     }
 
-    .navbar {
+    .skin-light .navbar {
         min-height: 65px;
-        padding-left: 40px;
-        padding-right: 40px;
+        background-color: #FFFFFF !important;
+        -webkit-box-shadow: 0 5px 10px 0 rgba(0,0,0,0.05);
+        box-shadow: 0 5px 10px 0 rgba(0,0,0,0.05);
     }
-
 }
+
 
 
 #imgUpload-dropdiv {
@@ -65,10 +53,6 @@
     margin-left: 1rem !important;
     margin-right: 1rem !important;
     cursor: pointer;
-}
-
-#imgUpload-list .dm-uploader:hover {
-    border: 2px #0032FF dashed;
 }
 
 #imgUpload-list .dm-uploader i {
@@ -87,10 +71,6 @@
 
 #imgUpload-list {
     transition: height .5s ease
-}
-
-#imgUpload-list > div {
-
 }
 
 #imgUpload-list  .info,
@@ -113,6 +93,8 @@
     width: 95%;
     transition:top .3s;
     top: 0;
+    border-top-left-radius: 0.4rem;
+    border-top-right-radius: 0.4rem;
 }
 
 @media (max-width: 767px) {
@@ -151,10 +133,15 @@
     background: linear-gradient(to bottom, rgba(175,32,40,0.9), rgba(0,0,0,0) 100%)
 }
 
+#imgUpload-list > div img {
+    height: 180px;
+}
+
 #imgUpload-list > div img,
 #imgUpload-list > div canvas {
     width: 100% !important;
-    display: block
+    display: block;
+    border-radius: 0.4rem !important;
 }
 
 #imgUpload-list > div .info {
@@ -254,8 +241,9 @@
     stroke-dasharray:0,100
 }
 
-
-
+.skin-light .delete_equipment {
+    margin-top: 1.7rem;
+}
 
 
 

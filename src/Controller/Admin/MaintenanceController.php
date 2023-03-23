@@ -11,21 +11,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class MaintenanceController extends AbstractController
 {
-    private MaintenanceConfigurationExporter $maintenanceExporter;
-
-    private MaintenanceConfigurationFactory $configurationFactory;
-
     public function __construct(
-        MaintenanceConfigurationExporter $maintenanceExporter,
-        MaintenanceConfigurationFactory $configurationFactory
+        private MaintenanceConfigurationExporter $maintenanceExporter,
+        private MaintenanceConfigurationFactory $configurationFactory
     ) {
-        $this->maintenanceExporter = $maintenanceExporter;
-        $this->configurationFactory = $configurationFactory;
     }
 
-    #[Route(path: '/admin/settings/maintenance', name: 'app_admin_maintenance_index')]
+    #[Route(path: '/settings/maintenance', name: 'app_admin_maintenance_index')]
     public function index(Request $request): Response
     {
         $maintenanceConfiguration = $this->configurationFactory->get();
@@ -50,7 +45,7 @@ class MaintenanceController extends AbstractController
         }
 
         return $this->render('admin/maintenance/index.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 }

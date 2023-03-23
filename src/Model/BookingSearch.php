@@ -2,11 +2,11 @@
 
 namespace App\Model;
 
+use App\Entity\Room;
+
 class BookingSearch
 {
-    private ?string $room = "";
-
-    private ?string $user = "";
+    private ?Room $room = null;
 
     private ?string $code = "";
 
@@ -22,26 +22,14 @@ class BookingSearch
         return $this;
     }
 
-    public function getRoom(): ?string
+    public function getRoom(): ?Room
     {
         return $this->room;
     }
 
-    public function setRoom(?string $room): self
+    public function setRoom(?Room $room): self
     {
         $this->room = $room;
-
-        return $this;
-    }
-
-    public function getUser(): ?string
-    {
-        return $this->user;
-    }
-
-    public function setUser(?string $user): self
-    {
-        $this->user = $user;
 
         return $this;
     }

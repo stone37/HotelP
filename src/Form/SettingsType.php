@@ -19,22 +19,22 @@ class SettingsType extends AbstractType
             ->add('name',TextType::class, ['label' => 'Nom de l\'hotel'])
             ->add('email',TextType::class, ['label' => 'E-mail'])
             ->add('phone',TextType::class, ['label' => 'Telephone'])
-            ->add('fax',TextType::class, ['label' => 'Fax', 'required' => false])
+            ->add('fax',TextType::class, ['label' => 'Fax (facultatif)', 'required' => false])
             ->add('address',TextType::class, ['label' => 'Adresse', 'required' => false])
             ->add('description', TextareaType::class, [
-                'label' => 'Description',
+                'label' => 'Description (facultatif)',
                 'attr'  => ['class' => 'form-control md-textarea', 'rows'  => 5],
                 'required' => false
             ])
-            ->add('country', TextType::class, ['label' => 'Pays', 'required' => false])
-            ->add('city', TextType::class, ['label' => 'Ville', 'required' => false])
-            ->add('facebookAddress', TextType::class, ['label' => 'Adresse Facebook', 'required' => false])
-            ->add('twitterAddress', TextType::class, ['label' => 'Adresse Twitter', 'required' => false])
-            ->add('linkedinAddress', TextType::class, ['label' => 'Adresse Linkedin', 'required' => false])
-            ->add('instagramAddress', TextType::class, ['label' => 'Adresse Instagram', 'required' => false])
-            ->add('youtubeAddress', TextType::class, ['label' => 'Adresse Youtube', 'required' => false])
-            ->add('checkinTime', TimeType::class, ['label' => 'Heure d\'arrivée', 'widget' => 'single_text',])
-            ->add('checkoutTime', TimeType::class, ['label' => 'Heure de Départ', 'widget' => 'single_text'])
+            ->add('country', TextType::class, ['label' => 'Pays (facultatif)', 'required' => false])
+            ->add('city', TextType::class, ['label' => 'Ville (facultatif)', 'required' => false])
+            ->add('facebookAddress', TextType::class, ['label' => 'Adresse Facebook (facultatif)', 'required' => false])
+            ->add('twitterAddress', TextType::class, ['label' => 'Adresse Twitter (facultatif)', 'required' => false])
+            ->add('linkedinAddress', TextType::class, ['label' => 'Adresse Linkedin (facultatif)', 'required' => false])
+            ->add('instagramAddress', TextType::class, ['label' => 'Adresse Instagram (facultatif)', 'required' => false])
+            ->add('youtubeAddress', TextType::class, ['label' => 'Adresse Youtube (facultatif)', 'required' => false])
+            ->add('checkinTime', TimeType::class, ['label' => 'Heure d\'arrivée (facultatif)', 'widget' => 'single_text',])
+            ->add('checkoutTime', TimeType::class, ['label' => 'Heure de Départ (facultatif)', 'widget' => 'single_text'])
             ->add('file', VichFileType::class, ['label' => 'Logo du site', 'required' => false])
         ;
     }

@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block app_body %}
-    {% include 'admin/promotion/show/_header.html.twig' %}
+    {{ include('admin/promotion/show/_header.html.twig') }}
 
-    {% include 'admin/promotion/show/_content.html.twig' %}
+    {{ include('admin/promotion/show/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}

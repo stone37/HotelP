@@ -27,7 +27,7 @@ class GoogleAuthenticator extends AbstractSocialAuthenticator
                 if (true !== ($googleUser->toArray()['email_verified'] ?? null)) {
                     throw new NotVerifiedEmailException();
                 }
-
+ 
                 $user = $this->repository->findForOauth('google', $googleUser->getId(), $googleUser->getEmail());
 
                 if ($user && null === $user->getGoogleId()) {

@@ -1,11 +1,14 @@
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-center justify-content-md-between">
         <div id="entity-list-delete-bulk-btn" class="mr-3 d-none entity-discount-delete-bulk-btn">
-            {% include 'Ui/Grid/Action/delete.html.twig' with {'action': {'label': 'Supprimer'}} %}
+            <a id="entity-bulk-delete-btn" class="btn btn-danger btn-md" data-url="{{ path('app_admin_discount_bulk_delete') }}">
+                <i class="fas fa-trash mr-1"></i> Supprimer
+            </a>
         </div>
         <div class="d-flex ml-auto">
             {% set path = path('app_admin_discount_create') %}
-            {% include 'Ui/Grid/Action/create.html.twig' with {'path': path, 'action': {'label': 'Créer'}} %}
+
+            {{ include('ui/Grid/Action/create.html.twig', {'path': path, 'action': {'label': 'Créer'}}) }}
         </div>
     </div>
 </div>
@@ -55,9 +58,10 @@
                                 <a class="dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-h text-primary"></i></a>
                                 <div class="dropdown-menu dropdown-primary dropdown-menu-right mt-0">
                                     <a href="{{ path('app_admin_discount_edit', {'id': discount.id}) }}" class="dropdown-item">
-                                        <i class="fas fa-pencil-alt mr-1"></i> Editer
+                                        <i class="fas fa-pencil-alt mr-1"></i> Éditer
                                     </a>
-                                    <a class="dropdown-item entity-discount-delete" id="{{ discount.id }}">
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ discount.id }}"
+                                       data-url="{{ path('app_admin_discount_delete', {'id': discount.id}) }}">
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -69,16 +73,16 @@
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ discounts.totalItemCount }} resultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ discounts.totalItemCount }} résultats</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
-            {{ knp_pagination_render(discounts, 'Ui/_pagination.html.twig') }}
+            {{ knp_pagination_render(discounts, 'ui/_pagination.html.twig') }}
         </div>
     </div>
 {% else %}
     <div class="row app-user d-flex justify-content-center">
         <div class="col-12 col-md-8 text-center mt-3 mt-md-5">
-            <h3 class="h3-responsive font-weight-stone-600">
+            <h3 class="h3-responsive font-weight-stone-600 text-dark">
                 Vous n'avez aucun code de réduction.
             </h3>
         </div>

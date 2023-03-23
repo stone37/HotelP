@@ -31,7 +31,7 @@ class AuthService
         if (null === $user) {
             throw new AccessDeniedException();
         }
-
+ 
         return $user;
     }
 

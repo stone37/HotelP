@@ -8,7 +8,9 @@ use App\Data\ContactData;
 use App\Service\ContactService;
 use ReCaptcha\ReCaptcha;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 use App\Form\ContactType;
@@ -17,15 +19,18 @@ class ContactController extends AbstractController
 {
     use ControllerTrait;
 
-    #[Route(path: '/contact', name: 'app_contact')]
-    public function index(
-        Request $request,
-        Breadcrumbs $breadcrumbs,
-        ContactService $contactService,
-        ReCaptcha $reCaptcha
+    public function __construct(
+        private Breadcrumbs $breadcrumbs,
+        private ContactService $contactService,
+        private ReCaptcha $reCaptcha
     )
     {
-        $this->breadcrumb($breadcrumbs)->addItem('Contact');
+    }
+
+    #[Route(path: '/contact', name: 'app_contact')]
+    public function index(Request $request): RedirectResponse|Response
+    {
+        $this->breadcrumb($this->breadcrumbs)->addItem('Contact');
 
         $data = new ContactData();
         $form = $this->createForm(ContactType::class, $data);
@@ -34,9 +39,9 @@ class ContactController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($reCaptcha->verify($form['recaptchaToken']->getData())->isSuccess()) {
+            if ($this->reCaptcha->verify($form['recaptchaToken']->getData())->isSuccess()) {
                 try {
-                    $contactService->send($data, $request);
+                    $this->contactService->send($data, $request);
                 } catch (TooManyContactException) {
                     $this->addFlash('error', 'Vous avez fait trop de demandes de contact consécutives.');
 

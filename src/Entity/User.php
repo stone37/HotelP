@@ -5,130 +5,93 @@ namespace App\Entity;
 use App\Entity\Traits\DeletableTrait;
 use App\Entity\Traits\MediaTrait;
 use App\Entity\Traits\SocialLoggableTrait;
+use App\Entity\Traits\TimestampableTrait;
 use App\Repository\UserRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['phone'], message: 'Il existe déjà un compte avec cet numéro de téléphone.')]
-#[UniqueEntity(fields: ['email'], repositoryMethod: 'findByCaseInsensitive', message: 'Il existe déjà un compte avec cet e-mail.')]
+#[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cet e-mail.', repositoryMethod: 'findByCaseInsensitive')]
 #[UniqueEntity(fields: ['username'], repositoryMethod: 'findByCaseInsensitive')]
-#[Vich\Uploadable]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use MediaTrait;
     use SocialLoggableTrait;
     use DeletableTrait;
+    use TimestampableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
+    #[Assert\NotBlank(message: 'Entrez une adresse e-mail s\'il vous plait.', groups: ['Registration', 'Profile'])]
+    #[Assert\Length(min: 2, max: 180, minMessage: 'L\'adresse e-mail est trop courte.', maxMessage: 'L\'adresse e-mail est trop longue.', groups: ['Registration', 'Profile'])]
+    #[Assert\Email(message: 'L\'adresse e-mail est invalide.', groups: ['Registration', 'Profile'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    #[Assert\NotBlank(
-        message: 'Entrez une adresse e-mail s\'il vous plait.',
-        groups: ['Registration', 'Profile']
-    )]
-    #[Assert\Length(
-        min: 2,
-        max: 180,
-        minMessage: 'L\'adresse e-mail est trop courte.',
-        maxMessage: 'L\'adresse e-mail est trop longue.',
-        groups: ['Registration', 'Profile']
-    )]
-    #[Assert\Email(
-        message: 'L\'adresse e-mail est invalide.',
-        groups: ['Registration', 'Profile']
-    )]
-    private ?string $email = '';
+    private ?string $email = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, unique: true)]
-    private ?string $username = '';
+    #[ORM\Column(unique: true, nullable: true)]
+    private ?string $username = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\NotBlank(
-        message: 'Entrez un prénom s\'il vous plait.',
-        groups: ['Registration', 'Profile']
-    )]
-    #[Assert\Length(
-        min: 2,
-        max: 180,
-        minMessage: 'Le prénom est trop court.',
-        maxMessage: 'Le prénom est trop long.',
-        groups: ['Registration', 'Profile']
-    )]
+    #[Assert\NotBlank(message: 'Entrez un prénom s\'il vous plait.', groups: ['Registration', 'Profile'])]
+    #[Assert\Length(min: 2, max: 180, minMessage: 'Le prénom est trop court.', maxMessage: 'Le prénom est trop long.', groups: ['Registration', 'Profile'])]
+    #[ORM\Column(nullable: true)]
     private ?string $firstname = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\NotBlank(
-        message: 'Entrez un nom s\'il vous plait.',
-        groups: ['Registration', 'Profile']
-    )]
-    #[Assert\Length(
-        min: 2,
-        max: 180,
-        minMessage: 'Le nom est trop court.',
-        maxMessage: 'Le nom est trop long.',
-        groups: ['Registration', 'Profile']
-    )]
+    #[Assert\NotBlank(message: 'Entrez un nom s\'il vous plait.', groups: ['Registration', 'Profile'])]
+    #[Assert\Length(min: 2, max: 180, minMessage: 'Le nom est trop court.', maxMessage: 'Le nom est trop long.', groups: ['Registration', 'Profile'])]
+    #[ORM\Column(nullable: true)]
     private ?string $lastname = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\NotBlank(
-        message: 'Entrez un numéro de téléphone s\'il vous plait.',
-        groups: ['Registration', 'Profile']
-    )]
-    #[Assert\Length(
-        min: 10,
-        max: 180,
-        minMessage: 'Le numéro de téléphone est trop court.',
-        maxMessage: 'Le numéro de téléphone est trop long.',
-        groups: ['Registration', 'Profile']
-    )]
+    #[Assert\NotBlank(message: 'Entrez un numéro de téléphone s\'il vous plait.', groups: ['Registration', 'Profile'])]
+    #[Assert\Length(min: 10, max: 180, minMessage: 'Le numéro de téléphone est trop court.', maxMessage: 'Le numéro de téléphone est trop long.', groups: ['Registration', 'Profile'])]
+    #[ORM\Column(nullable: true)]
     private ?string $phone = null;
 
     #[ORM\Column(type: 'json')]
     private array $roles = ['ROLE_USER'];
 
-    #[ORM\Column(type: 'string')]
-    private string $password = '';
+    #[ORM\Column(type: 'string')] 
+    private ?string $password = null;
+
+    #[SerializedName('password')]
+    private $plainPassword;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $country = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $city = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $country = '';
+    private ?string $address = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $city = '';
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $address = '';
-
-    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?bool $subscribedToNewsletter = false;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?bool $isVerified = false;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $confirmationToken;
+    #[ORM\Column(nullable: true)]
+    private ?string $confirmationToken = null;
 
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?DateTimeInterface $birthDay;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $createdAt;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $updatedAt = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $birthDay = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTimeInterface $bannedAt = null;
@@ -144,10 +107,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?File $file = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Booking::class)]
-    private $bookings = null;
+    private Collection $bookings;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Commande::class, cascade: ['ALL'])]
-    private $commandes = null;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Commande::class)]
+    private Collection $commandes;
 
     public function __construct()
     {
@@ -180,7 +143,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->id;
+        return (string) $this->email;
     }
 
     /**
@@ -224,6 +187,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
     }
 
     public function getUsername(): ?string
@@ -475,14 +450,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = $data['password'];
     }
 
-    public function __toString()
+    #[Pure] public function __toString()
     {
-        return (string) ucfirst($this->getFirstName()) . ' ' . ucfirst($this->getLastName());
+        return ucfirst($this->getFirstName()) . ' ' . ucfirst($this->getLastName());
     }
 
-    /**
-     * @return Collection<int, Commande>
-     */
     public function getCommandes(): Collection
     {
         return $this->commandes;

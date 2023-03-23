@@ -16,18 +16,12 @@ class ContactType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class, [
-                'label' => 'Nom et prénom',
-            ])
-            ->add('email', EmailType::class, [
-                'label' => 'Adresse email',
-            ])
-            ->add('phone', TextType::class, [
-                'label' => 'Numéro de téléphone',
-            ])
+            ->add('name', TextType::class, ['label' => 'Nom et prénom'])
+            ->add('email', EmailType::class, ['label' => 'Adresse email'])
+            ->add('phone', TextType::class, ['label' => 'Numéro de téléphone'])
             ->add('content',  TextareaType::class, [
                 'label' => 'Message',
-                'attr' => ['class' => 'md-textarea form-control', 'rows' => 6]
+                'attr' => ['class' => 'md-textarea form-control', 'rows' => 5]
             ])
             ->add('recaptchaToken', HiddenType::class, [
                 'mapped' => false,
@@ -42,5 +36,3 @@ class ContactType extends AbstractType
         ]);
     }
 }
-
-

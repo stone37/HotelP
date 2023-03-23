@@ -2,36 +2,25 @@
 
 namespace App\Form\Filter;
 
+use App\Form\RoomChoiceType;
 use App\Model\BookingSearch;
-use App\Repository\RoomRepository;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AdminBookingType extends AbstractType
 {
-    private RoomRepository $repository;
-
-    public function __construct(RoomRepository $repository)
-    {
-        $this->repository = $repository;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('room', ChoiceType::class, [
-                'choices' => $this->repository->getWithFilters(),
+            ->add('room', RoomChoiceType::class, [
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
                 'label' => 'Type d\'hébergement',
-                'attr' => [
-                    'class' => 'mdb-select md-outline md-form dropdown-stone',
-                ],
-                'required' => false,
                 'placeholder' => 'Type d\'hébergement',
+                'required' => false
             ])
-            ->add('code', TextType::class, ['label' => 'Code', 'required' => false]);
+            ->add('code', TextType::class, ['label' => 'Numéro de reservation', 'required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -43,7 +32,7 @@ class AdminBookingType extends AbstractType
         ]);
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return '';
     }

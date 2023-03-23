@@ -1,28 +1,36 @@
-{% import 'site/room/index/macro/__list.html.twig' as __room  %}
+<section class="container">
+    <section class="row">
+        <div class="col-12">
+            <div class="wow fadeIn">
+                <h2 class="h2-responsive font-weight-bold text-dark mb-3 text-center" style="margin-top: -1rem !important;">
+                    <span class="text-default">55 chambres</span> de qualité dans le quartier le plus paisible de Yamoussoukro
+                </h2>
+                <p class="text-center">
+                    <strong class="text-dark">{{ settings.name }}</strong> dispose de 55 chambres éléquantes et sophistiquées qui nous
+                    permettent d'accorder à chacun de nos clients une attention personnelles. Nos 35 chambres sont doubles
+                    ou Twin, certaines disposent d'une terrasse privée et d'un espace pour des lits d'appoint pour enfants.
+                    La <strong class="text-dark">Suite junior</strong> et la <strong class="text-dark">Penthouse</strong>, toutes deux avec des terrasse
+                    privative vous assureront une vue inoubliable sur le quartier.
+                </p>
+            </div>
+        </div>
+    </section>
 
-{% if rooms|length > 0 %}
-    <div class="col-12">
-        <section>
-            <div class="row mt-md-4 home-room">
-                {% for room in rooms %}
-                    <div class="col-12 col-md-6 col-lg-4">
-                        {{ __room.list(room, equipments) }}
-                    </div>
-                {% endfor %}
-
-                <div class="col-12 d-flex justify-content-center my-2">
-                    {{ knp_pagination_render(rooms, 'Ui/_pagination.html.twig') }}
+    {% if rooms|length > 0 %}
+        <section class="row mt-md-5 mt-4 home-room">
+            {% for room in rooms %}
+                <div class="col-12 col-md-4 ">
+                    {{ include('site/room/_box.html.twig') }}
                 </div>
+            {% endfor %}
+
+            <div class="col-12 d-flex justify-content-center my-2">
+                {{ knp_pagination_render(rooms, 'ui/_pagination.html.twig') }}
             </div>
         </section>
-    </div>
-{% else %}
-    <div class="row app-user d-flex justify-content-center">
-        <div class="col-12 col-md-8 text-center mt-3 mt-md-4">
-            <h4 class="h4-responsive font-weight-stone-500">Il y a aucune chambre sur le site</h4>
-        </div>
-    </div>
-{% endif %}
+    {% endif %}
 
+    {{ include('site/room/__data.html.twig') }}
+</section>
 
 

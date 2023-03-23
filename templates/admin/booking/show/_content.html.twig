@@ -34,7 +34,9 @@
                     <td class="table-dark text-center font-weight-normal">Enfants</td>
                     <td class="text-center font-weight-normal">{{ booking.children }}</td>
                     <td class="table-dark text-center font-weight-normal">Numéro de reservation</td>
-                    <td class="text-center font-weight-normal"><span class="badge badge-primary font-weight-normal small-9">{{ booking.reference }}</span></td>
+                    <td class="text-center font-weight-normal">
+                        <span class="badge badge-primary font-weight-normal small-9">{{ booking.number }}</span>
+                    </td>
                     <td class="table-dark text-center font-weight-normal">Durée</td>
                     <td class="text-center font-weight-normal">{{ booking.days }} jour(s)</td>
                 </tr>
@@ -52,7 +54,7 @@
                     <td class="table-dark text-center font-weight-normal">Ville</td>
                     <td class="text-center font-weight-normal">{{ booking.city }}</td>
                     <td class="table-dark text-center font-weight-normal">Prix</td>
-                    <td class="text-center font-weight-normal">{{ booking.commande.amountTotal|format_currency('XOF') }}</td>
+                    {#<td class="text-center font-weight-normal">{{ booking.commande.amountTotal|format_currency('XOF') }}</td>#}
                 </tr>
                 <tr>
                     <td class="table-dark text-center font-weight-normal">Date de creation</td>
@@ -76,11 +78,11 @@
                     {% if type == '3' %}
                         <td class="table-dark text-center font-weight-normal">Rembourser</td>
                         <td class="text-center">
-                            {% if booking.commande.payment.refunded %}
-                                <span class="badge badge-success">Oui</span>
-                            {% else %}
-                                <span class="badge badge-danger">Non</span>
-                            {% endif %}
+{#                            {% if booking.commande.payment.refunded %}#}
+{#                                <span class="badge badge-success">Oui</span>#}
+{#                            {% else %}#}
+{#                                <span class="badge badge-danger">Non</span>#}
+{#                            {% endif %}#}
                         </td>
                     {% endif%}
                 </tr>
@@ -116,7 +118,7 @@
                 {% set path = path('app_admin_booking_archive_index') %}
             {% elseif type == 5 %}
                 {% set path = path('app_admin_booking_user') %}
-            {% elseif type == 7 %}
+            {% elseif type == 6 %}
                 {% set path = path('app_admin_booking_room') %}
             {% else %}
                 {% set path = path('app_admin_booking_index') %}
@@ -125,15 +127,13 @@
 
             {% if booking.user|length > 0 %}
                 <div class="text-center mr-3">
-                    {{ buttons.default(path('app_admin_user_show', {'id': booking.user.id, 'type': 1}), 'Utilisateur',
-                        'app-entity-list-order-btn', 'fas fa-user', 'btn-primary') }}
+                    {{ buttons.default(path('app_admin_user_show', {'id': booking.user.id, 'type': 1}), 'Utilisateur', 'app-entity-list-order-btn', 'fas fa-user', 'btn-primary') }}
                 </div>
             {% endif %}
 
-            <div class="text-center">
-                {{ buttons.default(path('app_admin_commande_user', {'id': booking.commande.id}), 'Commande',
-                    'app-entity-list-order-btn', 'fas fa-shopping-cart', 'btn-grey') }}
-            </div>
+            {#<div class="text-center">
+                {{ buttons.default(path('app_admin_commande_user', {'id': booking.commande.id}), 'Commande', 'app-entity-list-order-btn', 'fas fa-shopping-cart', 'btn-grey') }}
+            </div>#}
         </div>
     </div>
 </div>

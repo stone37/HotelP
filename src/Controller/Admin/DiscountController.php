@@ -6,8 +6,10 @@ use App\Entity\Discount;
 use App\Event\AdminCRUDEvent;
 use App\Form\DiscountAdminType;
 use App\Repository\DiscountRepository;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,37 +17,29 @@ use Symfony\Component\HttpFoundation\Response;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class DiscountController extends AbstractController
 {
-    private DiscountRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-
     public function __construct(
-        DiscountRepository $repository,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher
+        private DiscountRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher
     )
     {
-        $this->repository = $repository;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
     }
 
-    #[Route(path: '/admin/discounts', name: 'app_admin_discount_index')]
-    public function index(Request $request)
+    #[Route(path: '/discounts', name: 'app_admin_discount_index')]
+    public function index(Request $request): Response
     {
         $qb = $this->repository->getAdmin();
 
         $discounts = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
 
-        return $this->render('admin/discount/index.html.twig', [
-            'discounts' => $discounts,
-        ]);
+        return $this->render('admin/discount/index.html.twig', ['discounts' => $discounts]);
     }
 
-    #[Route(path: '/admin/discounts/create', name: 'app_admin_discount_create')]
-    public function create(Request $request)
+    #[Route(path: '/discounts/create', name: 'app_admin_discount_create')]
+    public function create(Request $request): RedirectResponse|Response
     {
         $discount = new Discount();
         $form = $this->createForm(DiscountAdminType::class, $discount);
@@ -68,11 +62,11 @@ class DiscountController extends AbstractController
         }
 
         return $this->render('admin/discount/create.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 
-    #[Route(path: '/admin/discounts/{id}/edit', name: 'app_admin_discount_edit', requirements: ['id' => '\d+'])]
+    #[Route(path: '/discounts/{id}/edit', name: 'app_admin_discount_edit', requirements: ['id' => '\d+'])]
     public function edit(Request $request, Discount $discount): Response
     {
         $form = $this->createForm(DiscountAdminType::class, $discount);
@@ -96,12 +90,12 @@ class DiscountController extends AbstractController
 
         return $this->render('admin/discount/edit.html.twig', [
             'form' => $form->createView(),
-            'discount' => $discount,
+            'discount' => $discount
         ]);
     }
 
-    #[Route(path: '/admin/discounts/{id}/delete', name: 'app_admin_discount_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Discount $discount)
+    #[Route(path: '/discounts/{id}/delete', name: 'app_admin_discount_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, Discount $discount): RedirectResponse|JsonResponse
     {
         $form = $this->deleteForm($discount);
 
@@ -113,7 +107,7 @@ class DiscountController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($discount);
+                $this->repository->remove($discount, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -124,14 +118,12 @@ class DiscountController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cet code de réduction ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $discount,
             'message' => $message,
@@ -143,13 +135,14 @@ class DiscountController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/discounts/bulk/delete', name: 'app_admin_discount_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/discounts/bulk/delete', name: 'app_admin_discount_bulk_delete', options: ['expose' => true])]
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
-        if ($request->query->has('data'))
+        if ($request->query->has('data')) {
             $request->getSession()->set('data', $ids);
+        }
 
         $form = $this->deleteMultiForm();
 
@@ -177,17 +170,16 @@ class DiscountController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' codes de réduction ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cet code de réduction ?';
+        }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
@@ -199,21 +191,21 @@ class DiscountController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(Discount $discount)
+    private function deleteForm(Discount $discount): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_discount_delete', ['id' => $discount->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_discount_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

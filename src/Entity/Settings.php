@@ -6,6 +6,7 @@ use App\Entity\Traits\MediaTrait;
 use App\Repository\SettingsRepository;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\Timestampable;
 use Symfony\Component\HttpFoundation\File\File;
@@ -21,58 +22,65 @@ class Settings
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Assert\NotBlank]
-    private ?string $name;
+    #[ORM\Column(nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Assert\NotBlank]
-    private ?string $email;
+    #[Assert\Email]
+    #[ORM\Column(nullable: true)]
+    private ?string $email = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Assert\NotBlank]
-    private ?string $phone;
+    #[ORM\Column(nullable: true)]
+    private ?string $phone = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $fax;
+    #[ORM\Column(nullable: true)]
+    private ?string $fax = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $address;
+    #[ORM\Column(nullable: true)]
+    private ?string $address = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $country;
+    #[ORM\Column(nullable: true)]
+    private ?string $country = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $city;
+    #[ORM\Column(nullable: true)]
+    private ?string $city = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $facebookAddress;
+    #[ORM\Column(nullable: true)]
+    private ?string $facebookAddress = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $twitterAddress;
+    #[ORM\Column(nullable: true)]
+    private ?string $twitterAddress = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $linkedinAddress;
+    #[ORM\Column(nullable: true)]
+    private ?string $linkedinAddress = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $instagramAddress;
+    #[ORM\Column(nullable: true)]
+    private ?string $instagramAddress = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $youtubeAddress;
+    #[ORM\Column(nullable: true)]
+    private ?string $youtubeAddress = null;
 
-    #[ORM\Column(type: 'time', nullable: true)]
-    private ?DateTimeInterface $checkinTime;
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $checkinTime = null;
 
-    #[ORM\Column(type: 'time', nullable: true)]
-    private ?DateTimeInterface $checkoutTime;
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $checkoutTime = null;
 
-    #[Vich\UploadableField(mapping: 'settings', fileNameProperty: 'fileName', size: 'fileSize', mimeType: 'fileMimeType', originalName: 'fileOriginalName')]
+    #[Vich\UploadableField(
+        mapping: 'settings',
+        fileNameProperty: 'fileName',
+        size: 'fileSize',
+        mimeType: 'fileMimeType',
+        originalName: 'fileOriginalName'
+    )]
     private ?File $file = null;
 
     public function getId(): ?int

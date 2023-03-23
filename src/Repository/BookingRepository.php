@@ -8,6 +8,8 @@ use App\Entity\User;
 use App\Model\BookingSearch;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -62,18 +64,18 @@ class BookingRepository extends ServiceEntityRepository
             ->addSelect('commande')
             ->addSelect('occupants')
             ->where($qb->expr()->isNull('b.confirmedAt'))
-            ->andWhere('b.checkin >= :date')
+            ->andWhere($qb->expr()->isNull('b.cancelledAt'))
+            ->andWhere('b.checkout >= :date')
             ->setParameter('date', new DateTime())
             ->orderBy('b.createdAt', 'desc');
 
-        if ($search->getCode())
-            $qb->andWhere('b.reference = :reference')->setParameter('reference', $search->getCode());
+        if ($search->getCode()) {
+            $qb->andWhere('b.number = :number')->setParameter('number', $search->getCode());
+        }
 
-        if ($search->getUser())
-            $qb->andWhere('b.user = :user')->setParameter('user', (int)$search->getUser());
-
-        if ($search->getRoom())
-            $qb->andWhere('b.room = :room')->setParameter('room', (int)$search->getRoom());
+        if ($search->getRoom()) {
+            $qb->andWhere('b.room = :room')->setParameter('room', $search->getRoom());
+        }
 
         return $qb;
     }
@@ -90,14 +92,13 @@ class BookingRepository extends ServiceEntityRepository
             ->setParameter('date', new DateTime())
             ->orderBy('b.createdAt', 'desc');
 
-        if ($search->getCode())
-            $qb->andWhere('b.reference = :reference')->setParameter('reference', $search->getCode());
+        if ($search->getCode()) {
+            $qb->andWhere('b.number = :number')->setParameter('number', $search->getCode());
+        }
 
-        if ($search->getUser())
-            $qb->andWhere('b.user = :user')->setParameter('user', (int)$search->getUser());
-
-        if ($search->getRoom())
-            $qb->andWhere('b.room = :room')->setParameter('room', (int)$search->getRoom());
+        if ($search->getRoom()) {
+            $qb->andWhere('b.room = :room')->setParameter('room', $search->getRoom());
+        }
 
         return $qb;
     }
@@ -111,17 +112,86 @@ class BookingRepository extends ServiceEntityRepository
             ->addSelect('user')
             ->addSelect('room')
             ->where('b.status = :status')
-            ->setParameter('status', Booking::CANCELLED)
+            ->where($qb->expr()->isNotNull('b.cancelledAt'))
             ->orderBy('b.createdAt', 'desc');
 
-        if ($search->getCode())
-            $qb->andWhere('b.reference = :reference')->setParameter('reference', $search->getCode());
+        if ($search->getCode()) {
+            $qb->andWhere('b.number = :number')->setParameter('number', $search->getCode());
+        }
 
-        if ($search->getUser())
-            $qb->andWhere('b.user = :user')->setParameter('user', (int)$search->getUser());
+        if ($search->getRoom()) {
+            $qb->andWhere('b.room = :room')->setParameter('room', $search->getRoom());
+        }
 
-        if ($search->getRoom())
-            $qb->andWhere('b.room = :room')->setParameter('room', (int)$search->getRoom());
+        return $qb;
+    }
+
+    public function getArchiveAdmins(BookingSearch $search): ?QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        $qb->leftJoin('b.user', 'user')
+            ->leftJoin('b.room', 'room')
+            ->addSelect('user')
+            ->addSelect('room')
+            ->where($qb->expr()->isNotNull('b.confirmedAt'))
+            ->andWhere('b.checkout < :date')
+            ->setParameter('date', new DateTime())
+            ->orderBy('b.createdAt', 'desc');
+
+        if ($search->getCode()) {
+            $qb->andWhere('b.number = :number')->setParameter('number', $search->getCode());
+        }
+
+        if ($search->getRoom()) {
+            $qb->andWhere('b.room = :room')->setParameter('room', $search->getRoom());
+        }
+
+        return $qb;
+    }
+
+    public function getAdminByUser(User $user, BookingSearch $search): ?QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        $qb->leftJoin('b.user', 'user')
+            ->leftJoin('b.room', 'room')
+            ->addSelect('user')
+            ->addSelect('room')
+            ->andWhere('b.owner = :user')
+            ->setParameter('user', $user)
+            ->orderBy('b.createdAt', 'desc');
+
+        if ($search->getCode()) {
+            $qb->andWhere('b.number = :number')->setParameter('number', $search->getCode());
+        }
+
+        if ($search->getRoom()) {
+            $qb->andWhere('b.room = :room')->setParameter('room', $search->getRoom());
+        }
+
+        return $qb;
+    }
+
+    public function getAdminByRoom(Room $room, BookingSearch $search): ?QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        $qb->leftJoin('b.user', 'user')
+            ->leftJoin('b.room', 'room')
+            ->addSelect('user')
+            ->addSelect('room')
+            ->andWhere('b.room = :room')
+            ->setParameter('room', $room)
+            ->orderBy('b.createdAt', 'desc');
+
+        if ($search->getCode()) {
+            $qb->andWhere('b.number = :number')->setParameter('number', $search->getCode());
+        }
+
+        if ($search->getRoom()) {
+            $qb->andWhere('b.room = :room')->setParameter('room', $search->getRoom());
+        }
 
         return $qb;
     }
@@ -132,35 +202,90 @@ class BookingRepository extends ServiceEntityRepository
             ->orderBy('b.createdAt', 'desc');
 
         $qb->andWhere($qb->expr()->isNull('b.cancelledAt'))
+            ->andWhere($qb->expr()->isNull('b.confirmedAt'))
             ->andWhere('b.checkin <= :date')
             ->setParameter('date', new DateTime());
 
         return $qb->getQuery()->getResult();
     }
 
-    public function getArchiveAdmins(BookingSearch $search): ?QueryBuilder
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getNewNumber(): ?int
     {
-        $qb = $this->createQueryBuilder('b');
-        $qb->leftJoin('b.user', 'user')
-            ->leftJoin('b.room', 'room')
-            ->addSelect('user')
-            ->addSelect('room')
-            ->where($qb->expr()->isNotNull('b.confirmedAt'))
-            ->andWhere('b.checkout < :date')
-            ->setParameter('date', new DateTime())
-            ->orderBy('b.createdAt', 'desc');
+        $qb = $this->createQueryBuilder('b')
+            ->select('count(b.id)');
 
-        if ($search->getCode())
-            $qb->andWhere('b.reference = :reference')->setParameter('reference', $search->getCode());
+        $qb->where($qb->expr()->isNull('b.confirmedAt'))
+            ->andWhere($qb->expr()->isNull('b.cancelledAt'))
+            ->andWhere('b.checkout >= :date')
+            ->setParameter('date', new DateTime());
 
-        if ($search->getUser())
-            $qb->andWhere('b.user = :user')->setParameter('user', (int)$search->getUser());
-
-        if ($search->getRoom())
-            $qb->andWhere('b.room = :room')->setParameter('room', (int)$search->getRoom());
-
-        return $qb;
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getConfirmNumber(): ?int
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->select('count(b.id)');
+
+        $qb->where($qb->expr()->isNotNull('b.confirmedAt'))
+            ->andWhere('b.checkout > :date')
+            ->setParameter('date', new DateTime());
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getCancelNumber(): ?int
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->select('count(b.id)');
+
+        $qb->where('b.state = :state')
+            ->andWhere($qb->expr()->isNotNull('b.cancelledAt'))
+            ->setParameter('state', Booking::CANCELLED);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getArchiveNumber(): ?int
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->select('count(b.id)');
+
+        $qb->where($qb->expr()->isNotNull('b.confirmedAt'))
+            ->andWhere('b.checkout < :date')
+            ->setParameter('date', new DateTime());
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function admins(BookingSearch $search): ?QueryBuilder
     {
@@ -285,53 +410,6 @@ class BookingRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getNewNumber(): ?int
-    {
-        $qb = $this->createQueryBuilder('b')
-            ->select('count(b.id)');
-
-        $qb->where($qb->expr()->isNull('b.confirmedAt'))
-            ->andWhere('b.checkout >= :date')
-            ->setParameter('date', new DateTime());
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    public function getConfirmNumber(): ?int
-    {
-        $qb = $this->createQueryBuilder('b')
-            ->select('count(b.id)');
-
-        $qb->where($qb->expr()->isNotNull('b.confirmedAt'))
-            ->andWhere('b.checkout > :date')
-            ->setParameter('date', new DateTime());
-
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    public function getCancelNumber(): ?int
-    {
-        $qb = $this->createQueryBuilder('b')
-            ->select('count(b.id)');
-
-        $qb->where('b.status = :status')
-            ->setParameter('status', Booking::CANCELLED);
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    public function getArchiveNumber(): ?int
-    {
-        $qb = $this->createQueryBuilder('b')
-            ->select('count(b.id)');
-
-        $qb->where($qb->expr()->isNotNull('b.confirmedAt'))
-            ->andWhere('b.checkout < :date')
-            ->setParameter('date', new DateTime());
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
 
     public function getArchiveDays()
     {

@@ -3,7 +3,9 @@
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-center justify-content-md-between">
         <div id="entity-list-delete-bulk-btn" class="mr-3 d-none entity-room-gallery-delete-bulk-btn">
-            {% include 'Ui/Grid/Action/delete.html.twig' with {'action': {'label': 'Supprimer'}} %}
+            <a id="entity-bulk-delete-btn" class="btn btn-danger btn-md" data-url="{{ path('app_admin_room_gallery_bulk_delete') }}">
+                <i class="fas fa-trash mr-1"></i> Supprimer
+            </a>
         </div>
         <div class="d-flex ml-auto">
             {% set path = path('app_admin_room_gallery_add', {'room_id': room.id}) %}
@@ -31,7 +33,7 @@
 
                     <th scope="col" class="font-weight-stone-500 text-center">Image</th>
                     <th scope="col" class="font-weight-stone-500 text-center">Date de création</th>
-                    <th scope="col" class="font-weight-stone-500 text-center">Emplacement</th>
+                    <th scope="col" class="font-weight-stone-500 text-center">Position</th>
                     <th scope="col" class="font-weight-stone-500 text-center"></th>
                 </tr>
                 </thead>
@@ -62,7 +64,8 @@
                                     <a href="{{ path('app_admin_room_gallery_move', {'id': gallery.id, 'pos': 1, 'room_id': room.id}) }}" class="dropdown-item">
                                         <i class="fas fa-arrow-down mr-1"></i> Descendre
                                     </a>
-                                    <a class="dropdown-item entity-room-gallery-delete" id="{{ gallery.id }}">
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ gallery.id }}"
+                                       data-url="{{ path('app_admin_room_gallery_delete', {'id': gallery.id}) }}">
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -83,7 +86,7 @@
 {% else %}
     <div class="row app-user d-flex justify-content-center">
         <div class="col-12 col-md-8 text-center mt-3 mt-md-5">
-            <h3 class="h3-responsive font-weight-stone-600">
+            <h3 class="h3-responsive font-weight-stone-600 text-dark">
                 Vous n'avez aucune image dans la galerie.
             </h3>
         </div>

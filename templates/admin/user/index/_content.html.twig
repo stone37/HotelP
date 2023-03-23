@@ -1,11 +1,13 @@
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-center justify-content-md-between">
         <div id="entity-list-delete-bulk-btn" class="mr-3 d-none entity-user-delete-bulk-btn">
-            {% include 'Ui/Grid/Action/delete.html.twig' with {'action': {'label': 'Supprimer'}} %}
+            <a id="entity-bulk-delete-btn" class="btn btn-danger btn-md" data-url="{{ path('app_admin_user_bulk_delete') }}">
+                <i class="fas fa-trash mr-1"></i> Supprimer
+            </a>
         </div>
         <div class="d-flex ml-auto">
-            <div class="">
-                {% include 'admin/user/filter.html.twig' with {'form': searchForm}  %}
+            <div>
+                {{ include('admin/user/filter.html.twig', {'form': searchForm}) }}
             </div>
             <div class="mr-3">
                 <a href="" class="btn btn-grey" data-toggle="modal" data-target="#entity-search">
@@ -25,8 +27,7 @@
                     <th scope="col" class="text-center">
                         <div class="" style="position: relative; right: 10px; top: 2px">
                             <input type="checkbox" name="principal" class="form-check-input filled-in" id="principal-checkbox" value="" style="margin: 0 !important;" />
-                            <label class="form-check-label" for="principal-checkbox"
-                                   style="padding-left: 0!important; "></label>
+                            <label class="form-check-label" for="principal-checkbox" style="padding-left: 0!important; "></label>
                         </div>
                     </th>
                     <th scope="col" class="font-weight-stone-500 text-center">Nom d'utilisateur</th>
@@ -48,9 +49,7 @@
                             </div>
                         </td>
                         <td class="text-center">{{ user.username }}</td>
-                        <td class="text-center">
-                            {{ user.lastName|capitalize }} {{ user.firstName|capitalize }}
-                        </td>
+                        <td class="text-center">{{ user.lastname|capitalize }} {{ user.firstname|capitalize }}</td>
                         <td class="text-center">{{ user.email }}</td>
                         <td class="text-center">{{ user.phone }}</td>
                         <td class="text-center">
@@ -67,7 +66,8 @@
                                     <a href="{{ path('app_admin_user_show', {'id': user.id, 'type': type}) }}" class="dropdown-item">
                                         <i class="fas fa-eye mr-1"></i> Voir
                                     </a>
-                                    <a class="dropdown-item entity-user-delete" id="{{ user.id }}">
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ user.id }}"
+                                       data-url="{{ path('app_admin_user_delete', {'id': user.id}) }}">
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -79,7 +79,7 @@
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ users.totalItemCount }} resultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ users.totalItemCount }} résultats</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
             {{ knp_pagination_render(users, 'Ui/_pagination.html.twig') }}
@@ -88,7 +88,7 @@
 {% else %}
     <div class="row app-user d-flex justify-content-center">
         <div class="col-12 col-md-8 text-center mt-3 mt-md-5">
-            <h3 class="h3-responsive font-weight-stone-600">
+            <h3 class="h3-responsive font-weight-stone-600 text-dark">
                 Vous n'avez aucun compte client.
             </h3>
         </div>

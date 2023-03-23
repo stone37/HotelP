@@ -11,13 +11,13 @@
                 <td class="text-center font-weight-normal">{{ order.createdAt|date('d/m/Y H:i:s') }}</td>
                 <td class="table-dark text-center font-weight-normal">Reference</td>
                 <td class="text-center font-weight-normal">
-                    {% if order.reference %}
-                        {{ order.reference }}
+                    {% if order.number %}
+                        {{ order.number }}
                     {% else %}
                         <span class="badge badge-grey">Aucun</span>
                     {% endif %}
                 </td>
-                <td class="table-dark text-center font-weight-normal">Etat du paiement</td>
+                <td class="table-dark text-center font-weight-normal">État du paiement</td>
                 <td class="text-center font-weight-normal">
                     {% if order.validated %}
                         <span class="badge badge-success font-weight-stone-500">
@@ -69,7 +69,6 @@
                     {% endif %}
                 </td>
             </tr>
-
             </tbody>
         </table>
     </div>

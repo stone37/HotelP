@@ -1,0 +1,34 @@
+{% set home = isActive('app_home') %}
+{% set room_index = isActive('app_room_index') %}
+{% set room_show = isActive('app_room_show') %}
+{% set service_index = isActive('app_service_index') %}
+{% set gallery_index = isActive('app_gallery_index') %}
+{% set promotion_index = isActive('app_promotion_index') %}
+{% set promotion_show = isActive('app_promotion_show') %}
+
+<li class="nav-item {% if home %}active{% endif %}">
+    <a class="nav-link" href="{{ path('app_home') }}">
+        <i class="fas fa-home mr-1"></i> Accueil
+    </a>
+</li>
+<li class="nav-item {% if room_index or room_show %}active{% endif %}">
+    <a class="nav-link" href="{{ path('app_room_index') }}">
+        <i class="fas fa-bed mr-1"></i> Hébergements
+    </a>
+</li>
+<li class="nav-item {% if service_index %}active{% endif %}">
+    <a class="nav-link" href="{{ path('app_service_index') }}">
+        <i class="fas fa-clipboard-list mr-1"></i> Services
+    </a>
+</li>
+<li class="nav-item {% if promotion_index or promotion_show %}active{% endif %}">
+    <a class="nav-link" href="{{ path('app_promotion_index') }}">
+        <i class="fas fa-bullhorn mr-1"></i> Offres
+    </a>
+</li>
+<li class="nav-item {% if gallery_index %}active{% endif %}">
+    <a class="nav-link" href="{{ path('app_gallery_index') }}">
+        <i class="far fa-images mr-1"></i> Galerie
+    </a>
+</li>
+

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\LoginAttemptRepository;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LoginAttemptRepository::class)]
@@ -12,15 +13,15 @@ class LoginAttempt
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'datetime')]
-    private $createdAt;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?DateTimeInterface $createdAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
-    private $user;
+    private ?User $user = null;
 
     public function __construct()
     {

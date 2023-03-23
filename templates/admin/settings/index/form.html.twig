@@ -1,30 +1,20 @@
-<div class="form-row">
+<div class="form-row mb-2">
     <div class="col-12">
-        <div class="h5-responsive border border-dark border-top-0 border-left-0 border-right-0">
+        <div class="h5-responsive" style="border-bottom: 1.8px solid #212121">
             <div class="badge badge-dark d-inline-block mr-1" style="position: relative; bottom: 6px;">1</div>
             <div class="text-dark d-inline-block font-weight-stone-500">Information de base</div>
         </div>
     </div>
 </div>
-
 <div class="form-row">
     <div class="col-12 col-md-4">
         {{ form_row(form.name) }}
-        <small class="form-text text-muted" style="margin-top: -4px">
-            Ce champ est obligatoire
-        </small>
     </div>
     <div class="col-12 col-md-4">
         {{ form_row(form.email) }}
-        <small class="form-text text-muted" style="margin-top: -4px">
-            Ce champ est obligatoire
-        </small>
     </div>
     <div class="col-12 col-md-4">
         {{ form_row(form.phone) }}
-        <small class="form-text text-muted" style="margin-top: -4px">
-            Ce champ est obligatoire
-        </small>
     </div>
     <div class="col-12 col-md-4">
         {{ form_row(form.fax) }}
@@ -45,17 +35,13 @@
         {{ form_row(form.checkoutTime) }}
     </div>
     <div class="col-12 col-md-8">
-        <div class="md-form md-outline">
-            {{ form_widget(form.description) }}
-            {{ form_label(form.description) }}
-            <div class="red-text font-weight-stone-500">{{ form_errors(form.description) }}</div>
-        </div>
+        {{ form_widget(form.description) }}
     </div>
 </div>
 
-<div class="form-row">
+<div class="form-row mt-4">
     <div class="col-12">
-        <div class="h5-responsive border border-dark border-top-0 border-left-0 border-right-0">
+        <div class="h5-responsive" style="border-bottom: 1.8px solid #212121">
             <div class="badge badge-dark d-inline-block mr-1" style="position: relative; bottom: 6px;">2</div>
             <div class="text-dark d-inline-block font-weight-stone-500">Media</div>
         </div>
@@ -65,7 +51,7 @@
 <div class="form-row mt-4">
     <div class="col-5 col-md-3 col-lg-2">
         <div class="file-field">
-            <div class="btn btn-mdb-color float-left">
+            <div class="btn btn-mdb-color btn-md float-left">
                 <span>Choisir un logo</span>
                 <input type="file" name="{{ form.file.children.file.vars.full_name }}" id="entity-image" />
             </div>
@@ -76,15 +62,14 @@
     </div>
 </div>
 
-<div class="form-row mt-4">
+<div class="form-row mt-4 mb-2">
     <div class="col-12">
-        <div class="h5-responsive border border-dark border-top-0 border-left-0 border-right-0">
+        <div class="h5-responsive" style="border-bottom: 1.8px solid #212121">
             <div class="badge badge-dark d-inline-block mr-1" style="position: relative; bottom: 6px;">3</div>
             <div class="text-dark d-inline-block font-weight-stone-500">Adresse sociale</div>
         </div>
     </div>
 </div>
-
 <div class="form-row">
     <div class="col-12 col-md-4">
         {{ form_row(form.facebookAddress) }}

@@ -6,6 +6,8 @@ use App\Entity\Room;
 use App\Model\RoomFilter;
 use App\Model\RoomSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -47,12 +49,6 @@ class RoomRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    /**
-     * Retourne tous les chambres dans l'adminnistration
-     *
-     * @param RoomSearch $search
-     * @return QueryBuilder|null
-     */
     public function getAdmins(RoomSearch $search): ?QueryBuilder
     {
         $qb = $this->createQueryBuilder('r')
@@ -61,34 +57,27 @@ class RoomRepository extends ServiceEntityRepository
             ->leftJoin('r.galleries', 'galleries')
             ->leftJoin('r.supplements', 'supplements')
             ->leftJoin('r.promotions', 'promotions')
-            ->leftJoin('r.options', 'options')
             ->leftJoin('r.taxe', 'taxe')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('bookings')
             ->addSelect('equipments')
             ->addSelect('galleries')
             ->addSelect('supplements')
             ->addSelect('promotions')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
             ->addSelect('taxe')
             ->orderBy('r.position', 'asc');
 
-        if ($search->isEnabled())
+        if ($search->isEnabled()) {
             $qb->andWhere('r.enabled = 1');
+        }
 
-        if ($search->getName())
+        if ($search->getName()) {
             $qb->andWhere('r.name LIKE :name')->setParameter('name', '%'.$search->getName().'%');
+        }
 
         return $qb;
     }
-
-    /**
-     * Retourne tous les chambre active
-     *
-     * @return int|mixed|string
-     */
-    public function getEnabled()
+    
+    public function getEnabled(): array
     {
         $qb = $this->createQueryBuilder('r')
             ->leftJoin('r.bookings', 'bookings')
@@ -96,16 +85,12 @@ class RoomRepository extends ServiceEntityRepository
             ->leftJoin('r.galleries', 'galleries')
             ->leftJoin('r.supplements', 'supplements')
             ->leftJoin('r.promotions', 'promotions')
-            ->leftJoin('r.options', 'options')
             ->leftJoin('r.taxe', 'taxe')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('bookings')
             ->addSelect('equipments')
             ->addSelect('galleries')
             ->addSelect('supplements')
             ->addSelect('promotions')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
             ->addSelect('taxe')
             ->andWhere('r.enabled = 1')
             ->orderBy('r.position', 'asc');
@@ -113,36 +98,29 @@ class RoomRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getFilter(RoomFilter $filter)
+    public function getFilter(RoomFilter $filter): array
     {
+        $occupant = $filter->adult + $filter->children;
+
         $qb = $this->createQueryBuilder('r')
             ->leftJoin('r.bookings', 'bookings')
             ->leftJoin('r.equipments', 'equipments')
             ->leftJoin('r.galleries', 'galleries')
             ->leftJoin('r.supplements', 'supplements')
             ->leftJoin('r.promotions', 'promotions')
-            ->leftJoin('r.options', 'options')
             ->leftJoin('r.taxe', 'taxe')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('bookings')
             ->addSelect('equipments')
             ->addSelect('galleries')
             ->addSelect('supplements')
             ->addSelect('promotions')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
             ->addSelect('taxe')
             ->andWhere('r.enabled = 1')
             ->orderBy('r.position', 'asc');
 
-        if ($filter->getAdult()) {
-            $qb->andWhere('r.maximumAdults >= :adults')
-                ->setParameter('adults', $filter->getAdult());
-        }
-
-        if ($filter->getChildren()) {
-            $qb->andWhere('r.maximumOfChildren >= :children')
-                ->setParameter('children', $filter->getChildren());
+        if ($filter->adult || $filter->children) {
+            $qb->andWhere($qb->expr()->gte('r.occupant', ':occupant'))
+                ->setParameter('occupant', $occupant);
         }
 
         return $qb->getQuery()->getResult();
@@ -156,16 +134,12 @@ class RoomRepository extends ServiceEntityRepository
             ->leftJoin('r.galleries', 'galleries')
             ->leftJoin('r.supplements', 'supplements')
             ->leftJoin('r.promotions', 'promotions')
-            ->leftJoin('r.options', 'options')
             ->leftJoin('r.taxe', 'taxe')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('bookings')
             ->addSelect('equipments')
             ->addSelect('galleries')
             ->addSelect('supplements')
             ->addSelect('promotions')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
             ->addSelect('taxe')
             ->where('r.enabled = 1')
             ->orderBy('r.position', 'asc')
@@ -174,7 +148,10 @@ class RoomRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getBySlug(string $slug)
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function getBySlug(string $slug): ?Room
     {
         $qb = $this->createQueryBuilder('r')
             ->leftJoin('r.bookings', 'bookings')
@@ -182,47 +159,21 @@ class RoomRepository extends ServiceEntityRepository
             ->leftJoin('r.galleries', 'galleries')
             ->leftJoin('r.supplements', 'supplements')
             ->leftJoin('r.promotions', 'promotions')
-            ->leftJoin('r.options', 'options')
             ->leftJoin('r.taxe', 'taxe')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('bookings')
             ->addSelect('equipments')
             ->addSelect('galleries')
             ->addSelect('supplements')
             ->addSelect('promotions')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
             ->addSelect('taxe')
             ->where('r.slug = :slug')
-            //->andWhere('r.enabled = 1')
             ->setParameter('slug', $slug);
 
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function getMaximumAdult()
-    {
-        $qb = $this->createQueryBuilder('r')
-            ->select('r.maximumAdults')
-            ->orderBy('r.maximumAdults', 'desc')
-            ->andWhere('r.enabled = 1')
-            ->setMaxResults(1);
 
-        return $qb->getQuery()->getOneOrNullResult();
-    }
-
-    public function getMaximumChildren()
-    {
-        $qb = $this->createQueryBuilder('r')
-            ->select('r.maximumOfChildren')
-            ->orderBy('r.maximumOfChildren', 'desc')
-            ->andWhere('r.enabled = 1')
-            ->setMaxResults(1);
-
-        return $qb->getQuery()->getOneOrNullResult();
-    }
-
-    public function roomListeQueryBuilder()
+    public function roomListeQueryBuilder(): QueryBuilder
     {
         $qb = $this->createQueryBuilder('r')
             ->orderBy('r.position', 'asc');
@@ -230,6 +181,10 @@ class RoomRepository extends ServiceEntityRepository
         return $qb;
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getRoomTotalNumber(): ?int
     {
         $qb = $this->createQueryBuilder('r')
@@ -238,6 +193,10 @@ class RoomRepository extends ServiceEntityRepository
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getRoomEnabledTotalNumber(): ?int
     {
         $qb = $this->createQueryBuilder('r')
@@ -247,20 +206,7 @@ class RoomRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getWithFilters()
-    {
-        $results = $this->createQueryBuilder('r')
-            ->andWhere('r.enabled = 1')
-            ->orderBy('r.position', 'asc')
-            ->getQuery()->getArrayResult();
 
-        $data = [];
-
-        foreach ($results as $result) {
-            $data[$result['name']] = $result['id'];
-        }
-
-        return $data;
-    }
+    
 
 }

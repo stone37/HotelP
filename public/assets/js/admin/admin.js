@@ -1,7 +1,110 @@
 $(document).ready(function() {
 
+    // SideNav Button Initialization
+    $('.button-collapse').sideNav({
+        edge: 'left',
+        closeOnClick: false,
+        breakpoint: 1440,
+        menuWidth: 270,
+        timeDurationOpen: 300,
+        timeDurationClose: 200,
+        timeDurationOverlayOpen: 50,
+        timeDurationOverlayClose: 200,
+        easingOpen: 'easeOutQuad',
+        easingClose: 'easeOutCubic',
+        showOverlay: true,
+        showCloseButton: false
+    });
+
+    // SideNav Scrollbar Initialization
+    const sideNavScrollbar = document.querySelector('.custom-scrollbar');
+    const ps = new PerfectScrollbar(sideNavScrollbar);
+
+    // Material select
+    $('.mdb-select').materialSelect();
+    $('.select-wrapper.md-form.md-outline input.select-dropdown').bind('focus blur', function () {
+        $(this).closest('.select-outline').find('label').toggleClass('active');
+        $(this).closest('.select-outline').find('.caret').toggleClass('active');
+    });
+
+    //  Notification
+    let options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "md-toast-top-left",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    };
+
+    $('.toast').toast(options);
+
+
+    tableCheckbox();
+    modalSingleConfirmed();
+    modalMultipleConfirmed();
+    addEquipmentValue();
+
+    flashes($('.notify'));
+    password($('.input-prefix.fa-eye'));
+    passwordGenerate($('#password-generate-btn'))
+    readImage($('#entity-image'));
+
+    /*modalSingleConfirmed($('.entity-booking-delete'), 'app_admin_booking_delete');
+    modalMultipleConfirmed($('.entity-booking-delete-bulk-btn a.btn-danger'), 'app_admin_booking_bulk_delete')
+
+    modalSingleConfirmed($('.entity-booking-confirm'), 'app_admin_booking_confirmed');
+    modalMultipleConfirmed($('.entity-booking-confirm-bulk-btn a.btn-success'), 'app_admin_booking_bulk_confirmed')
+
+    modalSingleConfirmed($('.entity-booking-cancel'), 'app_admin_booking_cancelled');
+    modalMultipleConfirmed($('.entity-booking-cancel-bulk-btn a.btn-danger'), 'app_admin_booking_bulk_cancelled')
+
+    modalSingleConfirmed($('.entity-room-delete'), 'app_admin_room_delete');
+    modalMultipleConfirmed($('.entity-room-delete-bulk-btn a.btn-danger'), 'app_admin_room_bulk_delete');
+
+    modalSingleConfirmed($('.entity-roomEquipment-delete'), 'app_admin_room_equipment_delete');
+    modalMultipleConfirmed($('.entity-roomEquipment-delete-bulk-btn a.btn-danger'), 'app_admin_room_equipment_bulk_delete');
+
+    modalSingleConfirmed($('.entity-room-gallery-delete'), 'app_admin_room_gallery_delete');
+    modalMultipleConfirmed($('.entity-room-gallery-delete-bulk-btn a.btn-danger'), 'app_admin_room_gallery_bulk_delete');
+
+    modalSingleConfirmed($('.entity-supplement-delete'), 'app_admin_supplement_delete');
+    modalMultipleConfirmed($('.entity-supplement-delete-bulk-btn a.btn-danger'), 'app_admin_supplement_bulk_delete');
+
+    modalSingleConfirmed();
+    modalMultipleConfirmed();
+
+    modalSingleConfirmed();
+    modalMultipleConfirmed();
+    */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Time js
-    const terms = [
+    /*const terms = [
         {
             time: 45,
             divide: 60,
@@ -66,11 +169,11 @@ $(document).ready(function() {
         const date = new Date(timestamp);
 
         updateText(date, element, terms);
-    });
+    });*/
 
     // Gestion des checkbox dans la liste
 
-    let $principalCheckbox = $('#principal-checkbox'),
+    /*let $principalCheckbox = $('#principal-checkbox'),
         $listCheckbook = $('.list-checkbook'),
         $listCheckbookLength = $listCheckbook.length,
         $listCheckbookNumber = 0,
@@ -123,7 +226,7 @@ $(document).ready(function() {
     });
 
     let $container = $('#modal-container'),
-        $checkbookContainer = $('#list-checkbook-container');
+        $checkbookContainer = $('#list-checkbook-container');*/
 
     // Gestion des validation
     /*simpleModals($('.entity-advert-validate'), 'app_admin_advert_validate', $container);
@@ -145,7 +248,7 @@ $(document).ready(function() {
     // Gestion des suppression
 
     // Booking
-    simpleModals($('.entity-booking-delete'), 'app_admin_booking_delete', $container);
+    /*simpleModals($('.entity-booking-delete'), 'app_admin_booking_delete', $container);
     bulkModals($('.entity-booking-delete-bulk-btn a.btn-danger'), $checkbookContainer,
         'app_admin_booking_bulk_delete', $container);
 
@@ -232,7 +335,7 @@ $(document).ready(function() {
     // Option
     simpleModals($('.entity-option-delete'), 'app_admin_option_delete', $container);
     bulkModals($('.entity-option-delete-bulk-btn a.btn-danger'), $checkbookContainer,
-        'app_admin_option_bulk_delete', $container);
+        'app_admin_option_bulk_delete', $container);*/
 
 
 
@@ -240,8 +343,107 @@ $(document).ready(function() {
 
 });
 
+const password = function (element) {
+    element.click(function () {
+        passwordView($(this));
+    });
+}
 
+const passwordGenerate = function (element) {
+    element.click(function (e) {
+        e.preventDefault();
 
+        generatePassword($('#password-bulk').find('input'));
+    });
+}
+
+const readImage = function (element) {
+    element.change(function () {readURL(this)});
+}
+
+const addEquipmentValue = function () {
+    const $wrapper = $('#equipment-form-value-wrapper'), $equipment_add_btn = $('#add_new_equipment');
+    let $equipment_state = parseInt($wrapper.data('index'));
+
+    if ($wrapper.length) {
+        if ($equipment_state === 0) {
+            addEquipmentFormToCollection($wrapper);
+        }
+    }
+
+    $equipment_add_btn .click(function(e) {
+        e.preventDefault();
+
+        addEquipmentFormToCollection($wrapper);
+    });
+
+    $wrapper.on('click', '.delete_equipment', function(e) {
+        e.preventDefault();
+        const $this = $(this);
+
+        $this.closest('#equipment_values_'+ $this.attr('id')).fadeOut().remove();
+        $wrapper.data('index', $wrapper.data('index') - 1);
+    });
+
+    $('a.delete_equipment').click(function(e) {
+        e.preventDefault();
+
+        const $this = $(this), $parent = $this.parents('.equipment-data-row');
+
+        $parent.fadeOut().remove();
+        $wrapper.data('index', $wrapper.data('index') - 1);
+    });
+}
+
+const addEquipmentFormToCollection = (container) => {
+
+    let index = container.data('index'),
+        prototype = container.data('prototype');
+
+    container.append(prototype.replace(/__name__/g, index));
+
+    let $equipment_content =  $('#equipment_values_' + index),
+        $equipment_delete_btn = $('<div class="col-2 col-md-1"><a id="' + index + '" class="delete_equipment btn-floating btn-danger btn-sm"><i class="fas fa-trash"></i></a></div>');
+
+    $equipment_content.addClass('form-row');
+    $equipment_content.wrapInner('<div class="col-10 col-md-4 col-lg-3"></div>');
+
+    if (index > 0) {
+        $equipment_content.append($equipment_delete_btn);
+    }
+
+    container.data('index', index + 1);
+}
+
+/*Centre d'affaires		1
+
+Equipement audio visuel		2
+
+Salle de conférence		3
+
+Accès à internet		4
+
+Accès à internet gratuit		5
+
+Journal dans le hall		6
+
+Boissons de bienvenu		7
+
+Casino		8
+
+Boite de nuit		9
+
+Karaoké		10
+
+Service de blanchisserie		11
+
+Alimentation de secours		12
+
+GAB/Banque		13
+
+Echange de devise		14
+
+Salle de fete*/
 
 
 

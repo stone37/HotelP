@@ -9,21 +9,16 @@ use Twig\TwigFunction;
 
 class PromotionExtension extends AbstractExtension
 {
-    private PromotionManager $manager;
-
-    public function __construct(PromotionManager $manager)
+    public function __construct(private PromotionManager $manager)
     {
-        $this->manager = $manager;
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
-        return array(
-            new TwigFunction('get_promotion', array($this, 'getPromotion'))
-        );
+        return [new TwigFunction('get_promotion', array($this, 'getPromotion'))];
     }
 
-    public function getPromotion(Room $room)
+    public function getPromotion(Room $room): int
     {
        return $this->manager->getRoomPromotion($room);
     }

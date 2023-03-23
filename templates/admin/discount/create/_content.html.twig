@@ -7,7 +7,7 @@
         {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'admin-form'}}) }}
         <P class="text-danger my-0">{{ form_errors(form) }}</P>
 
-        {% include 'admin/discount/form.html.twig' %}
+        {{ include('admin/discount/form.html.twig') }}
 
         {{ form_widget(form._token) }}
 

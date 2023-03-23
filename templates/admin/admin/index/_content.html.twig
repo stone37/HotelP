@@ -1,11 +1,13 @@
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-center justify-content-md-between">
         <div id="entity-list-delete-bulk-btn" class="mr-3 d-none entity-admin-delete-bulk-btn">
-            {% include 'Ui/Grid/Action/delete.html.twig' with {'action': {'label': 'Supprimer'}} %}
+            <a id="entity-bulk-delete-btn" class="btn btn-danger btn-md" data-url="{{ path('app_admin_admin_bulk_delete') }}">
+                <i class="fas fa-trash mr-1"></i> Supprimer
+            </a>
         </div>
         <div class="d-flex ml-auto">
             <div class="">
-                {% include 'admin/admin/filter.html.twig' with {'form': searchForm}  %}
+                {{ include('admin/admin/filter.html.twig', {'form': searchForm}) }}
             </div>
             {% set path = path('app_admin_admin_create') %}
             <div class="mr-3">
@@ -13,7 +15,8 @@
                     <i class="fas fa-filter mr-1" aria-hidden="true"></i> Filtres
                 </a>
             </div>
-            {% include 'Ui/Grid/Action/create.html.twig' with {'path': path, 'action': {'label': 'Créer'}} %}
+
+            {{ include('ui/Grid/Action/create.html.twig', {'path': path, 'action': {'label': 'Créer'}}) }}
         </div>
     </div>
 </div>
@@ -27,8 +30,7 @@
                     <th scope="col" class="text-center">
                         <div class="" style="position: relative; right: 10px; top: 2px">
                             <input type="checkbox" name="principal" class="form-check-input filled-in" id="principal-checkbox" value="" style="margin: 0 !important;" />
-                            <label class="form-check-label" for="principal-checkbox"
-                                   style="padding-left: 0!important; "></label>
+                            <label class="form-check-label" for="principal-checkbox" style="padding-left: 0!important; "></label>
                         </div>
                     </th>
                     <th scope="col" class="font-weight-stone-500 text-center">Nom et prénom</th>
@@ -49,9 +51,7 @@
                                 <label class="form-check-label" for="checkbox{{ loop.index }}" style="padding-left: 0!important; "></label>
                             </div>
                         </td>
-                        <td class="text-center">
-                            {{ admin.lastName|capitalize }} {{ admin.firstName|capitalize }}
-                        </td>
+                        <td class="text-center">{{ admin.lastName|capitalize }} {{ admin.firstName|capitalize }}</td>
                         <td class="text-center">{{ admin.email }}</td>
                         <td class="text-center">{{ admin.phone }}</td>
                         <td class="text-center">
@@ -74,12 +74,15 @@
                         </td>
                         <td class="text-center">
                             <div class="dropdown">
-                                <a class="dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-h text-primary"></i></a>
+                                <a class="dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-h text-primary"></i>
+                                </a>
                                 <div class="dropdown-menu dropdown-primary dropdown-menu-right mt-0">
                                     <a href="{{ path('app_admin_admin_edit', {'id': admin.id}) }}" class="dropdown-item">
-                                        <i class="fas fa-pencil-alt mr-1"></i> Editer
+                                        <i class="fas fa-pencil-alt mr-1"></i> Éditer
                                     </a>
-                                    <a class="dropdown-item entity-admin-delete" id="{{ admin.id }}">
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ admin.id }}"
+                                       data-url="{{ path('app_admin_admin_delete', {'id': admin.id}) }}">
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -91,7 +94,7 @@
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ admins.totalItemCount }} resultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ admins.totalItemCount }} résultats</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
             {{ knp_pagination_render(admins, 'Ui/_pagination.html.twig') }}
@@ -100,7 +103,7 @@
 {% else %}
     <div class="row app-user d-flex justify-content-center">
         <div class="col-12 col-md-8 text-center mt-3 mt-md-5">
-            <h3 class="h3-responsive font-weight-stone-600">
+            <h3 class="h3-responsive font-weight-stone-600 text-dark">
                 Vous n'avez aucun compte administrateur.
             </h3>
         </div>

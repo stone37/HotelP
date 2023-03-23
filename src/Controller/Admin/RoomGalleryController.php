@@ -8,39 +8,32 @@ use App\Form\RoomGalleryType;
 use App\Repository\RoomGalleryRepository;
 use App\Repository\RoomRepository;
 use App\Service\RoomGalleryService;
+use JetBrains\PhpStorm\ArrayShape;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class RoomGalleryController extends AbstractController
 {
-    private RoomGalleryRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-    private RoomGalleryService $service;
-    private RoomRepository $roomRepository;
-
     public function __construct(
-        RoomGalleryRepository $repository,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher,
-        RoomGalleryService $service,
-        RoomRepository $roomRepository
+        private RoomGalleryRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher,
+        private RoomGalleryService $service,
+        private RoomRepository $roomRepository
     )
     {
-        $this->repository = $repository;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
-        $this->service = $service;
-        $this->roomRepository = $roomRepository;
     }
 
-    #[Route(path: '/admin/rooms/{room_id}/gallery', name: 'app_admin_room_gallery_index', requirements: ['room_id' => '\d+'])]
-    public function index(Request $request, $room_id)
+    #[Route(path: '/rooms/{room_id}/galleries', name: 'app_admin_room_gallery_index', requirements: ['room_id' => '\d+'])]
+    public function index(Request $request, $room_id): Response
     {
         $room = $this->roomRepository->find($room_id);
         $qb = $this->repository->findBy(['room' => $room], ['position' => 'asc']);
@@ -49,12 +42,12 @@ class RoomGalleryController extends AbstractController
 
         return $this->render('admin/roomGallery/index.html.twig', [
             'galleries' => $galleries,
-            'room' => $room,
+            'room' => $room
         ]);
     }
 
-    #[Route(path: '/admin/rooms/{room_id}/gallery/add', name: 'app_admin_room_gallery_add', requirements: ['room_id' => '\d+'], options: ['expose' => true])]
-    public function add(Request $request, $room_id)
+    #[Route(path: '/rooms/{room_id}/galleries/add', name: 'app_admin_room_gallery_add', requirements: ['room_id' => '\d+'], options: ['expose' => true])]
+    public function add(Request $request, $room_id): RedirectResponse|Response
     {
         $room = $this->roomRepository->find($room_id);
 
@@ -80,12 +73,12 @@ class RoomGalleryController extends AbstractController
 
         return $this->render('admin/roomGallery/add.html.twig', [
             'form' => $form->createView(),
-            'room' => $room,
+            'room' => $room
         ]);
     }
 
-    #[Route(path: '/admin/rooms/{room_id}/gallery/{id}/move', name: 'app_admin_room_gallery_move', requirements: ['id' => '\d+', 'room_id' => '\d+'])]
-    public function move(Request $request, RoomGallery $gallery, $room_id)
+    #[Route(path: '/rooms/{room_id}/galleries/{id}/move', name: 'app_admin_room_gallery_move', requirements: ['id' => '\d+', 'room_id' => '\d+'])]
+    public function move(Request $request, RoomGallery $gallery, $room_id): RedirectResponse
     {
         $room = $this->roomRepository->find($room_id);
 
@@ -103,8 +96,8 @@ class RoomGalleryController extends AbstractController
         return $this->redirectToRoute('app_admin_room_gallery_index', ['room_id' => $room->getId()]);
     }
 
-    #[Route(path: '/admin/room-gallery/{id}/delete', name: 'app_admin_room_gallery_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, RoomGallery $gallery)
+    #[Route(path: '/room-gallery/{id}/delete', name: 'app_admin_room_gallery_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, RoomGallery $gallery): RedirectResponse|JsonResponse
     {
         $form = $this->deleteForm($gallery);
 
@@ -116,7 +109,7 @@ class RoomGalleryController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($gallery);
+                $this->repository->remove($gallery, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -127,14 +120,12 @@ class RoomGalleryController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cette image ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $gallery,
             'message' => $message,
@@ -147,12 +138,13 @@ class RoomGalleryController extends AbstractController
     }
 
     #[Route(path: '/admin/room-gallery/bulk/delete', name: 'app_admin_room_gallery_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
-        if ($request->query->has('data'))
+        if ($request->query->has('data')) {
             $request->getSession()->set('data', $ids);
+        }
 
         $form = $this->deleteMultiForm();
 
@@ -185,16 +177,17 @@ class RoomGalleryController extends AbstractController
             return $response;
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' images ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cette image ?';
+        }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
-            'configuration' => $this->configuration(),
+            'configuration' => $this->configuration()
         ]);
 
         $response['html'] = $render->getContent();
@@ -202,21 +195,21 @@ class RoomGalleryController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(RoomGallery $gallery)
+    private function deleteForm(RoomGallery $gallery): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_room_gallery_delete', ['id' => $gallery->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_room_gallery_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

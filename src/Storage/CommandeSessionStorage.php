@@ -8,25 +8,18 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class CommandeSessionStorage
 {
-    private const ORDER_KEY_NAME = 'orderId';
-
-    private CommandeRepository $repository;
-    private RequestStack $request;
-
-    public function __construct(CommandeRepository $repository, RequestStack $request)
+    public function __construct(private CommandeRepository $repository, private RequestStack $request)
     {
-        $this->repository = $repository;
-        $this->request = $request;
     }
 
     public function set(string $orderId): void
     {
-        $this->request->getSession()->set(self::ORDER_KEY_NAME, $orderId);
+        $this->request->getSession()->set($this->provideKey(), $orderId);
     }
 
     public function remove(): void
     {
-        $this->request->getSession()->remove(self::ORDER_KEY_NAME);
+        $this->request->getSession()->remove($this->provideKey());
     }
 
     public function getCommande(): ?Commande
@@ -40,12 +33,17 @@ class CommandeSessionStorage
 
     public function has(): bool
     {
-        return $this->request->getSession()->has(self::ORDER_KEY_NAME);
+        return $this->request->getSession()->has($this->provideKey());
     }
 
     public function get(): string
     {
-        return $this->request->getSession()->get(self::ORDER_KEY_NAME);
+        return $this->request->getSession()->get($this->provideKey());
+    }
+
+    private function provideKey(): string
+    {
+        return '_app_commande';
     }
 }
 

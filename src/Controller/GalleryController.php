@@ -14,18 +14,11 @@ class GalleryController extends AbstractController
 {
     use ControllerTrait;
 
-    private GalleryRepository $repository;
-    private Breadcrumbs $breadcrumbs;
-    private PaginatorInterface $paginator;
-
     public function __construct(
-        GalleryRepository $repository,
-        Breadcrumbs $breadcrumbs,
-        PaginatorInterface $paginator)
+        private GalleryRepository $repository,
+        private Breadcrumbs $breadcrumbs,
+        private PaginatorInterface $paginator)
     {
-        $this->repository = $repository;
-        $this->breadcrumbs = $breadcrumbs;
-        $this->paginator = $paginator;
     }
 
     #[Route(path: '/galleries', name: 'app_gallery_index')]

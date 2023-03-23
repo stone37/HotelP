@@ -12,39 +12,32 @@ use App\Form\Filter\AdminBookingType;
 use App\Manager\BookingManager;
 use App\Model\BookingSearch;
 use App\Repository\BookingRepository;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class BookingController extends AbstractController
 {
-    private BookingRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-    private BookingManager $manager;
-    private BookingRepository $bookingRepository;
-
     public function __construct(
-        BookingRepository $repository,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher,
-        BookingManager $manager,
-        BookingRepository $bookingRepository
+        private BookingRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher,
+        private BookingManager $manager,
+        private BookingRepository $bookingRepository
     )
     {
-        $this->repository = $repository;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
-        $this->manager = $manager;
-        $this->bookingRepository = $bookingRepository;
     }
 
-    #[Route(path: '/admin/bookings', name: 'app_admin_booking_index')]
-    public function index(Request $request)
+    #[Route(path: '/bookings', name: 'app_admin_booking_index')]
+    public function index(Request $request): Response
     {
         $search = new BookingSearch();
 
@@ -63,8 +56,8 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/bookings/confirmed', name: 'app_admin_booking_confirmed_index')]
-    public function confirm(Request $request)
+    #[Route(path: '/bookings/confirmed', name: 'app_admin_booking_confirmed_index')]
+    public function confirm(Request $request): Response
     {
         $search = new BookingSearch();
 
@@ -83,8 +76,8 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/bookings/cancelled', name: 'app_admin_booking_cancel_index')]
-    public function cancel(Request $request)
+    #[Route(path: '/bookings/cancelled', name: 'app_admin_booking_cancel_index')]
+    public function cancel(Request $request): Response
     {
         $search = new BookingSearch();
 
@@ -105,8 +98,8 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/bookings/archive', name: 'app_admin_booking_archive_index')]
-    public function archive(Request $request)
+    #[Route(path: '/bookings/archive', name: 'app_admin_booking_archive_index')]
+    public function archive(Request $request): Response
     {
         $search = new BookingSearch();
 
@@ -125,8 +118,8 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/bookings/{id}/show/{type}', name: 'app_admin_booking_show', requirements: ['id' => '\d+'])]
-    public function show(Booking $booking, $type)
+    #[Route(path: '/bookings/{id}/show/{type}', name: 'app_admin_booking_show', requirements: ['id' => '\d+'])]
+    public function show(Booking $booking, $type): Response
     {
         return $this->render('admin/booking/show.html.twig', [
             'booking' => $booking,
@@ -134,15 +127,15 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/bookings/{id}/user', name: 'app_admin_booking_user', requirements: ['id' => '\d+'])]
-    public function user(Request $request, User $user)
+    #[Route(path: '/bookings/{id}/user', name: 'app_admin_booking_user', requirements: ['id' => '\d+'])]
+    public function user(Request $request, User $user): Response
     {
-        $search = (new BookingSearch())->setUser($user->getId());
+        $search = new BookingSearch();
 
         $form = $this->createForm(AdminBookingType::class, $search);
         $form->handleRequest($request);
 
-        $qb = $this->repository->admins($search);
+        $qb = $this->repository->getAdminByUser($user, $search);
 
         $bookings = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
 
@@ -153,15 +146,15 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/bookings/{id}/room', name: 'app_admin_booking_room', requirements: ['id' => '\d+'])]
-    public function room(Request $request, Room $room)
+    #[Route(path: '/bookings/{id}/room', name: 'app_admin_booking_room', requirements: ['id' => '\d+'])]
+    public function room(Request $request, Room $room): Response
     {
-        $search = (new BookingSearch())->setRoom($room->getId());
+        $search = new BookingSearch();
 
         $form = $this->createForm(AdminBookingType::class, $search);
         $form->handleRequest($request);
 
-        $qb = $this->repository->admins($search);
+        $qb = $this->repository->getAdminByRoom($room, $search);
 
         $bookings = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
 
@@ -172,8 +165,8 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/bookings/{id}/confirmed', name: 'app_admin_booking_confirmed', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function confirmed(Request $request, Booking $booking)
+    #[Route(path: '/bookings/{id}/confirmed', name: 'app_admin_booking_confirmed', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function confirmed(Request $request, Booking $booking): RedirectResponse|JsonResponse
     {
         $form = $this->confirmedForm($booking);
 
@@ -193,9 +186,7 @@ class BookingController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir confirmer cette reservation ?';
@@ -212,13 +203,14 @@ class BookingController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/bookings/bulk/confirmed', name: 'app_admin_booking_bulk_confirmed', options: ['expose' => true])]
-    public function confirmedBulk(Request $request)
+    #[Route(path: '/bookings/bulk/confirmed', name: 'app_admin_booking_bulk_confirmed', options: ['expose' => true])]
+    public function confirmedBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
-        if ($request->query->has('data'))
+        if ($request->query->has('data')) {
             $request->getSession()->set('data', $ids);
+        }
 
         $form = $this->confirmedMultiForm();
 
@@ -245,17 +237,16 @@ class BookingController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir confirmer ces '.count($ids).' reservations ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir confirmer cette reservation ?';
+        }
 
-        $render = $this->render('Ui/Modal/_confirm_multi.html.twig', [
+        $render = $this->render('ui/Modal/_confirm_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
@@ -267,8 +258,8 @@ class BookingController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/bookings/{id}/cancelled', name: 'app_admin_booking_cancelled', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function cancelled(Request $request, Booking $booking)
+    #[Route(path: '/bookings/{id}/cancelled', name: 'app_admin_booking_cancelled', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function cancelled(Request $request, Booking $booking): RedirectResponse|JsonResponse
     {
         $form = $this->cancelledForm($booking);
 
@@ -288,14 +279,12 @@ class BookingController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir annuler cette reservation ?';
 
-        $render = $this->render('Ui/Modal/_cancel.html.twig', [
+        $render = $this->render('ui/Modal/_cancel.html.twig', [
             'form' => $form->createView(),
             'data' => $booking,
             'message' => $message,
@@ -307,13 +296,14 @@ class BookingController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/bookings/bulk/cancelled', name: 'app_admin_booking_bulk_cancelled', options: ['expose' => true])]
-    public function cancelledBulk(Request $request)
+    #[Route(path: '/bookings/bulk/cancelled', name: 'app_admin_booking_bulk_cancelled', options: ['expose' => true])]
+    public function cancelledBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
-        if ($request->query->has('data'))
+        if ($request->query->has('data')) {
             $request->getSession()->set('data', $ids);
+        }
 
         $form = $this->cancelledMultiForm();
 
@@ -340,15 +330,14 @@ class BookingController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir annuler ces '.count($ids).' reservations ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir annuler cette reservation ?';
+        }
 
         $render = $this->render('Ui/Modal/_cancel_multi.html.twig', [
             'form' => $form->createView(),
@@ -362,9 +351,8 @@ class BookingController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(
-        path: '/admin/bookings/{id}/delete', name: 'app_admin_booking_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Booking $booking)
+    #[Route(path: '/bookings/{id}/delete', name: 'app_admin_booking_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, Booking $booking): RedirectResponse|JsonResponse
     {
         $form = $this->deleteForm($booking);
 
@@ -376,7 +364,7 @@ class BookingController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($booking);
+                $this->repository->remove($booking, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -407,7 +395,7 @@ class BookingController extends AbstractController
     }
 
     #[Route(path: '/admin/bookings/bulk/delete', name: 'app_admin_booking_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
@@ -440,9 +428,7 @@ class BookingController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         if (count($ids) > 1)
@@ -462,49 +448,49 @@ class BookingController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function confirmedForm(Booking $booking)
+    private function confirmedForm(Booking $booking): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_booking_confirmed', ['id' => $booking->getId()]))
             ->getForm();
     }
 
-    private function confirmedMultiForm()
+    private function confirmedMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_booking_bulk_confirmed'))
             ->getForm();
     }
 
-    private function cancelledForm(Booking $booking)
+    private function cancelledForm(Booking $booking): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_booking_cancelled', ['id' => $booking->getId()]))
             ->getForm();
     }
 
-    private function cancelledMultiForm()
+    private function cancelledMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_booking_bulk_cancelled'))
             ->getForm();
     }
 
-    private function deleteForm(Booking $booking)
+    private function deleteForm(Booking $booking): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_booking_delete', ['id' => $booking->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_booking_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

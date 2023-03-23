@@ -8,33 +8,30 @@ use App\Form\Filter\AdminRoomType;
 use App\Form\RoomType;
 use App\Model\RoomSearch;
 use App\Repository\RoomRepository;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class RoomController extends AbstractController
 {
-    private RoomRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-
     public function __construct(
-        RoomRepository $repository,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher
+        private RoomRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher
     )
     {
-        $this->repository = $repository;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
     }
 
-    #[Route(path: '/admin/rooms', name: 'app_admin_room_index')]
-    public function index(Request $request)
+    #[Route(path: '/rooms', name: 'app_admin_room_index')]
+    public function index(Request $request): Response
     {
         $search = new RoomSearch();
 
@@ -51,44 +48,14 @@ class RoomController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/rooms/show/{id}', name: 'app_admin_room_show', requirements: ['id' => '\d+'])]
-    public function show(Room $room)
+    #[Route(path: '/rooms/show/{id}', name: 'app_admin_room_show', requirements: ['id' => '\d+'])]
+    public function show(Room $room): Response
     {
        return $this->render('admin/room/show.html.twig', ['room' => $room]);
     }
 
-    #[Route(path: '/admin/rooms/create', name: 'app_admin_room_create')]
-    public function create(Request $request)
-    {
-        $room = (new Room())->setType('configured');
-
-        $form = $this->createForm(RoomType::class, $room);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $event = new AdminCRUDEvent($room);
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_CREATE);
-
-            $this->repository->add($room, true);
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_CREATE);
-
-            $this->addFlash('success', 'Un hébergement a été crée');
-
-            return $this->redirectToRoute('app_admin_room_index');
-        }
-
-        return $this->render('admin/room/create.html.twig', [
-            'form' => $form->createView(),
-            'room' => $room,
-        ]);
-    }
-
-    #[Route(path: '/admin/rooms/create/simple', name: 'app_admin_room_create_simple')]
-    public function createSimple(Request $request)
+    #[Route(path: '/rooms/create', name: 'app_admin_room_create')]
+    public function create(Request $request): RedirectResponse|Response
     {
         $room = new Room();
 
@@ -113,11 +80,11 @@ class RoomController extends AbstractController
 
         return $this->render('admin/room/create.html.twig', [
             'form' => $form->createView(),
-            'room' => $room,
+            'room' => $room
         ]);
     }
 
-    #[Route(path: '/admin/rooms/{id}/edit', name: 'app_admin_room_edit', requirements: ['id' => '\d+'])]
+    #[Route(path: '/rooms/{id}/edit', name: 'app_admin_room_edit', requirements: ['id' => '\d+'])]
     public function edit(Request $request, Room $room)
     {
         $form = $this->createForm(RoomType::class, $room);
@@ -141,15 +108,15 @@ class RoomController extends AbstractController
 
         return $this->render('admin/room/edit.html.twig', [
             'form' => $form->createView(),
-            'room' => $room,
+            'room' => $room
         ]);
     }
 
-    #[Route(path: '/admin/rooms/{id}/move', name: 'app_admin_room_move', requirements: ['id' => '\d+'])]
+    #[Route(path: '/rooms/{id}/move', name: 'app_admin_room_move', requirements: ['id' => '\d+'])]
     public function move(Request $request, Room $room)
     {
         if ($request->query->has('pos')) {
-            $pos = ($room->getPosition() + (int)$request->query->get('pos'));
+            $pos = ($room->getPosition() + (int) $request->query->get('pos'));
 
             if ($pos >= 0) {
                 $room->setPosition($pos);
@@ -162,8 +129,8 @@ class RoomController extends AbstractController
         return $this->redirectToRoute('app_admin_room_index');
     }
 
-    #[Route(path: '/admin/rooms/{id}/delete', name: 'app_admin_room_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Room $room)
+    #[Route(path: '/rooms/{id}/delete', name: 'app_admin_room_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, Room $room): RedirectResponse|JsonResponse
     {
         $form = $this->deleteForm($room);
 
@@ -175,7 +142,7 @@ class RoomController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($room);
+                $this->repository->remove($room, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -186,14 +153,12 @@ class RoomController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cet hébergement ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $room,
             'message' => $message,
@@ -205,13 +170,14 @@ class RoomController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/rooms/bulk/delete', name: 'app_admin_room_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/rooms/bulk/delete', name: 'app_admin_room_bulk_delete', options: ['expose' => true])]
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
-        if ($request->query->has('data'))
+        if ($request->query->has('data')) {
             $request->getSession()->set('data', $ids);
+        }
 
         $form = $this->deleteMultiForm();
 
@@ -239,21 +205,20 @@ class RoomController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' hébergements ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cet hébergement ?';
+        }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
-            'configuration' => $this->configuration(),
+            'configuration' => $this->configuration()
         ]);
 
         $response['html'] = $render->getContent();
@@ -261,21 +226,21 @@ class RoomController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(Room $room)
+    private function deleteForm(Room $room): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_room_delete', ['id' => $room->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_room_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

@@ -8,34 +8,31 @@ use App\Form\Filter\AdminUserType;
 use App\Model\UserSearch;
 use App\Repository\UserRepository;
 use App\Service\UserBanService;
-use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class UserController extends AbstractController
 {
-    private UserRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-
     public function __construct(
-        UserRepository $repository,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher
+        private UserRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher,
+        private UserBanService $banService
     )
     {
-        $this->repository = $repository;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
     }
 
-    #[Route(path: '/admin/users', name: 'app_admin_user_index')]
-    public function index(Request $request)
+    #[Route(path: '/users', name: 'app_admin_user_index')]
+    public function index(Request $request): Response
     {
         $search = new UserSearch();
 
@@ -54,11 +51,8 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/users/no-confirm', name: 'app_admin_user_no_confirm_index')]
-    public function indexN(
-        Request $request,
-        EntityManagerInterface $em,
-        PaginatorInterface $paginator)
+    #[Route(path: '/users/no-confirm', name: 'app_admin_user_no_confirm_index')]
+    public function indexN(Request $request, PaginatorInterface $paginator): Response
     {
         $search = new UserSearch();
 
@@ -66,7 +60,7 @@ class UserController extends AbstractController
 
         $form->handleRequest($request);
 
-        $qb = $em->getRepository(User::class)->getUserNoConfirmed($search);
+        $qb = $this->repository->getUserNoConfirmed($search);
 
         $users = $paginator->paginate($qb, $request->query->getInt('page', 1), 25);
 
@@ -77,8 +71,8 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/users/deleted', name: 'app_admin_user_deleted_index')]
-    public function indexD(Request $request)
+    #[Route(path: '/users/deleted', name: 'app_admin_user_deleted_index')]
+    public function indexD(Request $request): Response
     {
         $search = new UserSearch();
 
@@ -97,19 +91,19 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/users/{id}/show/{type}', name: 'app_admin_user_show', requirements: ['id' => '\d+', 'type' => '\d+'])]
-    public function show(User $user, $type)
+    #[Route(path: '/users/{id}/show/{type}', name: 'app_admin_user_show', requirements: ['id' => '\d+', 'type' => '\d+'])]
+    public function show(User $user, string $type): Response
     {
        return $this->render('admin/user/show.html.twig', [
             'user' => $user,
-            'type' => $type,
+            'type' => $type
         ]);
     }
 
-    #[Route(path: '/admin/users/{id}/ban', name: 'app_admin_user_ban', requirements: ['id' => '\d+'])]
-    public function ban(Request $request, UserBanService $banService, User $user)
+    #[Route(path: '/users/{id}/ban', name: 'app_admin_user_ban', requirements: ['id' => '\d+'])]
+    public function ban(Request $request, User $user): RedirectResponse|JsonResponse
     {
-        $banService->ban($user);
+        $this->banService->ban($user);
         $this->repository->flush();
 
         if ($request->isXmlHttpRequest()) {
@@ -121,8 +115,8 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_admin_user_index');
     }
 
-    #[Route(path: '/admin/users/{id}/delete', name: 'app_admin_user_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, User $user)
+    #[Route(path: '/users/{id}/delete', name: 'app_admin_user_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, User $user): RedirectResponse|JsonResponse
     {
         $form = $this->deleteForm($user);
 
@@ -134,7 +128,7 @@ class UserController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($user);
+                $this->repository->remove($user, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -145,18 +139,16 @@ class UserController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cet compte ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $user,
             'message' => $message,
-            'configuration' => $this->configuration(),
+            'configuration' => $this->configuration()
         ]);
 
         $response['html'] = $render->getContent();
@@ -164,13 +156,14 @@ class UserController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/users/bulk/delete', name: 'app_admin_user_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/users/bulk/delete', name: 'app_admin_user_bulk_delete', options: ['expose' => true])]
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
-        if ($request->query->has('data'))
+        if ($request->query->has('data')) {
             $request->getSession()->set('data', $ids);
+        }
 
         $form = $this->deleteMultiForm();
 
@@ -198,17 +191,16 @@ class UserController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' comptes ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cet compte ?';
+        }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
@@ -220,21 +212,21 @@ class UserController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(User $user)
+    private function deleteForm(User $user): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_user_delete', ['id' => $user->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_user_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

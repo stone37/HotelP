@@ -1,12 +1,12 @@
-<nav class="navbar fixed-top navbar-expand-lg double-nav py-0" style="background-color: #ffffff !important">
-    <div class="float-left" >
-        <a href="#" data-activates="slide-out"
-           class="button-collapse"><i class="fas fa-bars"></i>
+<nav class="navbar fixed-top navbar-expand-lg double-nav py-0">
+    <div class="float-left">
+        <a href="#" data-activates="slide-out" class="button-collapse">
+            <i class="fas fa-bars"></i>
         </a>
     </div>
     <div class="d-none d-md-block pl-5">
-        <a href="{{ path('app_home') }}" target="_blank" class="btn btn-sm btn-flat">
-            Voir votre site en ligne
+        <a href="{{ path('app_home') }}" target="_blank" class="btn btn-sm btn-flat font-weight-stone-500">
+            Voir mon site en ligne
         </a>
     </div>
 
@@ -17,13 +17,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle avatar waves-effect text-secondary" href="#"
                        id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {% if vich_uploader_asset(app.user, 'file') %}
-                            <img src="{{ vich_uploader_asset(app.user, 'file') }}" class="rounded-circle z-depth-0" alt="avatar image">
-                        {% else %}
-                            <span class="user-prefix d-inline-block rounded-circle">
-                                {{ app_prefix_user_name(app.user) }}
-                            </span>
-                        {% endif %}
+                        <span class="user-prefix d-inline-block rounded-circle">{{ userPrefixName(app.user) }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-dark dropdown-menu-right" aria-labelledby="userDropdown">
                         <a class="dropdown-item" href="{{ path('app_admin_admin_edit', {'id': app.user.id}) }}">
@@ -32,7 +26,7 @@
                         </a>
                         <a class="dropdown-item" href="{{ path('app_logout') }}">
                             <i class="fas fa-power-off mr-2" aria-hidden="true"></i>
-                            Deconnexion
+                            Déconnexion
                         </a>
                     </div>
                 </li>

@@ -12,19 +12,21 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+#[Route('/admin')]
 class UploadController extends AbstractController
 {
     use ControllerTrait;
     use UploadTrait;
 
-
-    #[Route(path: '/admin/upload/image', name: 'app_image_upload_add', options: ['expose' => true])]
-    public function add(Request $request): JsonResponse
+    #[Route(path: '/upload/image', name: 'app_image_upload_add', options: ['expose' => true])]
+    public function add(Request $request): NotFoundHttpException|JsonResponse
     {
-        if (!$request->isXmlHttpRequest()) $this->createNotFoundException('Mauvais requête');
+        if (!$request->isXmlHttpRequest()) {
+            return $this->createNotFoundException('Bad request');
+        }
 
         $files = $this->getFiles($request->files);
 
@@ -40,10 +42,15 @@ class UploadController extends AbstractController
     }
 
     #[Route(path: '/upload/image/{pos}/delete', name: 'app_image_upload_delete', requirements: ['pos' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, $pos)
+    public function delete(Request $request, $pos): NotFoundHttpException|JsonResponse
     {
-        if (!$request->isXmlHttpRequest()) $this->createNotFoundException('Mauvais requête');
-        if (!$request->getSession()->has('app_gallery_image')) return $this->createNotFoundException('Page introuvable');
+        if (!$request->isXmlHttpRequest()) {
+            return $this->createNotFoundException('Bad request');
+        }
+
+        if (!$request->getSession()->has('app_gallery_image')) {
+            return $this->createNotFoundException('Page introuvable');
+        }
 
         $data = $request->getSession()->get('app_gallery_image');
 

@@ -10,8 +10,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body pt-0">
-                {% include 'admin/booking/filter/form.html.twig' %}
+            <div class="modal-body pt-1">
+                {{ include('admin/booking/filter/form.html.twig') }}
             </div>
             <div class="modal-footer d-flex justify-content-between">
                 {% if isActive('app_admin_booking_confirmed_index') %}

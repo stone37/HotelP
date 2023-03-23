@@ -2,24 +2,20 @@
 
 {% block title %}Administration{% endblock %}
 
-{% block app_navbar_first %}
-    {% include 'admin/menu/sidebar.html.twig' %}
+{% block app_navbar %}
+    {{ include('admin/menu/sidebar.html.twig') }}
 
-    {% include 'admin/menu/top.html.twig' %}
+    {{ include('admin/menu/top.html.twig') }}
 {% endblock %}
-
-{% block app_navbar_second %}{% endblock %}
-
-{% block app_footer %}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
 
-    {% include 'Ui/_stylesheets.html.twig' with {'path': 'assets/css/admin/admin.css'} %}
+    {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/admin/admin.css'}) }}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
 
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/admin/admin.js'} %}
+    {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/admin/admin.js'}) }}
 {% endblock %}

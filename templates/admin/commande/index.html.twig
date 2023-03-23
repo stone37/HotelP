@@ -3,9 +3,9 @@
 {% block title %}Commandes | {{ parent() }}{% endblock %}
 
 {% block app_body %}
-    {% include 'admin/commande/index/_header.html.twig' %}
+    {{ include('admin/commande/index/_header.html.twig') }}
 
-    {% include 'admin/commande/index/_content.html.twig' %}
+    {{ include('admin/commande/index/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}

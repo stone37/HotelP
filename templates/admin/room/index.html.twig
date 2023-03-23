@@ -3,9 +3,9 @@
 {% block title %}Hébergements | {{ parent() }}{% endblock %}
 
 {% block app_body %}
-    {% include 'admin/room/index/_header.html.twig' %}
+    {{ include('admin/room/index/_header.html.twig') }}
 
-    {% include 'admin/room/index/_content.html.twig' %}
+    {{ include('admin/room/index/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}

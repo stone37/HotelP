@@ -5,46 +5,41 @@ namespace App\Controller\Admin;
 use App\Entity\Payment;
 use App\Event\AdminCRUDEvent;
 use App\Event\PaymentRefundedEvent;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\PaymentRepository;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class PaymentController extends AbstractController
 {
-    private EntityManagerInterface $em;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-
     public function __construct(
-        EntityManagerInterface $em,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher
+        private PaymentRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher
     )
     {
-        $this->em = $em;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
     }
 
-    #[Route(path: '/admin/payments', name: 'app_admin_payment_index')]
-    public function index(Request $request)
+    #[Route(path: '/payments', name: 'app_admin_payment_index')]
+    public function index(Request $request): Response
     {
-        $qb = $this->em->getRepository(Payment::class)->findBy([], ['createdAt' => 'desc']);
+        $qb = $this->repository->findBy([], ['createdAt' => 'desc']);
 
         $payments = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
 
-        return $this->render('admin/payment/index.html.twig', [
-            'payments' => $payments,
-        ]);
+        return $this->render('admin/payment/index.html.twig', ['payments' => $payments]);
     }
 
-    #[Route(path: '/admin/payments/{id}/refunded', name: 'app_admin_payment_refunded', requirements: ['id' => '\d+'])]
-    public function refunded(Payment $payment)
+    #[Route(path: '/payments/{id}/refunded', name: 'app_admin_payment_refunded', requirements: ['id' => '\d+'])]
+    public function refunded(Payment $payment): RedirectResponse
     {
         $this->dispatcher->dispatch(new PaymentRefundedEvent($payment));
         $this->addFlash('success', 'Le paiement a bien été marqué comme remboursé');
@@ -52,21 +47,21 @@ class PaymentController extends AbstractController
         return $this->redirectToRoute('app_admin_payment_index');
     }
 
-    #[Route(path: '/admin/payments/report', name: 'app_admin_payment_report')]
-    public function report(Request $request)
+    #[Route(path: '/payments/report', name: 'app_admin_payment_report')]
+    public function report(Request $request): Response
     {
         $year = $request->query->getInt('year', (int) date('Y'));
 
         return $this->render('admin/payment/report.html.twig', [
-            'reports' => $this->em->getRepository(Payment::class)->getMonthlyReport($year),
+            'reports' => $this->repository->getMonthlyReport($year),
             'prefix' => 'admin_transaction',
             'current_year' => date('Y'),
             'year' => $year,
         ]);
     }
 
-    #[Route(path: '/admin/payments/{id}/delete', name: 'app_admin_payment_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Payment $payment)
+    #[Route(path: '/payments/{id}/delete', name: 'app_admin_payment_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, Payment $payment): RedirectResponse|JsonResponse
     {
         $form = $this->deleteForm($payment);
 
@@ -78,26 +73,23 @@ class PaymentController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->em->remove($payment);
-                $this->em->flush();
+                $this->repository->remove($payment, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
-                $this->addFlash('info', 'Le paiement a été supprimé');
+                $this->addFlash('success', 'Un paiement a été supprimé');
             } else {
                 $this->addFlash('error', 'Désolé, le paiement n\'a pas pu être supprimée!');
             }
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cet paiement ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $payment,
             'message' => $message,
@@ -109,8 +101,8 @@ class PaymentController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/payments/bulk/delete', name: 'app_admin_payment_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/payments/bulk/delete', name: 'app_admin_payment_bulk_delete', options: ['expose' => true])]
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
@@ -128,32 +120,31 @@ class PaymentController extends AbstractController
                 $request->getSession()->remove('data');
 
                 foreach ($ids as $id) {
-                    $payment = $this->em->getRepository(Payment::class)->find($id);
+                    $payment = $this->repository->find($id);
                     $this->dispatcher->dispatch(new AdminCRUDEvent($payment), AdminCRUDEvent::PRE_DELETE);
 
-                    $this->em->remove($payment);
+                    $this->repository->remove($payment, false);
                 }
 
-                $this->em->flush();
+                $this->repository->flush();
 
-                $this->addFlash('info', 'Les paiements ont été supprimé');
+                $this->addFlash('success', 'Les paiements ont été supprimé');
             } else {
                 $this->addFlash('error', 'Désolé, les paiements n\'ont pas pu être supprimée!');
             }
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' epaiements ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cet paiement ?';
+        }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
@@ -165,21 +156,21 @@ class PaymentController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(Payment $payment)
+    private function deleteForm(Payment $payment): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_payment_delete', ['id' => $payment->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_payment_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

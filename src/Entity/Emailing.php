@@ -4,30 +4,31 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\EmailingRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EmailingRepository::class)]
 class Emailing
 {
-    const GROUP_PARTICULIER = 'particulier';
-    const GROUP_USER = 'user';
-    const GROUP_NEWSLETTER = 'newsletter';
+    public const GROUP_PARTICULIER = 'particulier';
+    public const GROUP_USER = 'user';
+    public const GROUP_NEWSLETTER = 'newsletter';
 
     use TimestampableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $destinataire = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $destinataire = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $subject = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $subject = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $content  = '';
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $content = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $groupe = self::GROUP_PARTICULIER;

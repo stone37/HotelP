@@ -1,13 +1,13 @@
 {% import 'Ui/Macro/buttons.html.twig' as buttons %}
 
-{% form_theme form 'Ui/Form/theme.html.twig' %}
+{% form_theme form 'ui/Form/theme.html.twig' %}
 
 <section class="section card">
     <div class="card-body">
         {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'admin-form'}}) }}
         <P class="text-danger my-0">{{ form_errors(form) }}</P>
 
-        {% include 'admin/taxe/form.html.twig' %}
+        {{ include('admin/taxe/form.html.twig') }}
 
         {{ form_widget(form._token) }}
 

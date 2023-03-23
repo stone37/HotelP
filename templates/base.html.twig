@@ -16,14 +16,14 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
 
         {% block stylesheets %}
-            {% include 'Ui/_stylesheets.html.twig' with {'path': 'assets/css/bootstrap.css'} %}
-            {% include 'Ui/_stylesheets.html.twig' with {'path': 'assets/css/mdb.css'} %}
-            {% include 'Ui/_stylesheets.html.twig' with {'path': 'assets/css/style.css'} %}
+            {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/bootstrap.css'}) }}
+            {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/mdb.css'}) }}
+            {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/style.css'}) }}
         {% endblock %}
     </head>
     <body class="fixed-sn skin-light">
-        {% block app_flashes %}{% include 'Ui/_flashes.html.twig' %}{% endblock %}
-        {% include 'Ui/_loading.html.twig' %}
+        {% block app_flashes %}{{ include('ui/_flashes.html.twig') }}{% endblock %}
+        {{ include('ui/_loading.html.twig') }}
 
         <header>
             {% block app_navbar %}{% endblock %}
@@ -34,14 +34,11 @@
             {% block app_body %}{% endblock %}
         </main>
 
-        {% include 'Ui/_top_scroll.html.twig' %}
-        {% include 'Ui/_confirmation.html.twig' %}
-        {% block app_booking %}{% include 'Ui/_booking.html.twig' %}{% endblock %}
-        {#{% include 'Ui/_cookieconsent.html.twig' %}#}
-        {% block app_footer %}
-            {% include '_footer.html.twig' %}
-        {% endblock %}
-
+        {{ include('ui/_top_scroll.html.twig') }}
+        {{ include('ui/_confirmation.html.twig') }}
+        {% block app_booking %}{{ include('ui/_booking.html.twig') }}{% endblock %}
+        {#{{ include('ui/_cookieconsent.html.twig') }}#}
+        {% block app_footer %}{{ include('ui/_footer.html.twig') }}{% endblock %}
 
         <script>
             {% set data = booker.bookingData %}
@@ -52,22 +49,20 @@
                 USER: {{ app.user ? app.user.id : 'null' }},
                 BOOKING_CHECKIN: new Date("{{ data.checkin|date('Y/m/d') }}"),
                 BOOKING_CHECKOUT: new Date("{{ data.checkout|date('Y/m/d') }}"),
-                MAX_ADULT: parseInt({{ roomService.maxAdult }}),
-                MAX_CHILDREN: parseInt("{{ roomService ? roomService.maxChildren : null }}"),
                 DEFAULT_ADULT: parseInt("{{ data.adult }}"),
                 DEFAULT_CHILDREN: parseInt("{{ data.children }}"),
-                DEFAULT_ROOM: parseInt("{{ data.roomNumber }}"),
+                DEFAULT_ROOM: parseInt("{{ data.roomNumber }}")
             }
         </script>
         <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
         <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
         {% block javascripts %}
-            {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/jquery.js'} %}
-            {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/popper.js'} %}
-            {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/bootstrap.js'} %}
-            {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/mdb.js'} %}
-            {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/init.js'} %}
-            {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/script.js'} %}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/jquery.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/popper.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/bootstrap.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/mdb.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/function.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/script.js'}) }}
         {% endblock %}
 
         {#<script src="https://cdn.jsdelivr.net/npm/jquery.cookie-consent/dist/jquery.cookie-consent.min.js"></script>

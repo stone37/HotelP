@@ -11,6 +11,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
@@ -18,27 +19,14 @@ class PromotionController extends AbstractController
 {
     use ControllerTrait;
 
-    private EntityManagerInterface $em;
-    private PromotionRepository $repository;
-    private Breadcrumbs $breadcrumbs;
-    private PaginatorInterface $paginator;
-    private BookingSessionStorage $storage;
-    private CartService $cartService;
-
     public function __construct(
-        EntityManagerInterface $em,
-        PromotionRepository $repository,
-        Breadcrumbs $breadcrumbs,
-        BookingSessionStorage $storage,
-        CartService $cartService,
-        PaginatorInterface $paginator)
+        private EntityManagerInterface $em,
+        private PromotionRepository $repository,
+        private Breadcrumbs $breadcrumbs,
+        private BookingSessionStorage $storage,
+        private CartService $cartService,
+        private PaginatorInterface $paginator)
     {
-        $this->em = $em;
-        $this->repository = $repository;
-        $this->breadcrumbs = $breadcrumbs;
-        $this->paginator = $paginator;
-        $this->storage = $storage;
-        $this->cartService = $cartService;
     }
 
     #[Route(path: '/nos-offres', name: 'app_promotion_index')]
@@ -49,7 +37,7 @@ class PromotionController extends AbstractController
 
         $this->breadcrumb($this->breadcrumbs)->addItem('Nos offres');
 
-        $promotions = $this->paginator->paginate($this->repository->getAll(), $request->query->getInt('page', 1), 15);
+        $promotions = $this->paginator->paginate($this->repository->getTotalEnabled(), $request->query->getInt('page', 1), 15);
 
         return $this->render('site/promotion/index.html.twig', [
             'promotions' => $promotions
@@ -57,18 +45,20 @@ class PromotionController extends AbstractController
     }
 
     #[Route(path: '/nos-offres/{slug}', name: 'app_promotion_show')]
-    public function show($slug): Response
+    public function show(string $slug): NotFoundHttpException|Response
     {
         $promotion = $this->repository->getBySlug($slug);
 
-        if (!$promotion) throw $this->createNotFoundException('Cette promotion n\'existe pas');
+        if (!$promotion) {
+            return $this->createNotFoundException('Cette promotion n\'existe pas');
+        }
 
         $this->breadcrumb($this->breadcrumbs)
             ->addItem('Nos offres', $this->generateUrl('app_promotion_index'))
             ->addItem($promotion->getName());
 
         return $this->render('site/promotion/show.html.twig', [
-            'promotion' => $promotion,
+            'promotion' => $promotion
         ]);
     }
 }

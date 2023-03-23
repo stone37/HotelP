@@ -6,7 +6,7 @@
     <div class="card-body">
         {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'settings-form'}}) }}
 
-        {% include 'admin/maintenance/form.html.twig' with {'form': form} %}
+        {{ include('admin/maintenance/form.html.twig') }}
 
         {{ form_widget(form._token) }}
 

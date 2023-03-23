@@ -4,19 +4,21 @@ namespace App\Entity;
 
 use App\Repository\RoomUserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RoomUserRepository::class)]
 class RoomUser
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\NotBlank(message: "Veuillez renseigner le nom et prénom du client.", groups: ['booking'])]
+    #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 180, nullable: true)]
+    #[ORM\Column(length: 180, nullable: true)]
     private ?string $email = null;
 
     #[ORM\ManyToOne(targetEntity: Booking::class, inversedBy: 'occupants')]

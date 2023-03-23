@@ -2,12 +2,12 @@
 
 {% form_theme form 'Ui/Form/theme.html.twig' %}
 
-<section class="section card mb-5">
+<div class="card mb-5">
     <div class="card-body">
         {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'admin-form'}}) }}
         <P class="text-danger my-0">{{ form_errors(form) }}</P>
 
-        {% include 'admin/admin/form.html.twig' %}
+        {{ include('admin/admin/form.html.twig') }}
 
         {{ form_widget(form._token) }}
 
@@ -18,4 +18,4 @@
         </div>
         {{ form_end(form, {'render_rest': false}) }}
     </div>
-</section>
+</div>

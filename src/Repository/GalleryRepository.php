@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Gallery;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -44,14 +46,18 @@ class GalleryRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function getGalleries(int $limit = 3)
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getGalleries(int $limit = 3): array
     {
         $qb = $this->createQueryBuilder('g')->select('COUNT(g)');
 
         $totalRecords = $qb->getQuery()->getSingleScalarResult();
 
         if ($totalRecords < 1) {
-            return null;
+            return [];
         }
 
         if ($totalRecords < $limit) {

@@ -11,13 +11,13 @@
                 </button>
             </div>
             <div class="modal-body pt-0">
-                {% include 'admin/admin/filter/form.html.twig' %}
+                {{ include('admin/admin/filter/form.html.twig') }}
             </div>
             <div class="modal-footer d-flex justify-content-between">
-                <a href="{{ path('app_admin_admin_index') }}" class="btn btn-sm btn-danger">
+                <a href="{{ path('app_admin_admin_index') }}" class="btn btn-md btn-danger">
                     <i class="fas fa-times mr-1"></i> Effacer
                 </a>
-                <button type="submit" class="btn btn-secondary btn-sm waves-effect">
+                <button type="submit" class="btn btn-secondary btn-md waves-effect">
                     <i class="fas fa-check mr-1"></i>
                     Appliquer
                 </button>

@@ -11,16 +11,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class SocialLoginController extends AbstractController
 {
-    private const SCOPES = [
-        'google' => [],
-        'facebook' => ['email'],
-    ];
+    private const SCOPES = ['google' => [], 'facebook' => ['email']];
 
-    private $clientRegistry;
-
-    public function __construct(ClientRegistry $clientRegistry)
+    public function __construct(private ClientRegistry $clientRegistry)
     {
-        $this->clientRegistry = $clientRegistry;
     }
 
     #[Route(path: '/oauth/connect/{service}', name: 'oauth_connect')]

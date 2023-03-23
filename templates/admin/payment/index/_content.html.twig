@@ -1,7 +1,9 @@
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-center justify-content-md-between">
         <div id="entity-list-delete-bulk-btn" class="mr-3 d-none entity-payment-delete-bulk-btn">
-            {% include 'Ui/Grid/Action/delete.html.twig' with {'action': {'label': 'Supprimer'}} %}
+            <a id="entity-bulk-delete-btn" class="btn btn-danger btn-md" data-url="{{ path('app_admin_payment_bulk_delete') }}">
+                <i class="fas fa-trash mr-1"></i> Supprimer
+            </a>
         </div>
     </div>
 </div>
@@ -13,10 +15,9 @@
                 <thead class="text-primary">
                 <tr>
                     <th scope="col" class="text-center">
-                        <div class="" style="position: relative; right: 10px; top: 2px">
+                        <div style="position: relative; right: 10px; top: 2px">
                             <input type="checkbox" name="principal" class="form-check-input filled-in" id="principal-checkbox" value="" style="margin: 0 !important;" />
-                            <label class="form-check-label" for="principal-checkbox"
-                                   style="padding-left: 0!important; "></label>
+                            <label class="form-check-label" for="principal-checkbox" style="padding-left: 0!important; "></label>
                         </div>
                     </th>
                     <th scope="col" class="font-weight-stone-500 text-center">Date</th>
@@ -30,13 +31,13 @@
                 {% for payment in payments %}
                     <tr>
                         <td class="text-center">
-                            <div class="" style="position: relative; right: 10px; top: 2px">
+                            <div style="position: relative; right: 10px; top: 2px">
                                 <input type="checkbox" name="checkbox{{ loop.index }}" class="form-check-input filled-in list-checkbook"
                                        id="checkbox{{ loop.index }}" value="{{ payment.id }}" style="margin: 0 !important;" />
                                 <label class="form-check-label" for="checkbox{{ loop.index }}" style="padding-left: 0!important; "></label>
                             </div>
                         </td>
-                        <td class="text-center">{{ payment.createdAt|date('d/m/Y H:i:s') }}</td>
+                        <td class="text-center">{{ payment.createdAt|date('d/m/Y H:i') }}</td>
                         <td class="text-center">
                             <a href="{{ path('app_admin_commande_show', {'id': payment.commande.id}) }}" class="card-link">#{{ payment.commande.id }}</a>
                         </td>
@@ -47,7 +48,7 @@
                         <td class="text-center">
                             {% if payment.enabled %}
                                 <span class="badge badge-success">
-                                    <i class="fas fa-plane mr-1"></i> Complete
+                                    <i class="fas fa-plane mr-1"></i> Complète
                                 </span>
                             {% else %}
                                 <span class="badge badge-grey">
@@ -62,7 +63,8 @@
                                     <a href="{{ path('app_admin_payment_refunded', {'id': payment.id}) }}" class="dropdown-item">
                                         <i class="fas fa-sync-alt mr-1"></i> Rembourser
                                     </a>
-                                    <a class="dropdown-item entity-payment-delete" id="{{ payment.id }}">
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ payment.id }}"
+                                       data-url="{{ path('app_admin_payment_delete', {'id': payment.id}) }}">
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -74,7 +76,7 @@
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ payments.totalItemCount }} resultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ payments.totalItemCount }} résultats</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
             {{ knp_pagination_render(payments, 'Ui/_pagination.html.twig') }}
@@ -83,7 +85,7 @@
 {% else %}
     <div class="row app-user d-flex justify-content-center">
         <div class="col-12 col-md-8 text-center mt-3 mt-md-5">
-            <h3 class="h3-responsive font-weight-stone-600">
+            <h3 class="h3-responsive font-weight-stone-600 text-dark">
                 Vous n'avez aucun paiement.
             </h3>
         </div>

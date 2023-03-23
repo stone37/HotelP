@@ -1,10 +1,9 @@
 $(document).ready(function() {
-
-    // Upload multiple
     let $ordPhoto = [];
-    let $body = $('body');
+    const $body = $('body');
+    const $btnPhotos = $('.btn-photos');
 
-    $('.btn-photos').on('click', function(){
+    $btnPhotos.on('click', function(){
         $('input[type="file"].input-photo').trigger('click');
     });
 
@@ -26,7 +25,7 @@ $(document).ready(function() {
         onNewFile: function(id, file){
 
             if (typeof FileReader !== "undefined"){
-                var reader = new FileReader();
+                 const reader = new FileReader();
 
                 reader.onload = function (e) {
                     // Photo chargée, on affiche
@@ -89,18 +88,14 @@ $(document).ready(function() {
         }
     });
 
-    /**
-     * Suppression de l'image
-     */
+    // Annuler le telechargement de l'image
     $body.on('click', 'button.remove', function(e) {
         e.preventDefault();
 
         uploadRemove($(this).attr('data-id'), $ordPhoto);
     });
 
-    /**
-     * Annuler le telechargement de l'image
-     */
+    // Annuler le telechargement de l'image
     $body.on('click', 'button.progress', function(e) {
         e.preventDefault();
 
@@ -108,12 +103,12 @@ $(document).ready(function() {
     });
 });
 
-function ajoutPhoto(file) {
+const ajoutPhoto = function (file) {
     let filesize = getReadableFileSizeString(file.size);
 
-    let $html = '<div class="scale-up-ver-top col-lg-2 col-md-4 col-6" id="'+file.id+'">';
+    let $html = '<div class="scale-up-ver-top col-lg-2 col-md-4 col-6" id="' + file.id + '">';
 
-    $html +='	<img src="'+file.src+'" alt="Image de l\'annonce" class="img-fluid z-depth-4">';
+    $html +='	<img src="'+file.src+'" alt="Image de l\'annonce" class="img-fluid z-depth-2">';
     $html +='	    <div class="info small font-weight-stone-500">';
     $html +='	        <span>'+file.name+'</span>';
     $html +='	        <span>'+filesize+'</span>';
@@ -128,22 +123,14 @@ function ajoutPhoto(file) {
     $('#imgUpload-list').prepend($html);
 }
 
-/**
- * Charge une image
- *
- * @param file
- */
-function ajoutPhotoLoaded(file) {
+
+// Charge une image
+const ajoutPhotoLoaded = function (file) {
     $('#'+file.id+' img').attr('src', file.src);
 }
 
-/**
- * Rend la taille de l'image
- *
- * @param fileSizeInBytes
- * @returns {string}
- */
-function getReadableFileSizeString(fileSizeInBytes) {
+// Rend la taille de l'image
+const getReadableFileSizeString = function (fileSizeInBytes) {
     let i = -1;
 
     let byteUnits = [' Ko', ' Mo', ' Go', ' To', 'Po', 'Eo', 'Zo', 'Yo'];
@@ -156,14 +143,8 @@ function getReadableFileSizeString(fileSizeInBytes) {
     return Math.max(fileSizeInBytes, 1).toFixed(0) + byteUnits[i];
 }
 
-/**
- * Supprime une image
- *
- * @param id
- * @param ordPhoto
- * @returns {boolean}
- */
-function uploadRemove(id, ordPhoto) {
+// Supprime une image
+const uploadRemove = function (id, ordPhoto) {
     showLoading();
 
     let pos = ordPhoto.indexOf(id);
@@ -181,7 +162,6 @@ function uploadRemove(id, ordPhoto) {
     $.ajax({
         url: Routing.generate('app_image_upload_delete', {'pos': pos}),
         success: function() {
-
             $('#'+id).addClass('fade-out-bck');
             setTimeout(function(){ $('#'+id).remove(); }, 400);
 
@@ -190,14 +170,9 @@ function uploadRemove(id, ordPhoto) {
     });
 }
 
-/**
- * Annule le telechargement de l'image
- *
- * @param id
- * @returns {boolean}
- */
-function uploadCancel(id) {
-    $('#photosAnnonce').dmUploader("cancel", id);
+// Annule le téléchargement de l'image
+const uploadCancel = function (id) {
+    $('#photosAnnonce').dmUploader('cancel', id);
     $('#'+id).remove();
 
     return false;

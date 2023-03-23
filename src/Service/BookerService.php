@@ -16,9 +16,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class BookerService
 {
-    const INIT_ADULT = 2;
-    const INIT_CHILDREN = 0;
-    const INIT_ROOM = 1;
+    public const INIT_ADULT = 2;
+    public const INIT_CHILDREN = 0;
+    public const INIT_ROOM = 1;
 
     private BookingRepository $repository;
     private Security $security;

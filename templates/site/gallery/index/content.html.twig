@@ -1,0 +1,37 @@
+<section class="container">
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="wow fadeIn">
+                <h2 class="h2-responsive font-weight-bold text-dark mb-3 text-center">
+                    Découvrez notre gallérie photo de nos installations et équipements
+                </h2>
+                <p class="text-center">
+                    Notre galerie photo vous donne un aperçu visuel de tout ce que notre hôtel a à offrir.
+                    Nous avons soigneusement sélectionné des images de haute qualité pour vous montrer les
+                    chambres, les suites, les espaces communs, les restaurants, les bars, les piscines et
+                    les jardins. Nous espérons que notre galerie photo vous inspirera et vous donnera une
+                    idée de ce à quoi vous pouvez vous attendre lors de votre séjour chez nous.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if galleries|length > 0 %}
+    <section class="container">
+        <div class="row mt-5">
+            <div class="col-12">
+                <div id="mdb-lightbox-ui"></div>
+                <div class="mdb-lightbox no-margin">
+                    {% for gallery in galleries %}
+                        <figure class="col-md-4 col-lg-3">
+                            <a href="{{ asset(gallery.webPath) }}" data-size="1600x1067">
+                                <img alt="picture" src="{{ asset(gallery.webPath) }}" class="img-fluid" style="height: 190px !important; width: 300px;" />
+                            </a>
+                        </figure>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endif %}

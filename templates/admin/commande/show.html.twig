@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block app_body %}
-    {% include 'admin/commande/show/_header.html.twig' %}
+    {{ include('admin/commande/show/_header.html.twig') }}
 
-    {% include 'admin/commande/show/_content.html.twig' %}
+    {{ include('admin/commande/show/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}

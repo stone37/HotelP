@@ -13,14 +13,14 @@ class ContactRequest
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id = null;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $ip = '';
+    #[ORM\Column(length: 255)]
+    private ?string $ip = null;
 
     #[ORM\Column(type: 'datetime')]
-    private ?DateTimeInterface $createdAt = null;
+    private ?DateTimeInterface $createdAt;
 
     public function __construct()
     {

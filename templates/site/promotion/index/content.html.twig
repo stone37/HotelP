@@ -1,25 +1,36 @@
-{% import 'site/promotion/macro/__list.html.twig' as __view %}
-
-{% if promotions|length > 0 %}
-    <section>
-        <div class="row mt-md-5 mx-lg-5 mx-md-4 home-room-promotion">
-            {% for promotion in promotions %}
-                {{ __view.list(promotion)}}
-            {% endfor %}
-
-            <div class="col-12 d-flex justify-content-center my-2">
-                {{ knp_pagination_render(promotions, 'Ui/_pagination.html.twig') }}
+<section class="container">
+    <section class="row">
+        <div class="col-12">
+            <div class="wow fadeIn">
+                <h2 class="h2-responsive font-weight-bold text-dark my-3 text-center">
+                    Offres exceptionnelles pour un voyage parfait: découvrez nos promotions dès maintenant
+                </h2>
+                <p class="text-center">
+                    Profitez des <strong class="text-primary font-weight-bold">offres spéciales et des promotions</strong>
+                    de notre hôtel pour rendre votre séjour encore plus mémorable ! Que vous voyagiez pour affaires ou pour
+                    le plaisir, nous avons des <strong class="text-dark">offres spéciales et des promotions</strong> qui répondent à tous vos besoins. Détendez-vous dans
+                    nos chambres luxueuses et confortables à des prix avantageux, ou offrez-vous un séjour prolongé pour
+                    découvrir pleinement notre destination. Notre hôtel propose également des offres spéciales pour
+                    les familles, les couples et les groupes, avec des forfaits tout compris pour rendre votre voyage
+                    encore plus facile et pratique.
+                </p>
             </div>
         </div>
     </section>
-{% else %}
-    <div class="row app-user d-flex justify-content-center">
-        <div class="col-12 col-md-8 text-center mt-3 mt-md-4">
-            <h4 class="h4-responsive font-weight-stone-500">Il y a aucune promotion sur le site</h4>
-            <div class="mt-4">
-                <a href="{{ path('app_room_index') }}" class="btn btn-primary btn-lg">Voir nos hébergements</a>
-            </div>
-        </div>
-    </div>
-{% endif %}
 
+    {% if promotions|length > 0 %}
+        <section>
+            <div class="row mt-5 home-room-promotion">
+                {% for promotion in promotions %}
+                    <div class="col-12 col-md-4">
+                        {{ include('site/promotion/_box.html.twig') }}
+                    </div>
+                {% endfor %}
+
+                <div class="col-12 d-flex justify-content-center my-2">
+                    {{ knp_pagination_render(promotions, 'ui/_pagination.html.twig') }}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+</section>

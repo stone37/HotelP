@@ -13,34 +13,25 @@ use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
+#[Route('/admin')]
 class DashboardController extends AbstractController
 {
-    private UserRepository $userRepository;
-    private PaymentRepository $paymentRepository;
-    private BookingRepository $bookingRepository;
-    private RoomRepository $roomRepository;
-    private NewsletterDataRepository $newsletterDataRepository;
-
     public function __construct(
-        UserRepository $userRepository,
-        PaymentRepository $paymentRepository,
-        BookingRepository $bookingRepository,
-        RoomRepository $roomRepository,
-        NewsletterDataRepository $newsletterDataRepository
+        private UserRepository $userRepository,
+        private PaymentRepository $paymentRepository,
+        private BookingRepository $bookingRepository,
+        private RoomRepository $roomRepository,
+        private NewsletterDataRepository $newsletterDataRepository
     )
     {
-        $this->userRepository = $userRepository;
-        $this->paymentRepository = $paymentRepository;
-        $this->bookingRepository = $bookingRepository;
-        $this->roomRepository = $roomRepository;
-        $this->newsletterDataRepository = $newsletterDataRepository;
     }
 
-    #[Route(path: '/admin', name: 'app_admin_dashboard')]
-    public function index()
+    #[Route(path: '/', name: 'app_admin_index')]
+    public function index(): Response
     {
         $taxe = $this->paymentRepository->totalTax();
         $reduction = $this->paymentRepository->totalReduction();
@@ -55,9 +46,6 @@ class DashboardController extends AbstractController
         $roomTotal = $this->roomRepository->getRoomTotalNumber();
         $roomEnabledTotal = $this->roomRepository->getRoomEnabledTotalNumber();
         $roomBookingTotal = $this->bookingRepository->getRoomBookingTotalNumber($today, $nextMonth);
-
-        //dump(new DateTime(), (new DateTime())->modify('+1 month'));
-        //dump($roomBookingTotal);
 
         $bookingTotal = $bookingConfirmNumber+$bookingCancelNumber+$bookingArchiveNumber;
         $bookingCancelPercent = ($bookingTotal > 0) ? ($bookingCancelNumber * 100) / ($bookingTotal) : 0;

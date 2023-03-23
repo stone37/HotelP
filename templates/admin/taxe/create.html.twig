@@ -3,9 +3,9 @@
 {% block title %}Nouveau taux | Taxes | {{ parent() }}{% endblock %}
 
 {% block app_body %}
-    {% include 'admin/taxe/create/_header.html.twig' %}
+    {{ include('admin/taxe/create/_header.html.twig') }}
 
-    {% include 'admin/taxe/create/_content.html.twig' %}
+    {{ include('admin/taxe/create/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}
@@ -14,6 +14,4 @@
 
 {% block javascripts %}
     {{ parent() }}
-
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/admin/create.js'} %}
 {% endblock %}

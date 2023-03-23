@@ -2,18 +2,9 @@
 
 namespace App\Form;
 
-use App\Entity\Option;
-use App\Entity\Supplement;
 use App\Entity\Room;
-use App\Entity\RoomEquipment;
-use App\Entity\Taxe;
-use App\Repository\OptionRepository;
-use App\Repository\SupplementRepository;
-use App\Repository\RoomEquipmentRepository;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\AbstractType;;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -26,83 +17,64 @@ class RoomType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, ['label' => 'Nom de l\'hébergement'])
-            ->add('smoker', ChoiceType::class, [
-                'choices' => [
-                    'Non-fumeurs' => 'Non-fumeurs',
-                    'Fumeurs' => 'Fumeurs',
-                    'Cet hébergement est fumeurs et non-fumeurs' => 'Cet hébergement est fumeurs et non-fumeurs',
-                ],
-                'label' => 'Fumeurs ou non-fumeurs',
-                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-stone'],
-                'placeholder' => 'Fumeurs ou non-fumeurs',
-                'required' => false,
-            ])
+            ->add('roomNumber', IntegerType::class, ['label' => 'Nombre d\'hébergements (de ce type)'])
+            ->add('price', IntegerType::class, ['label' => 'Tarif'])
             ->add('description', CKEditorType::class, [
                 'label' => false,
-                'config' => ['height' => '150', 'uiColor' => '#ffffff', 'toolbar' => 'basic']
+                'config' => ['height' => '120', 'uiColor' => '#ffffff', 'toolbar' => 'basic'],
+                'required' => false
             ])
-            ->add('roomNumber', IntegerType::class, ['label' => 'Nombre d\'hébergements (de ce type)'])
-            ->add('price', IntegerType::class, ['label' => 'Tarif (en CFA)'])
-            ->add('maximumAdults', IntegerType::class, ['label' => 'Nombre maximum d\'adultes'])
-            ->add('maximumOfChildren', IntegerType::class, ['label' => 'Nombre maximum d\'enfants'])
-            ->add('area', IntegerType::class, ['label' => 'Superficie de l\'hébergement (m²)', 'required' => false,])
-            ->add('enabled', CheckboxType::class, ['label' => 'Activé', 'required' => false])
-            ->add('taxeStatus', CheckboxType::class, ['label' => 'La taxe est-il dans le prix de l\'hébergement ?', 'required' => false])
-            ->add('equipments', EntityType::class, [
-                'class' => RoomEquipment::class,
-                'choice_label' => 'name',
-                'query_builder' => function (RoomEquipmentRepository $er) {
-                    return $er->getData();
-                },
-                'choice_attr' => function($choice, $key, $value) {
-                    return ['class' => 'form-check-input filled-in'];
-                },
-                'label' => 'Équipements de chambre',
-                'required' => false,
-                'expanded' => true,
-                'multiple' => true,
+            ->add('smoker', SmokerChoiceType::class, [
+                'label' => 'Fumeurs ou non-fumeurs (Facultatif)',
+                'placeholder' => 'Fumeurs ou non-fumeurs (Facultatif)',
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
+                'required' => false
             ])
-            ->add('supplements', EntityType::class, [
-                'class' => Supplement::class,
-                'choice_label' => 'name',
-                'query_builder' => function (SupplementRepository $er) {
-                    return $er->getData();
-                },
-                'choice_attr' => function($choice, $key, $value) {
-                    return ['class' => 'form-check-input filled-in'];
-                },
-                'label' => 'Suppléments',
-                'required' => false,
-                'expanded' => true,
-                'multiple' => true,
+            ->add('occupant', IntegerType::class, [
+                'label' => 'Nombre d\'occupant max.',
+                'help' => 'Indiquez le nombre de personnes maximum pouvant dormir dans cet hébergement.'
             ])
-            ->add('options', EntityType::class, [
-                'class' => Option::class,
-                'choice_label' => 'name',
-                'query_builder' => function (OptionRepository $er) {
-                    return $er->getData();
-                },
-                'choice_attr' => function($choice, $key, $value) {
-                    return ['class' => 'form-check-input filled-in'];
-                },
-                'label' => 'Options',
-                'required' => false,
-                'expanded' => true,
-                'multiple' => true,
+            ->add('area', IntegerType::class, [
+                'label' => 'Superficie (Facultatif)',
+                'help' => 'Indiquez la superficie de l\'hébergement en m²',
+                'required' => false
             ])
-            ->add('taxe',  EntityType::class, [
-                'label' => 'Taxe',
-                'class' => Taxe::class,
-                'choice_label' => 'name',
-                'attr' => [
-                    'class' => 'mdb-select md-outline md-form dropdown-stone mb-0',
-                ],
-                'placeholder' => 'Taxe',
+            ->add('enabled', ChoiceType::class, [
+                'choices' => ['Oui' => true, 'Non' => false],
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
+                'label' => 'Activé',
+                'placeholder' => 'Activé'
             ])
             ->add('couchage', TextType::class, [
-                'label' => 'Couchage (Lit de la chambre)',
+                'label' => 'Couchage (Facultatif)',
+                'help' => 'Indiquez le type et le nombre lit de la chambre',
                 'required' => false,
-            ]);
+            ])
+            ->add('taxe',  TaxeChoiceType::class, [
+                'label' => 'Taxe (Facultatif)',
+                'placeholder' => 'Taxe (Facultatif)',
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
+                'required' => false
+            ])
+            ->add('equipments', RoomEquipmentChoiceType::class, [
+                'choice_attr' => function() {
+                    return ['class' => 'form-check-input filled-in'];
+                },
+                'label' => 'Équipements de chambre (Facultatif)',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => false
+            ])
+            ->add('supplements', SupplementChoiceType::class, [
+                'choice_attr' => function() {
+                    return ['class' => 'form-check-input filled-in'];
+                },
+                'label' => 'Suppléments (Facultatif)',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => false
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

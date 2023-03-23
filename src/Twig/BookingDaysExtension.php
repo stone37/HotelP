@@ -9,18 +9,15 @@ use Twig\TwigFunction;
 
 class BookingDaysExtension extends AbstractExtension
 {
-    private BookingDaysCalculator $calculator;
-
-    public function __construct(BookingDaysCalculator $calculator)
+    public function __construct(private BookingDaysCalculator $calculator)
     {
-        $this->calculator = $calculator;
     }
 
     public function getFunctions()
     {
-        return array(
-            new TwigFunction('app_booking_days', array($this, 'getDays')),
-        );
+        return [
+            new TwigFunction('app_booking_days', [$this, 'getDays']),
+        ];
     }
 
     public function getDays(DateTime $checkin, DateTime $checkout): int

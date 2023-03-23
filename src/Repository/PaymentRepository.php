@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Payment;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -16,7 +18,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Payment[]    findAll()
  * @method Payment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PaymentRepository extends ServiceEntityRepository
+class  PaymentRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -93,12 +95,16 @@ class PaymentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getNumber()
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getNumber(): int
     {
         $qb = $this->createQueryBuilder('p')
             ->select('count(p.id)');
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     public function totalRevenues()
@@ -180,7 +186,7 @@ class PaymentRepository extends ServiceEntityRepository
      * @param int $id
      * @param User|UserInterface $user
      * @return int|mixed|string|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function findForId(int $id, User|UserInterface $user)
     {

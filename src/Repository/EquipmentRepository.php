@@ -46,14 +46,5 @@ class EquipmentRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function getAdmins(EquipmentSearch $search): ?QueryBuilder
-    {
-        $qb = $this->createQueryBuilder('e')
-            ->orderBy('e.position', 'asc');
 
-        if ($search->getName())
-            $qb->andWhere('e.name LIKE :name')->setParameter('name', '%'.$search->getName().'%');
-
-        return $qb;
-    }
 }

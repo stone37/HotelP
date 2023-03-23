@@ -2,7 +2,7 @@
 
 namespace App\Auth;
 
-use App\Entity\User;
+use App\Entity\User; 
 use App\Event\BadPasswordLoginEvent;
 use App\Repository\UserRepository;
 use Exception;

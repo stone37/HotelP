@@ -7,20 +7,17 @@ use App\Repository\PromotionRepository;
 
 class PromotionManager
 {
-    private PromotionRepository $repository;
-
-    public function __construct(PromotionRepository $repository)
+    public function __construct(private PromotionRepository $repository)
     {
-        $this->repository = $repository;
     }
 
     public function hasRoomPromotion(Room $room): bool
     {
-        return ($this->repository->fetchRoomPromotion($room) === 0) ? false : true;
+        return !(($this->repository->getByRoom($room) === 0));
     }
 
     public function getRoomPromotion(Room $room): int
     {
-        return $this->repository->fetchRoomPromotion($room);
+        return $this->repository->getByRoom($room);
     }
 }

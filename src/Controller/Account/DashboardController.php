@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/u')]
 class DashboardController extends AbstractController
 {
     use ControllerTrait;
@@ -19,7 +20,7 @@ class DashboardController extends AbstractController
         $this->bookingRepository = $bookingRepository;
     }
 
-    #[Route(path: '/u/', name: 'app_dashboard_index', methods: ['GET'])]
+    #[Route(path: '/', name: 'app_user_index')]
     #[IsGranted('ROLE_USER')]
     public function index()
     {

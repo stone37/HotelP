@@ -6,6 +6,7 @@ use App\Entity\Promotion;
 use App\Entity\Room;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -46,15 +47,11 @@ class PromotionRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function getEnabled()
+    public function getEnabled(): array
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.room', 'room')
-            ->leftJoin('room.options', 'options')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('room')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
             ->where('p.enabled = 1')
             ->andWhere('p.start <= :start')
             ->andWhere('p.end >= :end')
@@ -65,15 +62,11 @@ class PromotionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getAll()
+    public function getTotalEnabled(): array
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.room', 'room')
-            ->leftJoin('room.options', 'options')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('room')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
             ->where('p.enabled = 1')
             ->andWhere('p.end >= :end')
             ->setParameter('end', new DateTime())
@@ -82,15 +75,14 @@ class PromotionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getBySlug(string $slug)
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function getBySlug(string $slug): ?Promotion
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.room', 'room')
-            ->leftJoin('room.options', 'options')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('room')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
             ->where('p.enabled = 1')
             ->andWhere('p.slug = :slug')
             ->setParameter('slug', $slug);
@@ -98,17 +90,11 @@ class PromotionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findLimit(int $limit)
+    public function findLimit(int $limit): array
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.room', 'room')
-            ->leftJoin('room.options', 'options')
-            ->leftJoin('options.supplements', 'opt_supplements')
             ->addSelect('room')
-            ->addSelect('options')
-            ->addSelect('opt_supplements')
-            ->addSelect('room')
-            ->addSelect('options')
             ->where('p.enabled = 1')
             ->andWhere('p.start <= :start')
             ->andWhere('p.end >= :end')
@@ -120,7 +106,7 @@ class PromotionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function fetchRoomPromotion(Room $room)
+    public function getByRoom(Room $room): int
     {
         $qb = $this->createQueryBuilder('p');
 

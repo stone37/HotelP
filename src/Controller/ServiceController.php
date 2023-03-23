@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\Traits\ControllerTrait;
 use App\Repository\EquipmentRepository;
+use App\Repository\EquipmentValueRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,18 +15,11 @@ class ServiceController extends AbstractController
 {
     use ControllerTrait;
 
-    private Breadcrumbs $breadcrumbs;
-    private PaginatorInterface $paginator;
-    private EquipmentRepository $repository;
-
     public function __construct(
-        Breadcrumbs $breadcrumbs,
-        EquipmentRepository $repository,
-        PaginatorInterface $paginator)
+        private Breadcrumbs $breadcrumbs,
+        private EquipmentValueRepository $repository,
+        private PaginatorInterface $paginator)
     {
-        $this->breadcrumbs = $breadcrumbs;
-        $this->repository = $repository;
-        $this->paginator = $paginator;
     }
 
     #[Route(path: '/services', name: 'app_service_index')]
@@ -34,7 +28,7 @@ class ServiceController extends AbstractController
         $this->breadcrumb($this->breadcrumbs)->addItem('Nos services');
 
         return $this->render('site/service/index.html.twig', [
-            'equipments' => $this->repository->findBy([], ['position' => 'ASC'], 15)
+            'equipments' => $this->repository->findBy([], [], 10)
         ]);
     }
 }

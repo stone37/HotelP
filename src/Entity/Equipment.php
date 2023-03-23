@@ -5,7 +5,12 @@ namespace App\Entity;
 use App\Entity\Traits\PositionTrait;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\EquipmentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EquipmentRepository::class)]
 class Equipment
@@ -15,18 +20,27 @@ class Equipment
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\NotBlank]
+    #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[Gedmo\Slug(fields: ['name'], unique: true)]
+    #[ORM\Column(length: 100)]
+    private ?string $slug = null;
+
+    #[ORM\Column(nullable: true)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(targetEntity: EquipmentGroup::class, inversedBy: 'equipments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?EquipmentGroup $groupe = null;
+    #[ORM\OneToMany(mappedBy: 'equipment', targetEntity: EquipmentValue::class, cascade: ['ALL'], orphanRemoval: true)]
+    private Collection $values;
+
+    #[Pure] public function __construct()
+    {
+        $this->values = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -45,6 +59,18 @@ class Equipment
         return $this;
     }
 
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -57,15 +83,34 @@ class Equipment
         return $this;
     }
 
-    public function getGroupe(): ?EquipmentGroup
+    public function getValues(): Collection
     {
-        return $this->groupe;
+        return $this->values;
     }
 
-    public function setGroupe(?EquipmentGroup $groupe): self
+    public function addValue(EquipmentValue $value): self
     {
-        $this->groupe = $groupe;
+        if (!$this->values->contains($value)) {
+            $this->values[] = $value;
+            $value->setEquipment($this);
+        }
 
         return $this;
+    }
+
+    public function removeValue(EquipmentValue $value): self
+    {
+        if ($this->values->removeElement($value)) {
+            if ($value->getEquipment() === $this) {
+                $value->setEquipment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    #[Pure] public function __toString(): string
+    {
+        return (string) $this->getName();
     }
 }

@@ -21,20 +21,20 @@ class RegistrationAdminType extends AbstractType
         $passwordAttrs = ['minlength' => 8, 'maxlength' => 4096];
 
         $builder
-            ->add('firstName', TextType::class, ['label' => 'Prénom'])
-            ->add('lastName', TextType::class, ['label' => 'Nom'])
+            ->add('firstname', TextType::class, ['label' => 'Prénom'])
+            ->add('lastname', TextType::class, ['label' => 'Nom'])
             ->add('email', EmailType::class, ['label' => 'Adresse e-mail'])
             ->add('phone', TextType::class, ['label' => 'Téléphone'])
             ->add('roles', ChoiceType::class, [
                 'choices' => ['Admin' => 'ROLE_ADMIN', 'Super Admin' => 'ROLE_SUPER_ADMIN'],
                 'label' => 'Rôles',
-                'multiple' => true,
                 'required' => true,
-                'placeholder' => 'Rôles',
                 'attr' => [
-                    'class' => 'mdb-select md-form md-outline dropdown-stone',
-                    'data-label-select-all' => 'Tout selectionnée'
+                    'class' => 'mdb-select md-form md-outline dropdown-primary',
+                    'data-label-select-all' => 'Tout sélectionné',
+                    'data-placeholder' => 'Rôles'
                 ],
+                'multiple' => true
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'mapped' => false,
@@ -50,6 +50,12 @@ class RegistrationAdminType extends AbstractType
                 ],
                 'first_options' => ['label' => 'Mot de passe', 'attr' => $passwordAttrs],
                 'second_options' => ['label' => 'Confirmer le mot de passe', 'attr' => $passwordAttrs],
+            ])
+            ->add('isVerified', ChoiceType::class, [
+                'choices' => ['Oui' => true, 'Non' => false],
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
+                'label' => 'Activé',
+                'placeholder' => 'Activé'
             ]);
     }
 

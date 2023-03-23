@@ -9,9 +9,11 @@ use App\Form\RegistrationAdminType;
 use App\Model\UserSearch;
 use App\Repository\UserRepository;
 use DateTime;
+use JetBrains\PhpStorm\ArrayShape;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,29 +21,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+#[Route('/admin')]
 class AdminController extends AbstractController
 {
-    private UserRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-    private UserPasswordHasherInterface $passwordHasher;
-
     public function __construct(
-        UserRepository $repository,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher,
-        UserPasswordHasherInterface $passwordHasher
+        private UserRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher,
+        private UserPasswordHasherInterface $passwordHasher
     )
     {
-        $this->repository = $repository;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
-        $this->passwordHasher = $passwordHasher;
     }
 
-    #[Route(path: '/admin/admins', name: 'app_admin_admin_index')]
-    public function index(Request $request)
+    #[Route(path: '/admins', name: 'app_admin_admin_index')]
+    public function index(Request $request): Response
     {
         $search = new UserSearch();
 
@@ -59,8 +52,8 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/admins/create', name: 'app_admin_admin_create')]
-    public function create(Request $request)
+    #[Route(path: '/admins/create', name: 'app_admin_admin_create')]
+    public function create(Request $request): RedirectResponse|Response
     {
         $admin = new User();
 
@@ -97,7 +90,7 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/admins/{id}/edit', name: 'app_admin_admin_edit', requirements: ['id' => '\d+'])]
+    #[Route(path: '/admins/{id}/edit', name: 'app_admin_admin_edit', requirements: ['id' => '\d+'])]
     public function edit(Request $request, User $admin): Response
     {
         $form = $this->createForm(RegistrationAdminType::class, $admin);
@@ -134,8 +127,8 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/admins/{id}/delete', name: 'app_admin_admin_delete', requirements: ['id' => '\d+'],  options: ['expose' => true])]
-    public function delete(Request $request, User $admin)
+    #[Route(path: '/admins/{id}/delete', name: 'app_admin_admin_delete', requirements: ['id' => '\d+'],  options: ['expose' => true])]
+    public function delete(Request $request, User $admin): RedirectResponse|JsonResponse
     {
        $form = $this->deleteForm($admin);
 
@@ -147,7 +140,7 @@ class AdminController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($admin);
+                $this->repository->remove($admin, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -158,14 +151,12 @@ class AdminController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cet compte ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $admin,
             'message' => $message,
@@ -178,8 +169,8 @@ class AdminController extends AbstractController
 
     }
 
-    #[Route(path: '/admin/admins/bulk/delete', name: 'app_admin_admin_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/admins/bulk/delete', name: 'app_admin_admin_bulk_delete', options: ['expose' => true])]
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
@@ -212,17 +203,16 @@ class AdminController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' comptes ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cet compte ?';
+        }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
@@ -234,21 +224,21 @@ class AdminController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(User $user)
+    private function deleteForm(User $user): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_admin_delete', ['id' => $user->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_admin_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

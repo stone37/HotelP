@@ -7,48 +7,41 @@ use App\Event\AdminCRUDEvent;
 use App\Form\GalleryType;
 use App\Repository\GalleryRepository;
 use App\Service\GalleryService;
+use JetBrains\PhpStorm\ArrayShape;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin')]
 class GalleryController extends AbstractController
 {
-    private GalleryRepository $repository;
-    private PaginatorInterface $paginator;
-    private EventDispatcherInterface $dispatcher;
-    private GalleryService $service;
-
     public function __construct(
-        GalleryRepository $repository,
-        PaginatorInterface $paginator,
-        EventDispatcherInterface $dispatcher,
-        GalleryService $service
+        private GalleryRepository $repository,
+        private PaginatorInterface $paginator,
+        private EventDispatcherInterface $dispatcher,
+        private GalleryService $service
     )
     {
-        $this->repository = $repository;
-        $this->paginator = $paginator;
-        $this->dispatcher = $dispatcher;
-        $this->service = $service;
     }
 
-    #[Route(path: '/admin/gallery', name: 'app_admin_gallery_index', options: ['expose' => true])]
-    public function index(Request $request)
+    #[Route(path: '/galleries', name: 'app_admin_gallery_index', options: ['expose' => true])]
+    public function index(Request $request): Response
     {
         $qb = $this->repository->findBy([], ['position' => 'asc']);
 
         $galleries = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
 
-        return $this->render('admin/gallery/index.html.twig', [
-            'galleries' => $galleries,
-        ]);
+        return $this->render('admin/gallery/index.html.twig', ['galleries' => $galleries]);
     }
 
-    #[Route(path: '/admin/gallery/add', name: 'app_admin_gallery_add')]
-    public function add(Request $request)
+    #[Route(path: '/galleries/add', name: 'app_admin_gallery_add')]
+    public function add(Request $request): RedirectResponse|Response
     {
         $this->service->initialize($request);
 
@@ -71,12 +64,12 @@ class GalleryController extends AbstractController
         }
 
         return $this->render('admin/gallery/add.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 
-    #[Route(path: '/admin/gallery/{id}/move', name: 'app_admin_gallery_move', requirements: ['id' => '\d+'])]
-    public function move(Request $request, Gallery $gallery)
+    #[Route(path: '/galleries/{id}/move', name: 'app_admin_gallery_move', requirements: ['id' => '\d+'])]
+    public function move(Request $request, Gallery $gallery): RedirectResponse
     {
         if ($request->query->has('pos')) {
             $pos = ($gallery->getPosition() + (int)$request->query->get('pos'));
@@ -92,8 +85,8 @@ class GalleryController extends AbstractController
         return $this->redirectToRoute('app_admin_gallery_index');
     }
 
-    #[Route(path: '/admin/gallery/{id}/delete', name: 'app_admin_gallery_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Gallery $gallery)
+    #[Route(path: '/galleries/{id}/delete', name: 'app_admin_gallery_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function delete(Request $request, Gallery $gallery): RedirectResponse|JsonResponse
     {
         $form = $this->deleteForm($gallery);
 
@@ -105,7 +98,7 @@ class GalleryController extends AbstractController
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
 
-                $this->repository->remove($gallery);
+                $this->repository->remove($gallery, true);
 
                 $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
 
@@ -116,14 +109,12 @@ class GalleryController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
         $message = 'Être vous sur de vouloir supprimer cette image ?';
 
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/Modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $gallery,
             'message' => $message,
@@ -135,13 +126,14 @@ class GalleryController extends AbstractController
         return new JsonResponse($response);
     }
 
-    #[Route(path: '/admin/gallery/bulk/delete', name: 'app_admin_gallery_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/galleries/bulk/delete', name: 'app_admin_gallery_bulk_delete', options: ['expose' => true])]
+    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
-        if ($request->query->has('data'))
+        if ($request->query->has('data')) {
             $request->getSession()->set('data', $ids);
+        }
 
         $form = $this->deleteMultiForm();
 
@@ -169,17 +161,16 @@ class GalleryController extends AbstractController
 
             $url = $request->request->get('referer');
 
-            $response = new RedirectResponse($url);
-
-            return $response;
+            return new RedirectResponse($url);
         }
 
-        if (count($ids) > 1)
+        if (count($ids) > 1) {
             $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' images ?';
-        else
+        } else {
             $message = 'Être vous sur de vouloir supprimer cette image ?';
+        }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
@@ -191,21 +182,21 @@ class GalleryController extends AbstractController
         return new JsonResponse($response);
     }
 
-    private function deleteForm(Gallery $gallery)
+    private function deleteForm(Gallery $gallery): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_gallery_delete', ['id' => $gallery->getId()]))
             ->getForm();
     }
 
-    private function deleteMultiForm()
+    private function deleteMultiForm(): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_admin_gallery_bulk_delete'))
             ->getForm();
     }
 
-    private function configuration()
+    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
     {
         return [
             'modal' => [

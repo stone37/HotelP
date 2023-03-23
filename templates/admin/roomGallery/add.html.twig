@@ -3,9 +3,9 @@
 {% block title %} Ajouter des images à la galerie | Galerie ({{ room.name }}) | {{ parent() }}{% endblock %}
 
 {% block app_body %}
-    {% include 'admin/roomGallery/add/_header.html.twig' %}
+    {{ include('admin/roomGallery/add/_header.html.twig') }}
 
-    {% include 'admin/roomGallery/add/_content.html.twig' %}
+    {{ include('admin/roomGallery/add/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}
@@ -15,7 +15,6 @@
 {% block javascripts %}
     {{ parent() }}
 
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/jquery.dm-uploader.min.js'} %}
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/admin/create.js'} %}
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/admin/gallery.js'} %}
+    {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/jquery.dm-uploader.min.js'}) }}
+    {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/admin/gallery.js'}) }}
 {% endblock %}

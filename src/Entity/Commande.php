@@ -13,28 +13,28 @@ class Commande
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private bool $validated = false;
+    #[ORM\Column(nullable: true)]
+    private ?bool $validated = false;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $reference = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $number = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $address = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $address = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $amount = 0;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $amountTotal = 0;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $taxeAmount = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $taxeAmount = null; 
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $discountAmount = null;
 
     #[ORM\OneToOne(inversedBy: 'commande', targetEntity: Payment::class, cascade: ['persist', 'remove'])]
@@ -66,14 +66,14 @@ class Commande
         return $this;
     }
 
-    public function getReference(): ?string
+    public function getNumber(): ?string
     {
-        return $this->reference;
+        return $this->number;
     }
 
-    public function setReference(?string $reference): self
+    public function setNumber(?string $number): self
     {
-        $this->reference = $reference;
+        $this->number = $number;
 
         return $this;
     }

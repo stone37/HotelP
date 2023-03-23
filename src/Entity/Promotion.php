@@ -9,14 +9,15 @@ use App\Entity\Traits\TimestampableTrait;
 use App\Repository\PromotionRepository;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Gedmo\Mapping\Annotation as Gedmo;
 
-#[ORM\Entity(repositoryClass: PromotionRepository::class)]
 #[Vich\Uploadable]
+#[ORM\Entity(repositoryClass: PromotionRepository::class)]
 class Promotion
 {
     use TimestampableTrait;
@@ -25,31 +26,30 @@ class Promotion
     use PositionTrait;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\GeneratedValue] 
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Assert\NotBlank]
-    private ?string $name = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 100)]
     #[Gedmo\Slug(fields: ['name'], unique: true)]
+    #[ORM\Column(length: 255)]
     private ?string $slug;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = '';
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    #[Assert\NotBlank]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $start = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    #[Assert\NotBlank]
+    #[Assert\GreaterThan(propertyPath: 'start')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $end = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $discount = null;
+    private ?int $discount = null;
 
     #[Assert\File(maxSize: '8M')]
     #[Vich\UploadableField(mapping: 'promotion', fileNameProperty: 'fileName', size: 'fileSize', mimeType: 'fileMimeType', originalName: 'fileOriginalName')]

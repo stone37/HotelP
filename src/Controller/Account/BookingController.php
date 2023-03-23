@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+#[Route('/u')]
 class BookingController extends AbstractController
 {
     use ControllerTrait;
@@ -38,8 +38,8 @@ class BookingController extends AbstractController
         $this->manager = $bookingManager;
     }
 
-    #[Route(path: '/u/bookings', name: 'app_dashboard_booking_index', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
+    #[Route(path: '/bookings', name: 'app_user_booking_index')]
     public function index(Request $request)
     {
         $search = new BookingSearch();
@@ -57,8 +57,8 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/u/bookings/confirmed', name: 'app_dashboard_booking_confirmed_index', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
+    #[Route(path: '/u/bookings/confirmed', name: 'app_user_booking_confirmed_index')]
     public function confirm(Request $request)
     {
         $search = new BookingSearch();
@@ -76,8 +76,8 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/u/bookings/cancelled', name: 'app_dashboard_booking_cancel_index', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
+    #[Route(path: '/bookings/cancelled', name: 'app_user_booking_cancel_index', methods: ['GET', 'POST'])]
     public function cancel(Request $request)
     {
         $search = new BookingSearch();

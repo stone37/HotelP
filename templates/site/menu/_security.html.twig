@@ -1,0 +1,42 @@
+{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+    <li class="nav-item dropdown avatar d-none d-lg-block">
+        <a class="nav-link dropdown-toggle py-0" id="navbarDropdownUserMenuLink" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false">
+            <span class="user-prefix d-inline-block rounded-circle">{{ userPrefixName(app.user.firstname) }}</span>
+        </a>
+
+        <div class="dropdown-menu dropdown-primary dropdown-menu-right" aria-labelledby="navbarDropdownUserMenuLink">
+            {% if is_granted("ROLE_ADMIN") %}
+                <a class="dropdown-item" href="{{ path('app_admin_index') }}">
+                    <i class="fas fa-user-secret mr-2"></i>
+                    Administration
+                </a>
+            {% else %}
+                <a class="dropdown-item" href="{{ path('app_user_index') }}">
+                    <i class="fas fa-th-large mr-2"></i>
+                    Tableau de bord
+                </a>
+                <a class="dropdown-item" href="{{ path('app_user_booking_index') }}">
+                    <i class="fas fa-calendar mr-2"></i>
+                    Mes reservations
+                </a>
+                <a class="dropdown-item" href="{{ path('app_user_profil_edit') }}">
+                    <i class="fas fa-user-circle mr-2"></i>
+                    Mon profil
+                </a>
+            {% endif %}
+            <a class="dropdown-item" href="{{ path('app_logout') }}">
+                <i class="fas fa-power-off mr-2"></i>
+                Déconnexion
+            </a>
+        </div>
+    </li>
+{% else %}
+    <li class="nav-item mr-2 d-none d-lg-block">
+        <a href="{{ path('app_register') }}" type="button" class="btn btn-primary btn-sm z-depth-0">S'inscrire</a>
+    </li>
+    <li class="nav-item d-none d-lg-block">
+        <a href="{{ path('app_login') }}" type="button" class="btn btn-sm btn-outline-primary z-depth-0">Se connecter</a>
+    </li>
+{% endif %}
+

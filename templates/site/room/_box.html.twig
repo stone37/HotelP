@@ -1,0 +1,86 @@
+{% set session = app.session.has('_app_booking') %}
+{% set data = booker.bookingData %}
+{% set night = app_booking_days(data.checkin, data.checkout) %}
+{% set room_nbr = data.roomNumber %}
+{% set priceReduced = get_promotion(room) %}
+
+<div id="room_{{ room.id }}" class="card card-cascade narrower mb-4">
+    <div class="view view-cascade overlay">
+        {% if room.galleries|length %}
+            <img class="card-img-top" src="{{ asset(room.galleries.first.webPath) }}" alt="{{ room.galleries.first.name }}">
+        {% else %}
+            <img class="card-img-top" src="{{ asset('images/no_photo.png') }}" alt="Hostel room image">
+        {% endif %}
+        <a><div class="mask rgba-white-slight"></div></a>
+    </div>
+    <div class="card-body card-body-cascade text-left p-3">
+        {% if priceReduced %}
+            <div class="remise pink darken-1 z-depth-3">Remise de {{ priceReduced }}%</div>
+        {% endif %}
+        <h5 class="text-dark h5-responsive font-weight-bold mt-0">{{ room.name }}</h5>
+        <ul class="list-unstyled dark-grey-text">
+            {% if room.area %}
+                <li><i class="fas fa-border-style mr-1 my-2"></i> {{ room.area }} m²</li>
+            {% endif %}
+            <li><i class="fas fa-user-friends mr-1 my-2"></i> {{ room.occupant }} Personnes</li>
+            {% if room.couchage %}
+                <li><i class="fas fa-bed mr-1 my-2"></i> {{ room.couchage }}</li>
+            {% endif %}
+            <li><i class="fas fa-wifi mr-1 my-2"></i> Accès Wi-Fi gratuit</li>
+            {% if room.smoker %}
+                {% if room.smoker == 'Non-fumeurs' %}
+                    <li><i class="fas fa-smoking-ban mr-1 mt-2"></i> Non-fumeurs</li>
+                {% elseif room.smoker == 'Fumeurs' %}
+                    <li><i class="fas fa-smoking mr-1 mt-2"></i> Fumeurs</li>
+                {% elseif room.smoker == 'Cet hébergement est fumeurs et non-fumeurs' %}
+                    <li>
+                        <i class="fas fa-smoking-ban mr-1 mt-2"></i>
+                        <i class="fas fa-smoking mr-1"></i> Fumeurs et non-fumeurs
+                    </li>
+                {% endif %}
+            {% endif %}
+        </ul>
+        <div class="detail mb-3">
+            <a href="{{ path('app_room_show', {'slug': room.slug}) }}" class="card-link">
+                Plus de detail <i class="fas fa-angle-double-right ml-1"></i>
+            </a>
+        </div>
+        <div class="d-flex justify-content-between">
+            <div class="price">
+                <div class="text-danger number mb-1">
+                    {% set price = app_calculate_price(room) * night * room_nbr %}
+
+                    {% if priceReduced %}
+                        <div class="grey-text">
+                            <small>
+                                <s>{{ price|format_currency('XOF') }}</s>
+                            </small>
+                        </div>
+                        <div>
+                            {% set reduce = ((price * priceReduced) / 100) %}
+                            <strong>{{ (price - reduce)|format_currency('XOF') }}</strong>
+                        </div>
+                    {% else %}
+                      <strong>{{ price|format_currency('XOF') }}</strong>
+                    {% endif %}
+                </div>
+                {% if session %}
+                    <div class="dark-grey-text info font-weight-stone-500 w-50">
+                        {{ (room.totalPrice * room_nbr)|format_currency('XOF') }}
+                        par nuit pour {{ room_nbr }} chambres.
+                        Taxes et frais compris
+                    </div>
+                {% else %}
+                    <div class="dark-grey-text info font-weight-stone-500">Taxes et frais compris</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="booking-btn mt-2 mb-0">
+            <a href="" class="btn btn-primary btn-md btn-block">
+                <i class="fas fa-calendar-day mr-1"></i> Réserver {% if session %} {{ room_nbr }} {{ room_nbr > 1 ? 'chambres' : 'chambre' }}{% endif %}
+            </a>
+        </div>
+    </div>
+</div>
+
+

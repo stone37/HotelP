@@ -1,50 +1,29 @@
 $(document).ready(function() {
-    //$('.checkin-datepicker').pickadate();
-    //$('.checkout-datepicker').pickadate();
-
-    /*console.log(window.hostel.BOOKING_CHECKIN);
-    console.log(window.hostel.BOOKING_CHECKOUT);*/
 
     let $checkin_date = $('.checkin-datepicker'),
         $checkout_date = $('.checkout-datepicker'),
-        $booking_checkin_btn = $('#booking-checkin-btn'),
-        $booking_checkout_btn = $('#booking-checkout-btn'),
-        $booking_booker_btn = $('#booking-booker-btn'),
-        $booking_sm_booker_btn = $('#booking-sm-booker-btn'),
+        $booking_checkin_btn = $('#booking-checkin-btn .checkin'),
+        $booking_checkout_btn = $('#booking-checkout-btn .checkout'),
+        $booking_booker_btn = $('#booking-booker-btn .user'),
         $booking_booker_modal = $('#booking-booker-modal'),
-        $booking_sm_checkin_btn = $('#booking-sm-checkin-btn'),
-        $booking_sm_checkout_btn = $('#booking-sm-checkout-btn'),
         $booking_checkin_date = $booking_checkin_btn.find('.date-content'),
         $booking_checkout_date = $booking_checkout_btn.find('.date-content'),
-        $booking_sm_checkin_date = $booking_sm_checkin_btn.find('.date-content'),
-        $booking_sm_checkout_date = $booking_sm_checkout_btn.find('.date-content'),
         $booking_adult_field = $('input.booking_data_adult'),
         $booking_children_field = $('input.booking_data_children'),
         $booking_room_field = $('input.booking_data_room'),
-        /*$maximum_adults = maximumAdults,
-        $maximum_children = maximumChildren,
-        $adults = parseInt($booking_adult_field.val()),
-        $children = parseInt($booking_children_field.val()),
-        $rooms = $booking_room_field.val(),*/
-        $maximum_adults = window.hostel.MAX_ADULT,
-        $maximum_children = window.hostel.MAX_CHILDREN,
-        $adults = window.hostel.DEFAULT_ADULT,
-        $children = window.hostel.DEFAULT_CHILDREN,
-        $rooms = window.hostel.DEFAULT_ROOM,
         $booking_booker_adult_field = $('#booking-booker-modal .modal-body .adults a'),
         $booking_booker_children_field = $('#booking-booker-modal .modal-body .children a'),
         $booking_booker_room_field = $('#booking-booker-modal .modal-body .room a'),
-        $booking_booker_button = $('#booking-booker-modal button');
-        /*$today = new Date(),
-        $tomorrow = new Date();
-        $tomorrow.setDate($today.getDate() + 1);*/
+        $booking_booker_button = $('#booking-booker-modal button'),
+        $adults = window.hostel.DEFAULT_ADULT,
+        $children = window.hostel.DEFAULT_CHILDREN,
+        $rooms = window.hostel.DEFAULT_ROOM;
 
-
-    let $checkin_datepicker = $checkin_date.pickadate({
+    const checkin_datepicker = $checkin_date.pickadate({
             min: window.hostel.BOOKING_CHECKIN,
             selectMonths: false,
             selectYears: false,
-            weekdaysFull: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
+            weekdaysFull: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
             monthsFull: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
             monthsShort: ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'],
             weekdaysShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
@@ -53,27 +32,25 @@ $(document).ready(function() {
             today: '',
             clear: '',
             close: 'Fermer',
-            onClose: function() {
+            onClose: function () {
                 $booking_checkin_btn.removeClass('active');
-                $booking_sm_checkin_btn.removeClass('active');
             },
-            onSet: function(context) {
+            onSet: function () {
                 if ($checkin_picker.get('select')) {
-                    let selected = $checkin_picker.get('select');
+                    const selected = $checkin_picker.get('select');
 
-                    $checkout_picker.set('min', new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate()+1));
+                    $checkout_picker.set('min', new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate() + 1));
                     $booking_checkin_date.text($checkin_picker.get('value'));
-                    $booking_sm_checkin_date.text($checkin_picker.get('value'));
                 }
             }
         }),
-        $checkin_picker = $checkin_datepicker.pickadate('picker');
+        $checkin_picker = checkin_datepicker.pickadate('picker');
 
-    let $checkout_datepicker = $checkout_date.pickadate({
+    const checkout_datepicker = $checkout_date.pickadate({
             min: window.hostel.BOOKING_CHECKOUT,
             selectMonths: false,
             selectYears: false,
-            weekdaysFull: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
+            weekdaysFull: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
             monthsFull: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
             monthsShort: ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'],
             weekdaysShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
@@ -84,28 +61,24 @@ $(document).ready(function() {
             close: 'Fermer',
             onClose: function() {
                 $booking_checkout_btn.removeClass('active');
-                $booking_sm_checkout_btn.removeClass('active');
             },
-            onSet: function(context) {
+            onSet: function() {
                 if (!$checkout_picker.get('select') && $checkin_picker.get('select')) {
-                    let selected = $checkin_picker.get('select'),
-                        $d = new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate()+1);
+                    const selected = $checkin_picker.get('select'),
+                          d = new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate() + 1);
 
-                    $booking_checkout_date.text($d.getDate()+' '+getMonthsShort($d.getMonth())+' '+$d.getFullYear());
-                    $booking_sm_checkout_date.text($d.getDate()+' '+getMonthsShort($d.getMonth())+' '+$d.getFullYear());
+                    $booking_checkout_date.text(d.getDate() + ' ' + getMonthsShort(d.getMonth()) + ' ' + d.getFullYear());
                 }
 
                 if ($checkout_picker.get('select')) {
-                    let selected = $checkout_picker.get('select'),
-                        $d = new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate());
+                    const selected = $checkout_picker.get('select'),
+                        d = new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate());
 
-                    $booking_checkout_date.text($d.getDate()+' '+getMonthsShort($d.getMonth())+' '+$d.getFullYear());
-                    $booking_sm_checkout_date.text($d.getDate()+' '+getMonthsShort($d.getMonth())+' '+$d.getFullYear());
+                    $booking_checkout_date.text(d.getDate() + ' ' + getMonthsShort(d.getMonth()) + ' ' + d.getFullYear());
                 }
             }
         }),
-        $checkout_picker = $checkout_datepicker.pickadate('picker');
-        //$checkout_picker.set('min', $tomorrow);
+        $checkout_picker = checkout_datepicker.pickadate('picker');
 
     $booking_checkin_btn.click(function (e) {
         e.preventDefault();
@@ -137,73 +110,52 @@ $(document).ready(function() {
 
     $booking_booker_modal.on('hide.bs.modal', function () {
         $booking_booker_btn.removeClass('active');
-        $booking_sm_booker_btn.removeClass('active');
 
         $('body').css('overflow', 'auto');
     });
 
-    if ($adults === $maximum_adults) {
-        $('#booking-booker-modal .modal-body .adults a.addition').addClass('disabled')
-    }
-
     $booking_booker_adult_field.click(function (e) {
         e.preventDefault();
 
-        let $this = $(this);
+        const $this = $(this);
 
         if ($this.hasClass('soustraction')) {
-            let $sibling = $($this.siblings('.addition')[0]),
+            const $sibling = $($this.siblings('.addition')[0]),
                 $element = $this.parents('.data').find('span');
 
             $adults--;
 
-            if ($adults === 1) $this.addClass('disabled');
+            if ($adults === 1) {
+                $this.addClass('disabled');
+            }
 
             if ($sibling.hasClass('disabled')) {
                 $sibling.removeClass('disabled');
             }
 
-            //let $element = $this.parents('.data').find('span');
             $($element[0]).text($adults)
-
-            //$booking_adult_field.val($adults);
-
-            //alert($booking_adult_field.val())
         } else {
-            let $sibling = $($this.siblings('.soustraction')[0]),
+            const $sibling = $($this.siblings('.soustraction')[0]),
                 $element = $this.parents('.data').find('span');
 
             $adults++;
 
-            if ($adults === $maximum_adults) $this.addClass('disabled');
+            if ($adults === 4) {
+                $this.addClass('disabled');
+            }
 
             if ($sibling.hasClass('disabled')) {
                 $sibling.removeClass('disabled');
             }
 
-            //let $element = $this.parents('.data').find('span');
             $($element[0]).text($adults)
-
-            //$booking_adult_field.val($adults);
-
-            //alert($booking_adult_field.val())
         }
     });
-
-    if ($children === $maximum_children) {
-        $('#booking-booker-modal .modal-body .children a.addition').addClass('disabled')
-    }
-
-    ///console.log(parseInt($booking_children_field));
-
-    /*if ($children === 0) {
-        $('#booking-booker-modal .modal-body .children a.addition').addClass('disabled')
-    }*/
 
     $booking_booker_children_field.click(function (e) {
         e.preventDefault();
 
-        let $this = $(this);
+        const $this = $(this);
 
         if ($this.hasClass('soustraction')) {
             let $sibling =  $($this.siblings('.addition')[0]),
@@ -211,13 +163,14 @@ $(document).ready(function() {
 
             $children--;
 
-            if ($children === 0) $this.addClass('disabled');
+            if ($children === 0) {
+                $this.addClass('disabled');
+            }
 
             if ($sibling.hasClass('disabled')) {
                 $sibling.removeClass('disabled');
             }
 
-            //let $element = $this.parents('.data').find('span');
             $($element[0]).text($children)
         } else {
             let $sibling = $($this.siblings('.soustraction')[0]),
@@ -225,13 +178,14 @@ $(document).ready(function() {
 
             $children++;
 
-            if ($children === $maximum_children) $this.addClass('disabled');
+            if ($children === 4) {
+                $this.addClass('disabled');
+            }
 
             if ($sibling.hasClass('disabled')) {
                 $sibling.removeClass('disabled');
             }
 
-            //let $element = $this.parents('.data').find('span');
             $($element[0]).text($children)
         }
     });
@@ -239,7 +193,7 @@ $(document).ready(function() {
     $booking_booker_room_field.click(function (e) {
         e.preventDefault();
 
-        let $this = $(this);
+        const $this = $(this);
 
         if ($this.hasClass('soustraction')) {
             let $sibling = $($this.siblings('.addition')[0]),
@@ -247,13 +201,14 @@ $(document).ready(function() {
 
             $rooms--;
 
-            if ($rooms === 1) $this.addClass('disabled');
+            if ($rooms === 1) {
+                $this.addClass('disabled');
+            }
 
             if ($sibling.hasClass('disabled')) {
                 $sibling.removeClass('disabled');
             }
 
-            //let $element = $this.parents('.data').find('span');
             $($element[0]).text($rooms)
         } else {
             let $sibling = $($this.siblings('.soustraction')[0]),
@@ -261,13 +216,14 @@ $(document).ready(function() {
 
             $rooms++;
 
-            if ($rooms === 9) $this.addClass('disabled');
+            if ($rooms === 10) {
+                $this.addClass('disabled');
+            }
 
             if ($sibling.hasClass('disabled')) {
                 $sibling.removeClass('disabled');
             }
 
-            //let $element = $this.parents('.data').find('span');
             $($element[0]).text($rooms)
         }
     });
@@ -275,12 +231,9 @@ $(document).ready(function() {
     $booking_booker_button.click(function (e) {
         e.preventDefault();
 
-        let $room = $($booking_booker_btn.find('.room')),
+        const $room = $($booking_booker_btn.find('.room')),
             $customer = $($booking_booker_btn.find('.customer')),
-            $child = $($booking_booker_btn.find('.children')),
-            $roomSm = $($booking_sm_booker_btn.find('.room')),
-            $customerSm = $($booking_sm_booker_btn.find('.customer')),
-            $childSm = $($booking_sm_booker_btn.find('.children'));
+            $child = $($booking_booker_btn.find('.children'));
 
         $booking_adult_field.val($adults);
         $booking_children_field.val($children);
@@ -289,58 +242,10 @@ $(document).ready(function() {
         $room.text($rooms + ' chambre, ');
         $customer.text($adults + ' adultes, ');
         $child.text($children + ' enfants');
-        $roomSm.text($rooms + ' chambre, ');
-        $customerSm.text($adults + ' adultes, ');
-        $childSm.text($children + ' enfants');
 
         $('#booking-booker-modal').modal('hide')
     });
 
-    // Booking mobile
-    let $app_room_booking_sm_modal = $('#app-room-booking-sm-modal'),
-        $booking_room_modal_sm_btn = $('#booking_room_modal_sm_btn');
-
-    $app_room_booking_sm_modal.on('show.bs.modal', function () {
-        $('body').css('overflow', 'hidden');
-    });
-
-    $app_room_booking_sm_modal.on('hide.bs.modal', function () {
-        $booking_room_modal_sm_btn.show();
-
-        $('body').css('overflow', 'auto');
-    });
-
-    $booking_room_modal_sm_btn.click(function(e){
-        e.preventDefault();
-
-        $(this).hide();
-
-        $app_room_booking_sm_modal.modal()
-    });
-
-    $booking_sm_checkin_btn.click(function (e) {
-        e.preventDefault();
-
-        $(this).addClass('active');
-
-        $checkin_date.trigger('click');
-    });
-
-    $booking_sm_checkout_btn.click(function (e) {
-        e.preventDefault();
-
-        $(this).addClass('active');
-
-        $checkout_date.trigger('click');
-    });
-
-    $booking_sm_booker_btn.click(function(e){
-        e.preventDefault();
-
-        $(this).addClass('active');
-
-        $booking_booker_modal.modal()
-    });
 
 
 
@@ -355,7 +260,7 @@ $(document).ready(function() {
     for (let index = 0; index < window.hostel.DEFAULT_ROOM; index++) {
 
         if (!$wrapper.length) {
-            return;
+            return; 
         }
 
         let newForm = prototype.replace(/__name__/g, index);
@@ -968,6 +873,8 @@ $(document).ready(function() {
 
 
 });
+
+
 
 function getScrollbarWidth() {
 

@@ -6,12 +6,13 @@ use App\Entity\User;
 use App\Model\UserSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
-
+ 
 /**
  * @extends ServiceEntityRepository<User>
  *
@@ -88,7 +89,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return $qb;
     }
-
+ 
     /**
      * @param UserSearch $search
      * @return QueryBuilder|null
@@ -199,7 +200,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('username', mb_strtolower($username))
             ->getQuery()
             ->getOneOrNullResult();
-    }
+    } 
 
     /**
      * Cherche un utilisateur pour l'oauth.
@@ -260,10 +261,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     /**
      * Récupère les derniers comptes utilisateurs active
-     *
-     * @return int|mixed|string
      */
-    public function getLastClients()
+    public function getLastClients(): array
     {
         $qb = $this->createQueryBuilder('u');
 
@@ -282,11 +281,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * Récupère le nombres total d'utilisateurs active
-     *
-     * @return QueryBuilder|int|mixed|string
+     * @throws NonUniqueResultException
+     * @throws NoResultException
      */
-    public function getUserNumber()
+    public function getUserNumber(): int
     {
         $qb = $this->createQueryBuilder('u')
             ->select('count(u.id)');
@@ -299,6 +297,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('roleA', '%'."ROLE_ADMIN".'%')
             ->setParameter('roleSA', '%'."ROLE_SUPER_ADMIN".'%');
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 }

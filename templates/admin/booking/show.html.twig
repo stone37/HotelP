@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block app_body %}
-    {% include 'admin/booking/show/_header.html.twig' %}
+    {{ include('admin/booking/show/_header.html.twig') }}
 
-    {% include 'admin/booking/show/_content.html.twig' %}
+    {{ include('admin/booking/show/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}

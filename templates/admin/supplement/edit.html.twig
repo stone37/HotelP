@@ -1,11 +1,11 @@
 {% extends 'admin/layout.html.twig' %}
 
-{% block title %}Edition d'un supplément | Suppléments | {{ parent() }}{% endblock %}
+{% block title %}Édition d'un supplément | Suppléments | {{ parent() }}{% endblock %}
 
 {% block app_body %}
-    {% include 'admin/supplement/edit/_header.html.twig' %}
+    {{ include('admin/supplement/edit/_header.html.twig') }}
 
-    {% include 'admin/supplement/edit/_content.html.twig' %}
+    {{ include('admin/supplement/edit/_content.html.twig') }}
 {% endblock %}
 
 {% block stylesheets %}
@@ -14,6 +14,4 @@
 
 {% block javascripts %}
     {{ parent() }}
-
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/admin/create.js'} %}
 {% endblock %}

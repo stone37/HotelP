@@ -8,12 +8,13 @@ use App\Repository\DiscountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DiscountRepository::class)]
 class Discount
 {
-    const FIXED_PRICE = 'fixed';
-    const PERCENT_REDUCTION = 'percent';
+    public const FIXED_PRICE = 'fixed';
+    public const PERCENT_REDUCTION = 'percent';
 
     use EnabledTrait;
     use TimestampableTrait;
@@ -21,25 +22,27 @@ class Discount
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Assert\NotBlank]
+    #[ORM\Column(nullable: true)]
     private ?int $discount = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $code = '';
+    #[Assert\NotBlank]
+    #[ORM\Column(nullable: true)]
+    private ?string $code = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?string $type = Discount::PERCENT_REDUCTION;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $utilisation = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $utiliser = null;
 
     #[ORM\OneToMany(mappedBy: 'discount', targetEntity: Commande::class)]
-    private $commandes = null;
+    private Collection $commandes;
 
     public function __construct()
     {

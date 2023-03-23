@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\EmailVerificationRepository;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EmailVerificationRepository::class)]
@@ -12,17 +13,17 @@ class EmailVerification
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $email = '';
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?DateTimeInterface $createdAt = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $token = '';
+    #[ORM\Column(nullable: true)]
+    private ?string $token = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
