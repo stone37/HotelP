@@ -13,6 +13,7 @@ $(document).ready(function() {
     password($('.input-prefix.fa-eye'));
     newsletter($('#newsletter-form'));
     cookie($('#cookieConsent'));
+    mobileNavbar();
 });
 
 const cookie = function (element) {

@@ -13,8 +13,8 @@
 {% set profil_delete = isActive('app_user_delete') %}
 
 {% block app_intro %}
-    <nav class="navbar navbar-expand navbar-light mt-lg-70 mt-50 dashboard-navbar d-none d-lg-block py-0">
-        <div class="collapse navbar-collapse container">
+    <nav class="navbar navbar-expand navbar-light dashboard-navbar d-none d-lg-block py-0" style="margin-top: 5rem">
+        <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item {% if dashboard %}active{% endif %}">
                     <a href="{{ path('app_user_index') }}" class="nav-link" aria-haspopup="true" aria-expanded="false">

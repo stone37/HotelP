@@ -52,6 +52,7 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $user->setPassword(
                 $form->has('plainPassword') ? $this->passwordHasher->hashPassword(
                     $user,
@@ -62,7 +63,7 @@ class RegistrationController extends AbstractController
             $user->setCreatedAt(new DateTime());
             $user->setConfirmationToken($isOauthUser ? null : $this->tokenGenerator->generate(60));
 
-            $this->repository->add($user);
+            $this->repository->add($user, true);
 
             $this->dispatcher->dispatch(new UserCreatedEvent($user, $isOauthUser));
 

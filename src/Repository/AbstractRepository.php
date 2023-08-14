@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,13 +17,11 @@ abstract class AbstractRepository extends ServiceEntityRepository
 
     /**
      * Trouve une entité par sa clef primaire et renvoie une exception en cas d'absence.
-     *
-     * @param string|int $id
-     * @throws EntityNotFoundException
      */
-    public function findOrFail($id): object
+    public function findOrFail(int $id): object
     {
         $entity = $this->find($id, null, null);
+
         if (null === $entity) {
             throw EntityNotFoundException::fromClassNameAndIdentifier($this->_entityName, [(string) $id]);
         }
@@ -36,7 +35,7 @@ abstract class AbstractRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function findOneByCaseInsensitive(array $conditions): ?object
     {

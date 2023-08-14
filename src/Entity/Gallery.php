@@ -36,7 +36,7 @@ class Gallery
     )]
     private ?File $file = null;
 
-    private ?string $tempFilename;
+    private ?string $tempFilename = null;
 
     public function getId(): ?int
     {

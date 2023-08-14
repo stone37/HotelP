@@ -1,5 +1,5 @@
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-    <li class="nav-item dropdown avatar d-none d-lg-block">
+    <li class="nav-item dropdown avatar d-none d-lg-block ml-lg-4">
         <a class="nav-link dropdown-toggle py-0" id="navbarDropdownUserMenuLink" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
             <span class="user-prefix d-inline-block rounded-circle">{{ userPrefixName(app.user.firstname) }}</span>
@@ -8,26 +8,21 @@
         <div class="dropdown-menu dropdown-primary dropdown-menu-right" aria-labelledby="navbarDropdownUserMenuLink">
             {% if is_granted("ROLE_ADMIN") %}
                 <a class="dropdown-item" href="{{ path('app_admin_index') }}">
-                    <i class="fas fa-user-secret mr-2"></i>
-                    Administration
+                    <i class="fas fa-user-secret mr-2"></i> Administration
                 </a>
             {% else %}
                 <a class="dropdown-item" href="{{ path('app_user_index') }}">
-                    <i class="fas fa-th-large mr-2"></i>
-                    Tableau de bord
+                    <i class="fas fa-th-large mr-2"></i> Tableau de bord
                 </a>
                 <a class="dropdown-item" href="{{ path('app_user_booking_index') }}">
-                    <i class="fas fa-calendar mr-2"></i>
-                    Mes reservations
+                    <i class="fas fa-calendar mr-2"></i> Mes reservations
                 </a>
                 <a class="dropdown-item" href="{{ path('app_user_profil_edit') }}">
-                    <i class="fas fa-user-circle mr-2"></i>
-                    Mon profil
+                    <i class="fas fa-user-circle mr-2"></i> Mon profil
                 </a>
             {% endif %}
             <a class="dropdown-item" href="{{ path('app_logout') }}">
-                <i class="fas fa-power-off mr-2"></i>
-                Déconnexion
+                <i class="fas fa-power-off mr-2"></i> Déconnexion
             </a>
         </div>
     </li>

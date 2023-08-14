@@ -107,7 +107,7 @@ $(document).ready(function() {
 const ajoutPhoto = function (file) {
     let filesize = getReadableFileSizeString(file.size);
 
-    let $html = '<div class="scale-up-ver-top col-lg-2 col-md-4 col-6" id="' + file.id + '">';
+    let $html = '<div class="scale-up-ver-top col-lg-2 col-md-4 col-6 mb-3" id="' + file.id + '">';
 
     $html +='	<img src="'+file.src+'" alt="Image de l\'annonce" class="img-fluid z-depth-2">';
     $html +='	    <div class="info small font-weight-stone-500">';

@@ -48,9 +48,7 @@
 {% block javascripts %}
     {{ parent() }}
 
-    <script>
-        $("#mdb-lightbox-ui").load("/assets/mdb-addons/mdb-lightbox-ui.html");
-    </script>
+    {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/site/gallery.js'}) }}
 {% endblock %}
 
 

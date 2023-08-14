@@ -355,3 +355,19 @@ const password = function (element) {
         passwordView($(this));
     });
 }
+
+const mobileNavbar = function () {
+    const $icon_bulk = $('.skin-light .navbar .navbar-toggler .button-icon');
+
+    $('.skin-light .navbar .navbar-toggler').on('click', function () {
+
+        if ($icon_bulk.hasClass('open')) {
+            $('html, body').removeClass('stop-scroll');
+        } else {
+            $('html, body').addClass('stop-scroll');
+        }
+
+        $('.skin-light .navbar .navbar-toggler .button-icon').toggleClass('open');
+    });
+}
+

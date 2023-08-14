@@ -3,7 +3,7 @@
     "license": "proprietary",
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "require": { 
+    "require": {
         "php": ">=8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
@@ -57,6 +57,7 @@
         "symfony/webapp-meta": "^1.0",
         "symfony/yaml": "6.2.*",
         "symfonycasts/verify-email-bundle": "^1.10",
+        "twig/cssinliner-extra": "^3.7",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/intl-extra": "^3.4",
         "twig/string-extra": "^3.4",

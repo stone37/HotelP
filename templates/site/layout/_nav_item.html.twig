@@ -19,25 +19,21 @@
     <li class="nav-item mobile-user d-block d-lg-none px-md-2">
         <div class="menu mb-2">
             <div class="d-flex justify-content-between">
-                <a href="{{ path('app_user_index') }}" class="d-block text-center
-                        {% if dashboard %}active{% endif %}">
+                <a href="{{ path('app_user_index') }}" class="d-block text-center {% if dashboard %}active{% endif %}">
                     <div class="icon"><i class="fas fa-th-large"></i></div>
                     <div class="title">Tableau de bord</div>
                 </a>
-                <a href="{{ path('app_user_booking_index') }}" class="d-block text-center
-                        {% if booking_index or booking_confirm or booking_cancel %}active{% endif %}">
+                <a href="{{ path('app_user_booking_index') }}" class="d-block text-center {% if booking_index or booking_confirm or booking_cancel %}active{% endif %}">
                     <div class="icon"><i class="fas fa-calendar"></i></div>
                     <div class="title">Mes reservations</div>
                 </a>
             </div>
             <div class="d-flex justify-content-between">
-                <a href="{{ path('app_user_invoice_index') }}" class="d-block text-center
-                        {% if invoice %}active{% endif %}">
+                <a href="{{ path('app_user_invoice_index') }}" class="d-block text-center {% if invoice %}active{% endif %}">
                     <div class="icon"><i class="fas fa-file-invoice"></i></div>
                     <div class="title">Mes factures</div>
                 </a>
-                <a href="{{ path('app_user_profil_edit') }}" class="d-block text-center
-                        {% if profil_edit or profil_pw or profil_delete %}active{% endif %}">
+                <a href="{{ path('app_user_profil_edit') }}" class="d-block text-center {% if profil_edit or profil_pw or profil_delete %}active{% endif %}">
                     <div class="icon"><i class="fas fa-user-circle"></i></div>
                     <div class="title">Profil</div>
                 </a>
