@@ -2,34 +2,26 @@
 
 namespace App\Controller\Admin;
 
+use App\Data\UserCrudData;
 use App\Entity\User;
-use App\Event\AdminCRUDEvent;
 use App\Form\Filter\AdminUserType;
 use App\Model\UserSearch;
-use App\Repository\UserRepository;
 use App\Service\UserBanService;
-use JetBrains\PhpStorm\ArrayShape;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin')]
-class UserController extends AbstractController
+class UserController extends CrudController
 {
-    public function __construct(
-        private UserRepository $repository,
-        private PaginatorInterface $paginator,
-        private EventDispatcherInterface $dispatcher,
-        private UserBanService $banService
-    )
-    {
-    }
+    protected string $entity = User::class;
+    protected string $templatePath = 'user';
+    protected string $routePrefix = 'app_admin_user';
+    protected string $deleteFlashMessage = 'Un compte a été supprimé';
+    protected string $deleteMultiFlashMessage = 'Les comptes ont été supprimés';
+    protected string $deleteErrorFlashMessage = 'Désolé, les comptes n\'a pas pu être supprimé !';
 
     #[Route(path: '/users', name: 'app_admin_user_index')]
     public function index(Request $request): Response
@@ -37,38 +29,24 @@ class UserController extends AbstractController
         $search = new UserSearch();
 
         $form = $this->createForm(AdminUserType::class, $search);
-
         $form->handleRequest($request);
 
-        $qb = $this->repository->getAdminUsers($search);
+        $query = $this->getRepository()->getAdminUsers($search);
 
-        $users = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/user/index.html.twig', [
-            'users' => $users,
-            'searchForm' => $form->createView(),
-            'type' => 1,
-        ]);
+        return $this->crudIndex($query, $form, 1);
     }
 
     #[Route(path: '/users/no-confirm', name: 'app_admin_user_no_confirm_index')]
-    public function indexN(Request $request, PaginatorInterface $paginator): Response
+    public function indexN(Request $request): Response
     {
         $search = new UserSearch();
 
         $form = $this->createForm(AdminUserType::class, $search);
-
         $form->handleRequest($request);
 
-        $qb = $this->repository->getUserNoConfirmed($search);
+        $query = $this->getRepository()->getUserNoConfirmed($search);
 
-        $users = $paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/user/index.html.twig', [
-            'users' => $users,
-            'searchForm' => $form->createView(),
-            'type' => 2,
-        ]);
+        return $this->crudIndex($query, $form, 2);
     }
 
     #[Route(path: '/users/deleted', name: 'app_admin_user_deleted_index')]
@@ -80,31 +58,22 @@ class UserController extends AbstractController
 
         $form->handleRequest($request);
 
-        $qb = $this->repository->getUserDeleted($search);
+        $query = $this->getRepository()->getUserDeleted($search);
 
-        $users = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/user/index.html.twig', [
-            'users' => $users,
-            'searchForm' => $form->createView(),
-            'type' => 3,
-        ]);
+        return $this->crudIndex($query, $form, 3);
     }
 
     #[Route(path: '/users/{id}/show/{type}', name: 'app_admin_user_show', requirements: ['id' => '\d+', 'type' => '\d+'])]
     public function show(User $user, string $type): Response
     {
-       return $this->render('admin/user/show.html.twig', [
-            'user' => $user,
-            'type' => $type
-        ]);
+       return $this->render('admin/user/show.html.twig', ['user' => $user, 'type' => $type]);
     }
 
     #[Route(path: '/users/{id}/ban', name: 'app_admin_user_ban', requirements: ['id' => '\d+'])]
-    public function ban(Request $request, User $user): RedirectResponse|JsonResponse
+    public function ban(Request $request, UserBanService $service, User $user): RedirectResponse|JsonResponse
     {
-        $this->banService->ban($user);
-        $this->repository->flush();
+        $service->ban($user);
+        $this->getRepository()->flush();
 
         if ($request->isXmlHttpRequest()) {
             return $this->json([]);
@@ -116,128 +85,27 @@ class UserController extends AbstractController
     }
 
     #[Route(path: '/users/{id}/delete', name: 'app_admin_user_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, User $user): RedirectResponse|JsonResponse
+    public function delete(User $user): RedirectResponse|JsonResponse
     {
-        $form = $this->deleteForm($user);
+        $data = new UserCrudData($user);
 
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $event = new AdminCRUDEvent($user);
-
-                $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
-
-                $this->repository->remove($user, true);
-
-                $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
-
-                $this->addFlash('success', 'Le compte client a été supprimé');
-            } else {
-                $this->addFlash('error', 'Désolé, le compte client n\'a pas pu être supprimée!');
-            }
-
-            $url = $request->request->get('referer');
-
-            return new RedirectResponse($url);
-        }
-
-        $message = 'Être vous sur de vouloir supprimer cet compte ?';
-
-        $render = $this->render('ui/Modal/_delete.html.twig', [
-            'form' => $form->createView(),
-            'data' => $user,
-            'message' => $message,
-            'configuration' => $this->configuration()
-        ]);
-
-        $response['html'] = $render->getContent();
-
-        return new JsonResponse($response);
+        return $this->crudDelete($data);
     }
 
     #[Route(path: '/users/bulk/delete', name: 'app_admin_user_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
+    public function deleteBulk(): RedirectResponse|JsonResponse
     {
-        $ids = (array) json_decode($request->query->get('data'));
-
-        if ($request->query->has('data')) {
-            $request->getSession()->set('data', $ids);
-        }
-
-        $form = $this->deleteMultiForm();
-
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $ids = $request->getSession()->get('data');
-                $request->getSession()->remove('data');
-
-                foreach ($ids as $id) {
-                    $user = $this->repository->find($id);
-                    $this->dispatcher->dispatch(new AdminCRUDEvent($user), AdminCRUDEvent::PRE_DELETE);
-
-                    $this->repository->remove($user, false);
-                }
-
-                $this->repository->flush();
-
-                $this->addFlash('success', 'Les comptes clients ont été supprimé');
-            } else {
-                $this->addFlash('error', 'Désolé, les clients n\'ont pas pu être supprimée!');
-            }
-
-            $url = $request->request->get('referer');
-
-            return new RedirectResponse($url);
-        }
-
-        if (count($ids) > 1) {
-            $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' comptes ?';
-        } else {
-            $message = 'Être vous sur de vouloir supprimer cet compte ?';
-        }
-
-        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
-            'form' => $form->createView(),
-            'data' => $ids,
-            'message' => $message,
-            'configuration' => $this->configuration(),
-        ]);
-
-        $response['html'] = $render->getContent();
-
-        return new JsonResponse($response);
+        return $this->crudMultiDelete();
     }
 
-    private function deleteForm(User $user): FormInterface
+    public function getDeleteMessage(): string
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('app_admin_user_delete', ['id' => $user->getId()]))
-            ->getForm();
+        return 'Être vous sur de vouloir supprimer cet compte ?';
     }
 
-    private function deleteMultiForm(): FormInterface
+    public function getDeleteMultiMessage(int $number): string
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('app_admin_user_bulk_delete'))
-            ->getForm();
-    }
-
-    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
-    {
-        return [
-            'modal' => [
-                'delete' => [
-                    'type' => 'modal-danger',
-                    'icon' => 'fas fa-times',
-                    'yes_class' => 'btn-outline-danger',
-                    'no_class' => 'btn-danger'
-                ]
-            ]
-        ];
+        return 'Être vous sur de vouloir supprimer ces ' . $number . ' comptes ?';
     }
 }
 

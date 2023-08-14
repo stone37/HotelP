@@ -2,115 +2,56 @@
 
 namespace App\Controller\Admin;
 
+use App\Data\PromotionCrudData;
 use App\Entity\Promotion;
-use App\Event\AdminCRUDEvent;
-use App\Form\PromotionType;
-use App\Repository\PromotionRepository;
-use JetBrains\PhpStorm\ArrayShape;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin')]
-class PromotionController extends AbstractController
+class PromotionController extends CrudController
 {
-    public function __construct(
-        private PromotionRepository $repository,
-        private PaginatorInterface $paginator,
-        private EventDispatcherInterface $dispatcher
-    )
-    {
-    }
+    protected string $entity = Promotion::class;
+    protected string $templatePath = 'promotion';
+    protected string $routePrefix = 'app_admin_promotion';
+    protected string $createFlashMessage = 'Une promotion a été crée';
+    protected string $editFlashMessage = 'Une promotion a été mise à jour';
+    protected string $deleteFlashMessage = 'Une promotion a été supprimé';
+    protected string $deleteMultiFlashMessage = 'Les promotions ont été supprimés';
+    protected string $deleteErrorFlashMessage = 'Désolé, les promotions n\'a pas pu être supprimé !';
 
     #[Route(path: '/promotions', name: 'app_admin_promotion_index')]
-    public function index(Request $request): Response
+    public function index(): Response
     {
-        $qb = $this->repository->findBy([], ['position' => 'asc']);
+        $query = $this->getRepository()
+            ->createQueryBuilder('row')
+            ->orderby('row.position', 'ASC');
 
-        $promotions = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/promotion/index.html.twig', ['promotions' => $promotions]);
+        return $this->crudIndex($query);
     }
 
     #[Route(path: '/promotions/create', name: 'app_admin_promotion_create')]
-    public function create(Request $request): RedirectResponse|Response
+    public function create(): RedirectResponse|Response
     {
-        $promotion = new Promotion();
+        $entity = new Promotion();
+        $data = new PromotionCrudData($entity);
 
-        $form = $this->createForm(PromotionType::class, $promotion);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $event = new AdminCRUDEvent($promotion);
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_CREATE);
-
-            $this->repository->add($promotion, true);
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_CREATE);
-
-            $this->addFlash('success', 'Une promotion a été crée');
-
-            return $this->redirectToRoute('app_admin_promotion_index');
-        }
-
-        return $this->render('admin/promotion/create.html.twig', [
-            'form' => $form->createView(),
-            'promotion' => $promotion
-        ]);
+        return $this->crudNew($data);
     }
 
     #[Route(path: '/promotions/{id}/edit', name: 'app_admin_promotion_edit', requirements: ['id' => '\d+'])]
-    public function edit(Request $request, Promotion $promotion): RedirectResponse|Response
+    public function edit(Promotion $promotion): RedirectResponse|Response
     {
-        $form = $this->createForm(PromotionType::class, $promotion);
+        $data = new PromotionCrudData($promotion);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $event = new AdminCRUDEvent($promotion);
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_EDIT);
-
-            $this->repository->flush();
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_EDIT);
-
-            $this->addFlash('success', 'Une promotion a été mise à jour');
-
-            return $this->redirectToRoute('app_admin_promotion_index');
-        }
-
-        return $this->render('admin/promotion/edit.html.twig', [
-            'form' => $form->createView(),
-            'promotion' => $promotion
-        ]);
+        return $this->crudEdit($data);
     }
 
     #[Route(path: '/promotions/{id}/move', name: 'app_admin_promotion_move', requirements: ['id' => '\d+'])]
-    public function move(Request $request, Promotion $promotion): RedirectResponse
+    public function move(Promotion $promotion): RedirectResponse
     {
-        if ($request->query->has('pos')) {
-            $pos = ($promotion->getPosition() + (int)$request->query->get('pos'));
-
-            if ($pos >= 0) {
-                $promotion->setPosition($pos);
-                $this->repository->flush();
-
-                $this->addFlash('success', 'La position a été modifier');
-            }
-        }
-
-        return $this->redirectToRoute('app_admin_promotion_index');
+        return $this->crudMove($promotion);
     }
 
     #[Route(path: '/promotions/show/{id}', name: 'app_admin_promotion_show', requirements: ['id' => '\d+'])]
@@ -120,128 +61,27 @@ class PromotionController extends AbstractController
     }
 
     #[Route(path: '/promotions/{id}/delete', name: 'app_admin_promotion_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Promotion $promotion): RedirectResponse|JsonResponse
+    public function delete(Promotion $promotion): RedirectResponse|JsonResponse
     {
-        $form = $this->deleteForm($promotion);
+        $data = new PromotionCrudData($promotion);
 
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $event = new AdminCRUDEvent($promotion);
-
-                $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
-
-                $this->repository->remove($promotion, true);
-
-                $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
-
-                $this->addFlash('success', 'La promotion a été supprimé');
-            } else {
-                $this->addFlash('error', 'Désolé, la promotion n\'a pas pu être supprimée!');
-            }
-
-            $url = $request->request->get('referer');
-
-            return new RedirectResponse($url);
-        }
-
-        $message = 'Être vous sur de vouloir supprimer cette promotion ?';
-
-        $render = $this->render('ui/Modal/_delete.html.twig', [
-            'form' => $form->createView(),
-            'data' => $promotion,
-            'message' => $message,
-            'configuration' => $this->configuration()
-        ]);
-
-        $response['html'] = $render->getContent();
-
-        return new JsonResponse($response);
+        return $this->crudDelete($data);
     }
 
     #[Route(path: '/promotions/bulk/delete', name: 'app_admin_promotion_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
+    public function deleteBulk(): RedirectResponse|JsonResponse
     {
-        $ids = (array) json_decode($request->query->get('data'));
-
-        if ($request->query->has('data')) {
-            $request->getSession()->set('data', $ids);
-        }
-
-        $form = $this->deleteMultiForm();
-
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $ids = $request->getSession()->get('data');
-                $request->getSession()->remove('data');
-
-                foreach ($ids as $id) {
-                    $promotion = $this->repository->find($id);
-                    $this->dispatcher->dispatch(new AdminCRUDEvent($promotion), AdminCRUDEvent::PRE_DELETE);
-
-                    $this->repository->remove($promotion, false);
-                }
-
-                $this->repository->flush();
-
-                $this->addFlash('success', 'Les promotion ont été supprimé');
-            } else {
-                $this->addFlash('error', 'Désolé, les hébergements n\'ont pas pu être supprimée !');
-            }
-
-            $url = $request->request->get('referer');
-
-            return new RedirectResponse($url);
-        }
-
-        if (count($ids) > 1) {
-            $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' hébergements ?';
-        } else {
-            $message = 'Être vous sur de vouloir supprimer cette promotion ?';
-        }
-
-        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
-            'form' => $form->createView(),
-            'data' => $ids,
-            'message' => $message,
-            'configuration' => $this->configuration()
-        ]);
-
-        $response['html'] = $render->getContent();
-
-        return new JsonResponse($response);
+        return $this->crudMultiDelete();
     }
 
-    private function deleteForm(Promotion $promotion): FormInterface
+    public function getDeleteMessage(): string
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('app_admin_promotion_delete', ['id' => $promotion->getId()]))
-            ->getForm();
+        return 'Être vous sur de vouloir supprimer cette promotion ?';
     }
 
-    private function deleteMultiForm(): FormInterface
+    public function getDeleteMultiMessage(int $number): string
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('app_admin_promotion_bulk_delete'))
-            ->getForm();
-    }
-
-    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
-    {
-        return [
-            'modal' => [
-                'delete' => [
-                    'type' => 'modal-danger',
-                    'icon' => 'fas fa-times',
-                    'yes_class' => 'btn-outline-danger',
-                    'no_class' => 'btn-danger'
-                ]
-            ]
-        ];
+        return 'Être vous sur de vouloir supprimer ces ' . $number . ' promotions ?';
     }
 }
 

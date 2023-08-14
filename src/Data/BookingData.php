@@ -19,49 +19,37 @@ class BookingData
 
     public int $roomNumber = Booker::INIT_ROOM;
 
-    public ?string $message = '';
+    public ?string $message = null;
 
-    /**
-     * @Assert\NotBlank(groups="booking")
-     */
-    public string $firstname = '';
+    #[Assert\NotBlank(groups: ['booking'])]
+    public ?string $firstname = null;
 
-    /**
-     * @Assert\NotBlank(groups="booking")
-     */
-    public string $lastname = '';
+    #[Assert\NotBlank(groups: ['booking'])]
+    public ?string $lastname = null;
 
-    /**
-     * @Assert\NotBlank(groups="booking")
-     */
-    public string $email = '';
+    #[Assert\NotBlank(groups: ['booking'])]
+    public ?string $email = null;
 
-    /**
-     * @Assert\NotBlank(groups="booking")
-     */
-    public string $phone = '';
+    #[Assert\NotBlank(groups: ['booking'])]
+    public ?string $phone = null;
 
-    public ?string $country = '';
+    public ?string $country = null;
 
-    public ?string $city = '';
+    public ?string $city = null;
 
-    public int $days;
+    public ?int $night = null;
 
-    public int $amount;
+    public ?int $amount = null;
 
-    public int $taxeAmount = 0;
+    public ?int $taxeAmount = null;
 
-    public int $discountAmount = 0;
+    public ?int $discountAmount = null;
 
-    public ?int $roomId;
+    public ?int $roomId = null;
 
-    public ?int $optionId;
+    public ?int $userId = null;
 
-    public ?int $userId;
-
-    /**
-     * @Assert\Valid(groups="booking")
-     */
+    #[Assert\Valid(groups: ['booking'])]
     public ArrayCollection $occupants;
 
     public function __construct()

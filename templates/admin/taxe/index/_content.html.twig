@@ -7,12 +7,12 @@
         </div>
         <div class="d-flex ml-auto">
             {% set path = path('app_admin_taxe_create') %}
-            {{ include('ui/Grid/Action/create.html.twig', {'path': path, 'action': {'label': 'Créer'}}) }}
+            {{ include('ui/grid/action/create.html.twig', {'path': path, 'action': {'label': 'Créer'}}) }}
         </div>
     </div>
 </div>
 
-{% if taxes|length > 0 %}
+{% if rows|length > 0 %}
     <div class="row app-user">
         <div class="col-12">
             <table class="table table-responsive-sm">
@@ -30,26 +30,25 @@
                 </tr>
                 </thead>
                 <tbody id="list-checkbook-container">
-                {% for taxe in taxes %}
+                {% for row in rows %}
                     <tr>
                         <td class="text-center">
                             <div class="" style="position: relative; right: 10px; top: 2px">
                                 <input type="checkbox" name="checkbox{{ loop.index }}" class="form-check-input filled-in list-checkbook"
-                                       id="checkbox{{ loop.index }}" value="{{ taxe.id }}" style="margin: 0 !important;" />
+                                       id="checkbox{{ loop.index }}" value="{{ row.id }}" style="margin: 0 !important;" />
                                 <label class="form-check-label" for="checkbox{{ loop.index }}" style="padding-left: 0!important; "></label>
                             </div>
                         </td>
-                        <td class="text-center">{{ taxe.name|capitalize }}</td>
-                        <td class="text-center">{{ taxe.value }}%</td>
+                        <td class="text-center">{{ row.name|capitalize }}</td>
+                        <td class="text-center">{{ row.value }}%</td>
                         <td class="text-center">
                             <div class="dropdown">
                                 <a class="dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-h text-primary"></i></a>
                                 <div class="dropdown-menu dropdown-primary dropdown-menu-right mt-0">
-                                    <a href="{{ path('app_admin_taxe_edit', {'id': taxe.id}) }}" class="dropdown-item">
+                                    <a href="{{ path('app_admin_taxe_edit', {'id': row.id}) }}" class="dropdown-item">
                                         <i class="fas fa-pencil-alt mr-1"></i> Éditer
                                     </a>
-                                    <a class="dropdown-item entity-delete-btn" data-id="{{ taxe.id }}"
-                                       data-url="{{ path('app_admin_taxe_delete', {'id': taxe.id}) }}">
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ row.id }}" data-url="{{ path('app_admin_taxe_delete', {'id': row.id}) }}">
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -61,10 +60,10 @@
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ taxes.totalItemCount }} résultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ rows.totalItemCount > 1 ? rows.totalItemCount ~ ' résultats' : rows.totalItemCount ~ ' résultat' }}</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
-            {{ knp_pagination_render(taxes, 'ui/_pagination.html.twig') }}
+            {{ knp_pagination_render(rows, 'ui/_pagination.html.twig') }}
         </div>
     </div>
 {% else %}

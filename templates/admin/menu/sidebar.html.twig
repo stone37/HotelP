@@ -1,131 +1,127 @@
+{% set dashboard = isActive('app_admin_index') %}
+
+{# admin #}
+{% set admin_index = isActive('app_admin_admin_index') %}
+{% set admin_new   = isActive('app_admin_admin_create') %}
+{% set admin_edit  = isActive('app_admin_admin_edit') %}
+{# admin #}
+
+{# user #}
+{% set user_index = isActive('app_admin_user_index') %}
+{% set user_no_index = isActive('app_admin_user_no_confirm_index') %}
+{% set user_d_index = isActive('app_admin_user_deleted_index') %}
+{% set user_show  = isActive('app_admin_user_show') %}
+{# user #}
+
+{# commande #}
+{% set commande_index = isActive('app_admin_commande_index') %}
+{% set commande_show  = isActive('app_admin_commande_show') %}
+{% set commande_user = isActive('app_admin_commande_user') %}
+{# commande #}
+
+{# review #}
+{% set review_index = isActive('app_admin_review_index') %}
+{% set review_edit = isActive('app_admin_review_edit') %}
+{# review #}
+
+{# equipment #}
+{% set equipment_index = isActive('app_admin_equipment_index') %}
+{% set equipment_edit  = isActive('app_admin_equipment_edit') %}
+{% set equipment_new = isActive('app_admin_equipment_create') %}
+{# equipment #}
+
+{# gallery #}
+{% set gallery_index = isActive('app_admin_gallery_index') %}
+{% set gallery_add  = isActive('app_admin_gallery_add') %}
+{# gallery #}
+
+{# room #}
+{% set room_index = isActive('app_admin_room_index') %}
+{% set room_edit = isActive('app_admin_room_edit') %}
+{% set room_new = isActive('app_admin_room_create') %}
+{% set room_simple_new = isActive('app_admin_room_create_simple') %}
+{% set room_show  = isActive('app_admin_room_show') %}
+{# room #}
+
+{# room gallery #}
+{% set room_gallery_index = isActive('app_admin_room_gallery_index') %}
+{% set room_gallery_add  = isActive('app_admin_room_gallery_add') %}
+{# room gallery #}
+
+{# room equipment #}
+{% set r_equipment_index = isActive('app_admin_room_equipment_index') %}
+{% set r_equipment_edit  = isActive('app_admin_room_equipment_edit') %}
+{% set r_equipment_new = isActive('app_admin_room_equipment_create') %}
+{# room equipment #}
+
+{# supplement #}
+{% set supplement_index = isActive('app_admin_supplement_index') %}
+{% set supplement_edit  = isActive('app_admin_supplement_edit') %}
+{% set supplement_new = isActive('app_admin_supplement_create') %}
+{# supplement #}
+
+{# booking #}
+{% set booking_index = isActive('app_admin_booking_index') %}
+{% set booking_confirmed  = isActive('app_admin_booking_confirmed_index') %}
+{% set booking_cancel = isActive('app_admin_booking_cancel_index') %}
+{% set booking_archive = isActive('app_admin_booking_archive_index') %}
+{% set booking_show = isActive('app_admin_booking_show') %}
+{% set booking_user = isActive('app_admin_booking_user') %}
+{% set booking_room = isActive('app_admin_booking_room') %}
+{# booking #}
+
+{# settings #}
+{% set s_index = isActive('app_admin_settings_index') %}
+{% set s_module_index = isActive('app_admin_settings_module_index') %}
+{# settings #}
+
+{# emailing #}
+{% set type = '0' %}
+{% set emailing_index = isActive('app_admin_emailing_index') %}
+{% set emailing_new = isActive('app_admin_emailing_create') %}
+{% set emailing_resend = isActive('app_admin_emailing_resend') %}
+{% set emailing_user = isActive('app_admin_emailing_user') %}
+{% set emailing_newsletter = isActive('app_admin_emailing_newsletter') %}
+{% set newsletter = isActive('app_admin_emailing_newsletters') %}
+{# emailing #}
+
+{# payment #}
+{% set payment_index = isActive('app_admin_payment_index') %}
+{% set payment_report = isActive('app_admin_payment_report') %}
+{# payment #}
+
+{# discount #}
+{% set discount_index = isActive('app_admin_discount_index') %}
+{% set discount_new   = isActive('app_admin_discount_create') %}
+{% set discount_edit  = isActive('app_admin_discount_edit') %}
+{# discount #}
+
+{# taxe #}
+{% set taxe_index = isActive('app_admin_taxe_index') %}
+{% set taxe_new   = isActive('app_admin_taxe_create') %}
+{% set taxe_edit  = isActive('app_admin_taxe_edit') %}
+{# taxe #}
+
+{# promotion #}
+{% set promotion_index = isActive('app_admin_promotion_index') %}
+{% set promotion_edit = isActive('app_admin_promotion_edit') %}
+{% set promotion_new = isActive('app_admin_promotion_create') %}
+{% set promotion_show  = isActive('app_admin_promotion_show') %}
+{# promotion #}
+
+{# maintenance #}
+{% set maintenance_index = isActive('app_admin_maintenance_index') %}
+{# maintenance #}
+
 <div id="slide-out" class="side-nav sn-bg-4 fixed">
     <ul class="custom-scrollbar">
-
-        <li class="logo-sn waves-effect py-3">
+        <li class="logo-sn waves-effect py-4">
             <div class="text-center">
                 <a href="{{ path('app_admin_index') }}" class="pl-0">
-                    <img src="{{ asset('images/logo/logo_write.png') }}" style="width: 180px !important;" alt="Logo du site" />
+                    <img src="{{ asset('images/logo/logo_write.png') }}" style="width: 200px !important;" alt="Logo du site" />
                 </a>
             </div>
         </li>
-
-        {% set dashboard = isActive('app_admin_index') %}
-
-        {# admin #}
-        {% set admin_index = isActive('app_admin_admin_index') %}
-        {% set admin_new   = isActive('app_admin_admin_create') %}
-        {% set admin_edit  = isActive('app_admin_admin_edit') %}
-        {# admin #}
-
-        {# user #}
-        {% set user_index = isActive('app_admin_user_index') %}
-        {% set user_no_index = isActive('app_admin_user_no_confirm_index') %}
-        {% set user_d_index = isActive('app_admin_user_deleted_index') %}
-        {% set user_show  = isActive('app_admin_user_show') %}
-        {# user #}
-
-        {# commande #}
-        {% set commande_index = isActive('app_admin_commande_index') %}
-        {% set commande_show  = isActive('app_admin_commande_show') %}
-        {% set commande_user = isActive('app_admin_commande_user') %}
-        {# commande #}
-
-        {# review #}
-        {% set review_index = isActive('app_admin_review_index') %}
-        {% set review_edit = isActive('app_admin_review_edit') %}
-        {# review #}
-
-        {# equipment #}
-        {% set equipment_index = isActive('app_admin_equipment_index') %}
-        {% set equipment_edit  = isActive('app_admin_equipment_edit') %}
-        {% set equipment_new = isActive('app_admin_equipment_create') %}
-        {# equipment #}
-
-        {# gallery #}
-        {% set gallery_index = isActive('app_admin_gallery_index') %}
-        {% set gallery_add  = isActive('app_admin_gallery_add') %}
-        {# gallery #}
-
-        {# room #}
-        {% set room_index = isActive('app_admin_room_index') %}
-        {% set room_edit = isActive('app_admin_room_edit') %}
-        {% set room_new = isActive('app_admin_room_create') %}
-        {% set room_simple_new = isActive('app_admin_room_create_simple') %}
-        {% set room_show  = isActive('app_admin_room_show') %}
-        {# room #}
-
-        {# room gallery #}
-        {% set room_gallery_index = isActive('app_admin_room_gallery_index') %}
-        {% set room_gallery_add  = isActive('app_admin_room_gallery_add') %}
-        {# room gallery #}
-
-        {# room equipment #}
-        {% set r_equipment_index = isActive('app_admin_room_equipment_index') %}
-        {% set r_equipment_edit  = isActive('app_admin_room_equipment_edit') %}
-        {% set r_equipment_new = isActive('app_admin_room_equipment_create') %}
-        {# room equipment #}
-
-        {# supplement #}
-        {% set supplement_index = isActive('app_admin_supplement_index') %}
-        {% set supplement_edit  = isActive('app_admin_supplement_edit') %}
-        {% set supplement_new = isActive('app_admin_supplement_create') %}
-        {# supplement #}
-
-        {# booking #}
-        {% set booking_index = isActive('app_admin_booking_index') %}
-        {% set booking_confirmed  = isActive('app_admin_booking_confirmed_index') %}
-        {% set booking_cancel = isActive('app_admin_booking_cancel_index') %}
-        {% set booking_archive = isActive('app_admin_booking_archive_index') %}
-        {% set booking_show = isActive('app_admin_booking_show') %}
-        {% set booking_user = isActive('app_admin_booking_user') %}
-        {% set booking_room = isActive('app_admin_booking_room') %}
-        {# booking #}
-
-        {# settings #}
-        {% set s_index = isActive('app_admin_settings_index') %}
-        {% set s_module_index = isActive('app_admin_settings_module_index') %}
-        {# settings #}
-
-        {# emailing #}
-        {% set type = '0' %}
-        {% set emailing_index = isActive('app_admin_emailing_index') %}
-        {% set emailing_new = isActive('app_admin_emailing_create') %}
-        {% set emailing_resend = isActive('app_admin_emailing_resend') %}
-        {% set emailing_user = isActive('app_admin_emailing_user') %}
-        {% set emailing_newsletter = isActive('app_admin_emailing_newsletter') %}
-        {% set newsletter = isActive('app_admin_emailing_newsletters') %}
-        {# emailing #}
-
-        {# payment #}
-        {% set payment_index = isActive('app_admin_payment_index') %}
-        {% set payment_report = isActive('app_admin_payment_report') %}
-        {# payment #}
-
-        {# discount #}
-        {% set discount_index = isActive('app_admin_discount_index') %}
-        {% set discount_new   = isActive('app_admin_discount_create') %}
-        {% set discount_edit  = isActive('app_admin_discount_edit') %}
-        {# discount #}
-
-        {# taxe #}
-        {% set taxe_index = isActive('app_admin_taxe_index') %}
-        {% set taxe_new   = isActive('app_admin_taxe_create') %}
-        {% set taxe_edit  = isActive('app_admin_taxe_edit') %}
-        {# taxe #}
-
-        {# promotion #}
-        {% set promotion_index = isActive('app_admin_promotion_index') %}
-        {% set promotion_edit = isActive('app_admin_promotion_edit') %}
-        {% set promotion_new = isActive('app_admin_promotion_create') %}
-        {% set promotion_show  = isActive('app_admin_promotion_show') %}
-        {# promotion #}
-
-        {# maintenance #}
-        {% set maintenance_index = isActive('app_admin_maintenance_index') %}
-        {# maintenance #}
-
-        {% set settings = config.get %}
-
         <li>
             <ul class="collapsible collapsible-accordion">
                 <li>

@@ -1,42 +1,337 @@
-{% extends 'base.html.twig' %}
+{% set data = booker.bookingData %}
 
-{% block title 'Sélectionnez votre date de séjour' %}
+<div id="booking-data-modal{{ room.id }}" class="modal fade booking-data-modal right" tabindex="-1" role="dialog" aria-labelledby="AdvertFilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-notify modal-primary modal-xl modal-full-height modal-right">
+        <div class="modal-content">
+            <div class="modal-header text-white">
+                <h5 class="h5-responsive modal-title font-weight-stone-500 pl-1 pl-md-2">
+                    {% if state %}
+                        Modifier mon séjour
+                    {% else %}
+                        Sélectionner mon séjour
+                    {% endif %}
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body grey lighten-5 pt-2 pb-3">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'booking-select-data-form'}}) }}
 
-{% set settings = config.get %}
-
-{% block meta %}
-    {% set content = "Sélectionnez votre date de séjour" %}
-    <meta name="description" content="{{ content }}"/>
-    <meta property="og:description" content="{{ content }}" />
-{% endblock %}
-
-{% block app_flashes %}{% endblock %}
-{% block app_intro %}{% endblock %}
-{% block app_booking %}{% endblock %}
-{% block app_footer %}{% endblock %}
-
-{% block app_body %}
-   {{ include('site/booking/select/content.html.twig') }}
-{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-
-    <script>
-        window.hostel.MAX_ADULT = parseInt("{{ room.maximumAdults }}");
-        window.hostel.MAX_CHILDREN = parseInt("{{ room.maximumOfChildren }}");
-    </script>
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/site/booking.js'} %}
-{% endblock %}
+                    {{ form_widget(form.checkin) }}
+                    {{ form_widget(form.checkout) }}
+                    {{ form_widget(form.adult) }}
+                    {{ form_widget(form.children) }}
+                    {{ form_widget(form.roomNumber) }}
 
 
+                    <div class="row booking-form-bulk">
+                        <div class="col-6 pl-md-2 pr-1">
+                            <div id="booking-checkin-btn" class="booking-bulk checkin-bulk booking-checkin-btn">
+                                <div class="checkin d-flex align-items-center">
+                                    <div class="icon"><i class="fas fa-calendar text-primary"></i></div>
+                                    <div>
+                                        <div class="title text-dark">Arrivée</div>
+                                        <div class="date-content select dark-grey-text">
+                                            {{ data.checkin|format_datetime('medium', 'none', locale='fr') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 pl-1 pr-md-2">
+                            <div id="booking-checkout-btn" class="booking-bulk checkout-bulk booking-checkout-btn">
+                                <div class="checkout d-flex align-items-center">
+                                    <div class="icon"><i class="fas fa-calendar text-primary"></i></div>
+                                    <div>
+                                        <div class="title text-dark">Départ</div>
+                                        <div class="date-content dark-grey-text">
+                                            {{ data.checkout|format_datetime('medium', 'none', locale='fr') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 px-md-2">
+                            <div id="booking-booker-btn" class="booking-bulk user-bulk booking-booker-btn">
+                                <div class="user d-flex align-items-center">
+                                    <div class="icon"><i class="fas fa-user text-primary"></i></div>
+                                    <div>
+                                        <div class="title text-dark">Voyageurs</div>
+                                        <div class="date-content dark-grey-text">
+                                            <span class="room">{{ data.roomNumber }} chambre, </span>
+                                            <span class="customer">{{ data.adult }} adultes, </span>
+                                            <span class="children">{{ data.children }} enfants</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 px-md-2 mt-2 booking-form-btn-bulk">
+                            <button type="submit" class="btn btn-primary btn-block booking-form-btn z-depth-0">
+                                {% if state %}
+                                    <i class="fas fa-pencil-alt mr-2"></i> Modifier
+                                {% else %}
+                                    <i class="fas fa-check mr-2"></i> Valider
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+                    {{ form_widget(form._token) }}
+                    <input type="hidden" name="referer" value="{{app.request.headers.get('referer')}}"/>
+                {{ form_end(form, {'render_rest': false}) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        let $checkin_date = $('.modal .modal-content .modal-body .checkin-datepicker'),
+            $checkout_date = $('.modal .modal-content .modal-body .checkout-datepicker'),
+            $booking_checkin_btn = $('.modal .modal-content .modal-body .booking-checkin-btn .checkin'),
+            $booking_checkout_btn = $('.modal .modal-content .modal-body .booking-checkout-btn .checkout'),
+            $booking_booker_btn = $('.modal .modal-content .modal-body .booking-booker-btn .user'),
+            $booking_booker_modal = $('#booking-booker-modal'),
+            $booking_checkin_date = $booking_checkin_btn.find('.date-content'),
+            $booking_checkout_date = $booking_checkout_btn.find('.date-content'),
+            $booking_adult_field = $('input.booking_data_adult'),
+            $booking_children_field = $('input.booking_data_children'),
+            $booking_room_field = $('input.booking_data_room'),
+            $booking_booker_adult_field = $('#booking-booker-modal .modal-body .adults a'),
+            $booking_booker_children_field = $('#booking-booker-modal .modal-body .children a'),
+            $booking_booker_room_field = $('#booking-booker-modal .modal-body .room a'),
+            $booking_booker_button = $('#booking-booker-modal button'),
+            $adults = window.hostel.DEFAULT_ADULT,
+            $children = window.hostel.DEFAULT_CHILDREN,
+            $rooms = window.hostel.DEFAULT_ROOM;
+
+        let checkin_datepicker = $checkin_date.pickadate({
+                min: window.hostel.BOOKING_CHECKIN,
+                selectMonths: false,
+                selectYears: false,
+                weekdaysFull: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                monthsFull: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                monthsShort: ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'],
+                weekdaysShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
+                format: 'dd mmm yyyy',
+                formatSubmit: 'yyyy-mm-dd',
+                today: '',
+                clear: '',
+                close: 'Fermer',
+                onClose: function () {
+                    $booking_checkin_btn.removeClass('active');
+                },
+                onSet: function () {
+                    if ($checkin_picker.get('select')) {
+                        const selected = $checkin_picker.get('select');
+
+                        $checkout_picker.set('min', new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate() + 1));
+                        $booking_checkin_date.text($checkin_picker.get('value'));
+                    }
+                }
+            }),
+            $checkin_picker = checkin_datepicker.pickadate('picker');
+
+        let checkout_datepicker = $checkout_date.pickadate({
+                min: window.hostel.BOOKING_CHECKOUT,
+                selectMonths: false,
+                selectYears: false,
+                weekdaysFull: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                monthsFull: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                monthsShort: ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'],
+                weekdaysShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
+                format: 'dd mmm yyyy',
+                formatSubmit: 'yyyy-mm-dd',
+                today: '',
+                clear: '',
+                close: 'Fermer',
+                onClose: function() {
+                    $booking_checkout_btn.removeClass('active');
+                },
+                onSet: function() {
+                    if (!$checkout_picker.get('select') && $checkin_picker.get('select')) {
+                        const selected = $checkin_picker.get('select'),
+                            d = new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate() + 1);
+
+                        $booking_checkout_date.text(d.getDate() + ' ' + getMonthsShort(d.getMonth()) + ' ' + d.getFullYear());
+                    }
+
+                    if ($checkout_picker.get('select')) {
+                        const selected = $checkout_picker.get('select'),
+                            d = new Date(selected.obj.getFullYear(), selected.obj.getMonth(),selected.obj.getDate());
+
+                        $booking_checkout_date.text(d.getDate() + ' ' + getMonthsShort(d.getMonth()) + ' ' + d.getFullYear());
+                    }
+                }
+            }),
+            $checkout_picker = checkout_datepicker.pickadate('picker');
 
 
+        $booking_checkin_btn.click(function (e) {
+            e.preventDefault();
 
+            $(this).addClass('active');
 
+            $checkin_date.trigger('click');
+        });
 
+        $booking_checkout_btn.click(function (e) {
+            e.preventDefault();
 
+            $(this).addClass('active');
+
+            $checkout_date.trigger('click');
+        });
+
+        $booking_booker_btn.click(function(e){
+            e.preventDefault();
+
+            $(this).addClass('active');
+
+            $booking_booker_modal.modal()
+        });
+
+        $booking_booker_modal.on('show.bs.modal', function () {
+            $('body').css('overflow', 'hidden');
+        });
+
+        $booking_booker_modal.on('hide.bs.modal', function () {
+            $booking_booker_btn.removeClass('active');
+
+            $('body').css('overflow', 'auto');
+        });
+
+        $booking_booker_adult_field.click(function (e) {
+            e.preventDefault();
+
+            const $this = $(this);
+
+            if ($this.hasClass('soustraction')) {
+                const $sibling = $($this.siblings('.addition')[0]),
+                    $element = $this.parents('.data').find('span');
+
+                $adults--;
+
+                if ($adults === 1) {
+                    $this.addClass('disabled');
+                }
+
+                if ($sibling.hasClass('disabled')) {
+                    $sibling.removeClass('disabled');
+                }
+
+                $($element[0]).text($adults)
+            } else {
+                const $sibling = $($this.siblings('.soustraction')[0]),
+                    $element = $this.parents('.data').find('span');
+
+                $adults++;
+
+                if ($adults === 4) {
+                    $this.addClass('disabled');
+                }
+
+                if ($sibling.hasClass('disabled')) {
+                    $sibling.removeClass('disabled');
+                }
+
+                $($element[0]).text($adults)
+            }
+        });
+
+        $booking_booker_children_field.click(function (e) {
+            e.preventDefault();
+
+            const $this = $(this);
+
+            if ($this.hasClass('soustraction')) {
+                let $sibling =  $($this.siblings('.addition')[0]),
+                    $element = $this.parents('.data').find('span');
+
+                $children--;
+
+                if ($children === 0) {
+                    $this.addClass('disabled');
+                }
+
+                if ($sibling.hasClass('disabled')) {
+                    $sibling.removeClass('disabled');
+                }
+
+                $($element[0]).text($children)
+            } else {
+                let $sibling = $($this.siblings('.soustraction')[0]),
+                    $element = $this.parents('.data').find('span');
+
+                $children++;
+
+                if ($children === 4) {
+                    $this.addClass('disabled');
+                }
+
+                if ($sibling.hasClass('disabled')) {
+                    $sibling.removeClass('disabled');
+                }
+
+                $($element[0]).text($children)
+            }
+        });
+
+        $booking_booker_room_field.click(function (e) {
+            e.preventDefault();
+
+            const $this = $(this);
+
+            if ($this.hasClass('soustraction')) {
+                let $sibling = $($this.siblings('.addition')[0]),
+                    $element = $this.parents('.data').find('span');
+
+                $rooms--;
+
+                if ($rooms === 1) {
+                    $this.addClass('disabled');
+                }
+
+                if ($sibling.hasClass('disabled')) {
+                    $sibling.removeClass('disabled');
+                }
+
+                $($element[0]).text($rooms)
+            } else {
+                let $sibling = $($this.siblings('.soustraction')[0]),
+                    $element = $this.parents('.data').find('span');
+
+                $rooms++;
+
+                if ($rooms === 10) {
+                    $this.addClass('disabled');
+                }
+
+                if ($sibling.hasClass('disabled')) {
+                    $sibling.removeClass('disabled');
+                }
+
+                $($element[0]).text($rooms)
+            }
+        });
+
+        $booking_booker_button.click(function (e) {
+            e.preventDefault();
+
+            const $room = $($booking_booker_btn.find('.room')),
+                $customer = $($booking_booker_btn.find('.customer')),
+                $child = $($booking_booker_btn.find('.children'));
+
+            $booking_adult_field.val($adults);
+            $booking_children_field.val($children);
+            $booking_room_field.val($rooms);
+
+            $room.text($rooms + ' chambre, ');
+            $customer.text($adults + ' adultes, ');
+            $child.text($children + ' enfants');
+
+            $('#booking-booker-modal').modal('hide')
+        });
+    });
+</script>

@@ -21,12 +21,7 @@ class UpdateProfileForm extends AbstractType
 
         $builder
             ->add('email', EmailType::class, [
-                'required' => true,
                 'label' => 'Adresse e-mail'
-            ])
-            ->add('username', TextType::class, [
-                'required' => false,
-                'label' => "Nom d'utilisateur"
             ])
             ->add('firstName', TextType::class, [
                 'label' => 'Prénom'
@@ -37,20 +32,22 @@ class UpdateProfileForm extends AbstractType
             ->add('phone', TextType::class, [
                 'label' => 'Téléphone'
             ])
+            ->add('username', TextType::class, [
+                'label' => "Nom d'utilisateur (facultatif)",
+                'required' => false
+            ])
             ->add('address', TextType::class, [
-                'label' => 'Adresse',
+                'label' => 'Adresse (facultatif)',
                 'required' => false
             ])
             ->add('country', CountryType::class, [
-                'label' => 'Pays',
-                'attr' => [
-                    'class' => 'mdb-select md-outline md-form dropdown-stone',
-                ],
-                'placeholder' => 'Pays',
+                'label' => 'Pays (facultatif)',
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
+                'placeholder' => 'Pays (facultatif)',
                 'required' => false,
             ])
             ->add('city', TextType::class, [
-                'label' => 'Ville',
+                'label' => 'Ville (facultatif)',
                 'required' => false
             ]);
     }

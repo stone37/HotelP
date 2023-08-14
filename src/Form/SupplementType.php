@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Supplement;
+use App\Data\SupplementCrudData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -26,7 +26,7 @@ class SupplementType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Supplement::class,
+            'data_class' => SupplementCrudData::class,
         ]);
     }
 }

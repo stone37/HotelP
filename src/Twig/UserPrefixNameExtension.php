@@ -14,8 +14,6 @@ class UserPrefixNameExtension extends AbstractExtension
 
     public function getFunctions(): array
     {
-        return [
-            new TwigFunction('userPrefixName', [$this->prefix, 'prefix'])
-        ];
+        return [new TwigFunction('userPrefixName', [$this->prefix, 'prefix'])];
     }
 }

@@ -12,25 +12,16 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class RoomGalleryService
 {
-    private RequestStack $request;
-    private OrphanageManager $orphanageManager;
-    private UploadService $uploadService;
-    private RoomGalleryRepository $repository;
-
     public function __construct(
-        RequestStack $request,
-        OrphanageManager $orphanageManager,
-        UploadService $uploadService,
-        RoomGalleryRepository $repository
+        private RequestStack $request,
+        private OrphanageManager $orphanageManager,
+        private UploadService $uploadService,
+        private RoomGalleryRepository $repository
     )
     {
-        $this->request = $request;
-        $this->orphanageManager = $orphanageManager;
-        $this->uploadService = $uploadService;
-        $this->repository = $repository;
     }
 
-    public function add(Room $room)
+    public function add(Room $room): bool
     {
         $files = $this->uploadService->getFilesUpload($this->request->getSession());
 
@@ -52,7 +43,7 @@ class RoomGalleryService
         return true;
     }
 
-    public function initialize(Request $request)
+    public function initialize(Request $request): void
     {
         if (!$request->isMethod('POST')) {
             $request->getSession()->set('app_gallery_image', []);

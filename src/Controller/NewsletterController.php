@@ -8,6 +8,7 @@ use App\Validator\NewsletterValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -53,7 +54,7 @@ class NewsletterController extends AbstractController
     }
 
     #[Route(path: '/newsletter/unsubscribe', name: 'app_newsletter_unsubscribe')]
-    public function unsubscribe(Request $request)
+    public function unsubscribe(Request $request): RedirectResponse
     {
         $email = $request->query->get('email');
         $data = $this->em->getRepository(NewsletterData::class)->findOneBy(['email' => $email]);

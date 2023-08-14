@@ -444,10 +444,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __unserialize(array $data): void
     {
-        $this->id = $data['id'];
-        $this->username = $data['username'];
-        $this->email = $data['email'];
-        $this->password = $data['password'];
+        list (
+            $this->id,
+            $this->username,
+            $this->email,
+            $this->password
+            ) = $data;
     }
 
     #[Pure] public function __toString()

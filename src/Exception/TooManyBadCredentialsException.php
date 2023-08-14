@@ -12,14 +12,15 @@ class TooManyBadCredentialsException extends CustomUserMessageAuthenticationExce
      * @param string $message
      * @param array $messageData
      * @param int $code
-     * @param \Throwable|null $previous
+     * @param Throwable|null $previous
      */
     public function __construct(
         string $message = 'Le compte a été verrouillé suite à de trop nombreuses tentatives de connexion',
         array $messageData = [],
         int $code = 0,
         Throwable $previous = null
-    ) {
+    )
+    {
         parent::__construct($message, $messageData, $code, $previous);
     }
 }

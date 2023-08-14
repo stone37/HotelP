@@ -1,87 +1,102 @@
-<section class="container bg-white">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="h1-responsive display-4 font-weight-bold text-dark text-center mb-4">Nos installations</h1>
-        </div>
-        <div class="col-12 col-md-6 hostel-facilities">
-            <h5 class="h5-responsive text-primary font-weight-bold text-center p-2 mb-4">
-                Installations de l'hôtel
-            </h5>
+{% set equipmentImageState = equipmentImages|length > 0 %}
+{% set equipmentState = equipments|length > 0 %}
+{% set roomEquipmentImageState = roomEquipmentImages|length > 0 %}
+{% set roomEquipmentState = roomEquipments|length > 0 %}
 
-            <div class="content">
-                <div id="carousel-hostel-facilities" class="carousel slide" data-ride="carousel">
-                    <ol class="carousel-indicators">
-                        {% for image in equipmentImages %}
-                            <li data-target="#carousel-hostel-facilities" data-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></li>
-                        {% endfor %}
-                    </ol>
-                    <div class="carousel-inner">
-                        {% for image in equipmentImages %}
-                            <div class="carousel-item {% if loop.first %}active{% endif %}">
-                                <img class="d-block w-100" src="{{ asset(image.webPath) }}" alt="{{ image.name }}">
+{% if equipmentImageState or equipmentState or roomEquipmentImageState or roomEquipmentState %}
+    <section class="container bg-white">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="h1-responsive display-4 font-weight-bold text-dark text-center mb-4">Nos installations</h1>
+            </div>
+            <div class="col-12 col-md-6 hostel-facilities">
+                {% if equipmentImageState or equipmentState %}
+                    <h5 class="h5-responsive text-primary font-weight-bold text-center p-2 mb-4">
+                        Installations de l'hôtel
+                    </h5>
+                {% endif %}
+
+                {% if equipmentImageState %}
+                    <div class="content">
+                        <div id="carousel-hostel-facilities" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                {% for image in equipmentImages %}
+                                    <li data-target="#carousel-hostel-facilities" data-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></li>
+                                {% endfor %}
+                            </ol>
+                            <div class="carousel-inner">
+                                {% for image in equipmentImages %}
+                                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                        <img class="d-block w-100" src="{{ asset(image.webPath) }}" alt="{{ image.name }}">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <a class="carousel-control-prev controls" href="#carousel-hostel-facilities" role="button" data-slide="prev">
+                                <i class="fas fa-arrow-left"></i>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next controls" href="#carousel-hostel-facilities" role="button" data-slide="next">
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if equipmentState %}
+                    <div class="my-4 dark-grey-text">
+                        {% for equipment in equipments %}
+                            <div class="font-weight-stone-500 text-dark mb-2">
+                                <i class="fas fa-angle-double-right mr-2 text-primary"></i> {{ equipment.value }}
                             </div>
                         {% endfor %}
                     </div>
-                    <a class="carousel-control-prev controls" href="#carousel-hostel-facilities" role="button" data-slide="prev">
-                        <i class="fas fa-arrow-left"></i>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next controls" href="#carousel-hostel-facilities" role="button" data-slide="next">
-                        <i class="fas fa-arrow-right"></i>
-                        <span class="sr-only">Next</span>
-                    </a>
-                </div>
+                {% endif %}
             </div>
+            <div class="col-12 col-md-6 room-facilities">
+                {% if roomEquipmentImageState or roomEquipments|length > 0 %}
+                    <h5 class="h5-responsive text-primary font-weight-bold text-center p-2 mb-4">
+                        Installations des chambres
+                    </h5>
+                {% endif %}
 
-            {% if equipments|length > 0 %}
-                <div class="my-4 dark-grey-text">
-                    {% for equipment in equipments %}
-                        <div class="font-weight-stone-500 text-dark mb-2">
-                            <i class="fas fa-angle-double-right mr-2 text-primary"></i> {{ equipment.value }}
+                {% if roomEquipmentImageState %}
+                    <div class="content">
+                        <div id="carousel-room-facilities" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                {% for image in roomEquipmentImages %}
+                                    <li data-target="#carousel-room-facilities" data-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></li>
+                                {% endfor %}
+                            </ol>
+                            <div class="carousel-inner">
+                                {% for image in roomEquipmentImages %}
+                                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                        <img class="d-block w-100" src="{{ asset(image.webPath) }}" alt="{{ image.name }}">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <a class="carousel-control-prev controls" href="#carousel-room-facilities" role="button" data-slide="prev">
+                                <i class="fas fa-arrow-left"></i>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next controls" href="#carousel-room-facilities" role="button" data-slide="next">
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="sr-only">Next</span>
+                            </a>
                         </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-        <div class="col-12 col-md-6 room-facilities">
-            <h5 class="h5-responsive text-primary font-weight-bold text-center p-2 mb-4">
-                Installations des chambres
-            </h5>
-            <div class="content">
-                <div id="carousel-room-facilities" class="carousel slide" data-ride="carousel">
-                    <ol class="carousel-indicators">
-                        {% for image in roomEquipmentImages %}
-                            <li data-target="#carousel-room-facilities"
-                                data-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></li>
-                        {% endfor %}
-                    </ol>
-                    <div class="carousel-inner">
-                        {% for image in roomEquipmentImages %}
-                            <div class="carousel-item {% if loop.first %}active{% endif %}">
-                                <img class="d-block w-100" src="{{ asset(image.webPath) }}" alt="{{ image.name }}">
+                    </div>
+                {% endif %}
+
+                {% if roomEquipmentState %}
+                    <div class="my-4 dark-grey-text">
+                        {% for roomEquipment in roomEquipments %}
+                            <div class="font-weight-stone-500 text-dark mb-2">
+                                <i class="fas fa-angle-double-right mr-2 text-primary"></i> {{ roomEquipment.name }}
                             </div>
                         {% endfor %}
                     </div>
-                    <a class="carousel-control-prev controls" href="#carousel-room-facilities" role="button" data-slide="prev">
-                        <i class="fas fa-arrow-left"></i>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next controls" href="#carousel-room-facilities" role="button" data-slide="next">
-                        <i class="fas fa-arrow-right"></i>
-                        <span class="sr-only">Next</span>
-                    </a>
-                </div>
+                {% endif %}
             </div>
-            {% if roomEquipments|length > 0 %}
-                <div class="my-4 dark-grey-text">
-                    {% for roomEquipment in roomEquipments %}
-                        <div class="font-weight-stone-500 text-dark mb-2">
-                            <i class="fas fa-angle-double-right mr-2 text-primary"></i> {{ roomEquipment.name }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
         </div>
-    </div>
-</section>
-
+    </section>
+{% endif %}

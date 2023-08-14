@@ -64,7 +64,7 @@ class EmailingController extends AbstractController
 
             $this->repository->add($emailing, true);
 
-            $this->service->sendEmailing($emailing);
+            $this->service->send($emailing);
 
             $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_CREATE);
 
@@ -95,7 +95,8 @@ class EmailingController extends AbstractController
 
                 $this->repository->flush();
 
-                $this->service->sendEmailing($emailing);
+                $this->service->send($emailing);
+
                 $this->addFlash('success', 'Votre email a été envoyé');
 
                 return $this->redirectToRoute('app_admin_emailing_index', ['type' => '1']);
@@ -110,7 +111,9 @@ class EmailingController extends AbstractController
                 }
 
                 $this->repository->flush();
-                $this->service->sendUserEmailing($emailing, $users);
+
+                $this->service->sendUser($emailing, $users);
+
                 $this->addFlash('success', 'Votre newsletter a été envoyée avec succès');
 
                 return $this->redirectToRoute('app_admin_emailing_index', ['type' => '2']);
@@ -125,7 +128,7 @@ class EmailingController extends AbstractController
 
                 $this->repository->flush();
 
-                $this->service->sendNewsletterEmailing($emailing, $newsletters);
+                $this->service->sendNewsletter($emailing, $newsletters);
 
                 $this->addFlash('success', 'Votre newsletter a été envoyée avec succès');
 
@@ -160,7 +163,7 @@ class EmailingController extends AbstractController
 
             $this->repository->add($emailing, true);
 
-            $this->service->sendUserEmailing($emailing, $users);
+            $this->service->sendUser($emailing, $users);
 
             $this->addFlash('success', 'Votre newsletter a été envoyée avec succès');
 
@@ -193,7 +196,7 @@ class EmailingController extends AbstractController
 
             $this->repository->add($emailing, true);
 
-            $this->service->sendNewsletterEmailing($emailing, $newsletters);
+            $this->service->sendNewsletter($emailing, $newsletters);
 
             $this->addFlash('success', 'Votre newsletter a été envoyée avec succès');
 
@@ -202,18 +205,6 @@ class EmailingController extends AbstractController
 
         return $this->render('admin/emailing/newsletter.html.twig', [
             'form' => $form->createView(),
-            'newsletters' => $newsletters,
-        ]);
-    }
-
-    #[Route(path: '/emailing/newsletters', name: 'app_admin_emailing_newsletters')]
-    public function newsletters(Request $request): Response
-    {
-        $qb = $this->em->getRepository(NewsletterData::class)->findBy([], ['createdAt' => 'desc']);
-
-        $newsletters = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/emailing/newsletters.html.twig', [
             'newsletters' => $newsletters,
         ]);
     }
@@ -247,7 +238,7 @@ class EmailingController extends AbstractController
 
         $message = 'Être vous sur de vouloir supprimer cet mail ?';
 
-        $render = $this->render('ui/Modal/_delete.html.twig', [
+        $render = $this->render('ui/modal/_delete.html.twig', [
             'form' => $form->createView(),
             'data' => $emailing,
             'message' => $message,
@@ -302,7 +293,7 @@ class EmailingController extends AbstractController
             $message = 'Être vous sur de vouloir supprimer cet mail ?';
         }
 
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
+        $render = $this->render('ui/modal/_delete_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,

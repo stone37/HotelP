@@ -2,239 +2,80 @@
 
 namespace App\Controller\Admin;
 
+use App\Data\RoomEquipmentCrudData;
 use App\Entity\RoomEquipment;
-use App\Event\AdminCRUDEvent;
-use App\Form\RoomEquipmentType;
-use App\Repository\RoomEquipmentRepository;
-use JetBrains\PhpStorm\ArrayShape;
-use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin')]
-class RoomEquipmentController extends AbstractController
+class RoomEquipmentController extends CrudController
 {
-    public function __construct(
-        private RoomEquipmentRepository $repository,
-        private PaginatorInterface $paginator,
-        private EventDispatcherInterface $dispatcher
-    )
-    {
-    }
+    protected string $entity = RoomEquipment::class;
+    protected string $templatePath = 'roomEquipment';
+    protected string $routePrefix = 'app_admin_room_equipment';
+    protected string $createFlashMessage = 'Un équipement a été crée';
+    protected string $editFlashMessage = 'Un équipement a été mise à jour';
+    protected string $deleteFlashMessage = 'Un équipement a été supprimé';
+    protected string $deleteMultiFlashMessage = 'Les équipements ont été supprimés';
+    protected string $deleteErrorFlashMessage = 'Désolé, les équipements n\'a pas pu être supprimée !';
 
     #[Route(path: '/room-equipments', name: 'app_admin_room_equipment_index')]
-    public function index(Request $request): Response
+    public function index(): Response
     {
-        $qb = $this->repository->findBy([], ['position' => 'asc']);
+        $query = $this->getRepository()
+            ->createQueryBuilder('row')
+            ->orderby('row.position', 'ASC');
 
-        $equipments = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/roomEquipment/index.html.twig', ['equipments' => $equipments]);
+        return $this->crudIndex($query);
     }
 
     #[Route(path: '/room-equipments/create', name: 'app_admin_room_equipment_create')]
-    public function create(Request $request): RedirectResponse|Response
+    public function create(): RedirectResponse|Response
     {
-        $equipment = new RoomEquipment();
+        $entity = new RoomEquipment();
+        $data = new RoomEquipmentCrudData($entity);
 
-        $form = $this->createForm(RoomEquipmentType::class, $equipment);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $event = new AdminCRUDEvent($equipment);
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_CREATE);
-
-            $this->repository->add($equipment, true);
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_CREATE);
-
-            $this->addFlash('success', 'Un équipement a été crée');
-
-            return $this->redirectToRoute('app_admin_room_equipment_index');
-        }
-
-        return $this->render('admin/roomEquipment/create.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->crudNew($data);
     }
 
     #[Route(path: '/room-equipments/{id}/edit', name: 'app_admin_room_equipment_edit', requirements: ['id' => '\d+'])]
-    public function edit(Request $request, RoomEquipment $equipment): RedirectResponse|Response
+    public function edit(RoomEquipment $equipment): RedirectResponse|Response
     {
-        $form = $this->createForm(RoomEquipmentType::class, $equipment);
+        $data = new RoomEquipmentCrudData($equipment);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $event = new AdminCRUDEvent($equipment);
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_EDIT);
-
-            $this->repository->flush();
-
-            $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_EDIT);
-
-            $this->addFlash('success', 'Un équipement a été mise à jour');
-
-            return $this->redirectToRoute('app_admin_room_equipment_index');
-        }
-
-        return $this->render('admin/roomEquipment/edit.html.twig', [
-            'form' => $form->createView(),
-            'equipment' => $equipment
-        ]);
+        return $this->crudEdit($data);
     }
 
     #[Route(path: '/room-equipments/{id}/move', name: 'app_admin_room_equipment_move', requirements: ['id' => '\d+'])]
-    public function move(Request $request, RoomEquipment $equipment): RedirectResponse
+    public function move(RoomEquipment $equipment): RedirectResponse
     {
-        if ($request->query->has('pos')) {
-            $pos = ($equipment->getPosition() + (int)$request->query->get('pos'));
-
-            if ($pos >= 0) {
-                $equipment->setPosition($pos);
-                $this->repository->flush();
-
-                $this->addFlash('success', 'La position a été modifier');
-            }
-        }
-
-        return $this->redirectToRoute('app_admin_room_equipment_index');
+        return $this->crudMove($equipment);
     }
 
     #[Route(path: '/room-equipments/{id}/delete', name: 'app_admin_room_equipment_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, RoomEquipment $equipment): RedirectResponse|JsonResponse
+    public function delete(RoomEquipment $equipment): RedirectResponse|JsonResponse
     {
-        $form = $this->deleteForm($equipment);
+        $data = new RoomEquipmentCrudData($equipment);
 
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $event = new AdminCRUDEvent($equipment);
-
-                $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
-
-                $this->repository->remove($equipment, true);
-
-                $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
-
-                $this->addFlash('success', 'L\'équipement  a été supprimé');
-            } else {
-                $this->addFlash('error', 'Désolé, l\'équipement n\'a pas pu être supprimée!');
-            }
-
-            $url = $request->request->get('referer');
-
-            return new RedirectResponse($url);
-        }
-
-        $message = 'Être vous sur de vouloir supprimer cet équipement ?';
-
-        $render = $this->render('ui/Modal/_delete.html.twig', [
-            'form' => $form->createView(),
-            'data' => $equipment,
-            'message' => $message,
-            'configuration' => $this->configuration(),
-        ]);
-
-        $response['html'] = $render->getContent();
-
-        return new JsonResponse($response);
+        return $this->crudDelete($data);
     }
 
     #[Route(path: '/room-equipments/bulk/delete', name: 'app_admin_room_equipment_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
+    public function deleteBulk(): RedirectResponse|JsonResponse
     {
-        $ids = (array) json_decode($request->query->get('data'));
-
-        if ($request->query->has('data')) {
-            $request->getSession()->set('data', $ids);
-        }
-
-        $form = $this->deleteMultiForm();
-
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $ids = $request->getSession()->get('data');
-                $request->getSession()->remove('data');
-
-                foreach ($ids as $id) {
-                    $equipment = $this->repository->find($id);
-                    $this->dispatcher->dispatch(new AdminCRUDEvent($equipment), AdminCRUDEvent::PRE_DELETE);
-
-                    $this->repository->remove($equipment, false);
-                }
-
-                $this->repository->flush();
-
-                $this->addFlash('success', 'Les équipements ont été supprimé');
-            } else {
-                $this->addFlash('error', 'Désolé, les équipements n\'ont pas pu être supprimée !');
-            }
-
-            $url = $request->request->get('referer');
-
-            return new RedirectResponse($url);
-        }
-
-        if (count($ids) > 1) {
-            $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' équipements ?';
-        } else {
-            $message = 'Être vous sur de vouloir supprimer cet équipement ?';
-        }
-
-        $render = $this->render('ui/Modal/_delete_multi.html.twig', [
-            'form' => $form->createView(),
-            'data' => $ids,
-            'message' => $message,
-            'configuration' => $this->configuration()
-        ]);
-
-        $response['html'] = $render->getContent();
-
-        return new JsonResponse($response);
+        return $this->crudMultiDelete();
     }
 
-    private function deleteForm(RoomEquipment $equipment): FormInterface
+    public function getDeleteMessage(): string
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('app_admin_room_equipment_delete', ['id' => $equipment->getId()]))
-            ->getForm();
+        return 'Être vous sur de vouloir supprimer cet équipement ?';
     }
 
-    private function deleteMultiForm(): FormInterface
+    public function getDeleteMultiMessage(int $number): string
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('app_admin_room_equipment_bulk_delete'))
-            ->getForm();
-    }
-
-    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
-    {
-        return [
-            'modal' => [
-                'delete' => [
-                    'type' => 'modal-danger',
-                    'icon' => 'fas fa-times',
-                    'yes_class' => 'btn-outline-danger',
-                    'no_class' => 'btn-danger'
-                ]
-            ]
-        ];
+        return 'Être vous sur de vouloir supprimer ces ' . $number . ' équipements ?';
     }
 }
 

@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Data\BookingData;
 use App\Entity\User;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
@@ -12,15 +13,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Security;
 
 class BookingType extends AbstractType
 {
-    private Security $security;
-
-    public function __construct(Security $security)
+    public function __construct(private Security $security)
     {
-        $this->security = $security;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -60,10 +57,9 @@ class BookingType extends AbstractType
         if (!$user || empty($user->getCountry())) {
             $builder->add('country', CountryType::class, [
                 'label' => 'Pays (facultatif)',
-                'attr' => [
-                    'class' => 'mdb-select md-outline md-form dropdown-stone',
-                ],
+                'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
                 'placeholder' => 'Pays',
+                'data' => 'CI',
                 'required' => false,
             ]);
         }

@@ -8,14 +8,28 @@
 
     {% apply markdown_email %}
 
-        Bonjour {{ order.user.username }}
+        Cher {{ booking.firstname }}
         ===============================
 
-        Votre commande est validée.
-        Vous pouvez accéder à votre facture sur votre espace client.
+        Nous vous remercions pour votre commande sur **{{ settings.name|upper }}**. Nous sommes heureux
+        de vous informer que votre commande a été validée et votre réservation est en cours de confirmation.
+
+        Détails de votre commande
+        -------------------------
+
+        Numéro de commande: **#{{ booking.commande.reference }}**
+        Date de commande: **{{ booking.commande.createdAt|date('d/m/Y') }}**
+
+        Vous recevrez un courriel de confirmation avec votre **numéro réservation** dès que votre réservation sera confirmée.
+
+        Nous nous excusons pour tout désagrément causé par le délai de traitement et nous vous remercions pour votre patience.
+
+        Si vous avez des questions ou des préoccupations, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.
 
     {% endapply %}
 
-    {{ e.button('Mes factures', url('app_dashboard_invoice_index')) }}
+    {% if app.user %}
+        {{ e.button('Mes factures', url('app_user_invoice_index')) }}
+    {% endif %}
 {% endblock %}
 

@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Controller\Traits\ControllerTrait;
 use App\Repository\PromotionRepository;
-use App\Service\CartService;
-use App\Storage\BookingSessionStorage;
+use App\Storage\BookingStorage;
+use App\Storage\CartStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,8 +23,8 @@ class PromotionController extends AbstractController
         private EntityManagerInterface $em,
         private PromotionRepository $repository,
         private Breadcrumbs $breadcrumbs,
-        private BookingSessionStorage $storage,
-        private CartService $cartService,
+        private BookingStorage $storage,
+        private CartStorage $cartStorage,
         private PaginatorInterface $paginator)
     {
     }
@@ -33,7 +33,7 @@ class PromotionController extends AbstractController
     public function index(Request $request): Response
     {
         $this->storage->remove();
-        $this->cartService->init();
+        $this->cartStorage->init();
 
         $this->breadcrumb($this->breadcrumbs)->addItem('Nos offres');
 
@@ -57,8 +57,6 @@ class PromotionController extends AbstractController
             ->addItem('Nos offres', $this->generateUrl('app_promotion_index'))
             ->addItem($promotion->getName());
 
-        return $this->render('site/promotion/show.html.twig', [
-            'promotion' => $promotion
-        ]);
+        return $this->render('site/promotion/show.html.twig', ['promotion' => $promotion]);
     }
 }

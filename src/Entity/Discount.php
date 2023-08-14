@@ -8,7 +8,6 @@ use App\Repository\DiscountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DiscountRepository::class)]
 class Discount
@@ -24,11 +23,9 @@ class Discount
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[Assert\NotBlank]
     #[ORM\Column(nullable: true)]
     private ?int $discount = null;
 
-    #[Assert\NotBlank]
     #[ORM\Column(nullable: true)]
     private ?string $code = null;
 

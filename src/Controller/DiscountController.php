@@ -11,18 +11,12 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 class DiscountController extends AbstractController
 {
     use ControllerTrait;
 
-    private OrderManager $manager;
-    private DiscountRepository $repository;
-
-    public function __construct(OrderManager $manager, DiscountRepository $repository)
+    public function __construct(private OrderManager $manager, private DiscountRepository $repository)
     {
-        $this->manager = $manager;
-        $this->repository = $repository;
     }
 
     #[Route(path: '/discount', name: 'app_discount_index')]

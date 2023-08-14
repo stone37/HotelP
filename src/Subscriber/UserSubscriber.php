@@ -8,11 +8,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class UserSubscriber implements EventSubscriberInterface
 {
-    private BookingRepository $bookingRepository;
-
-    public function __construct(BookingRepository $bookingRepository)
+    public function __construct(private BookingRepository $bookingRepository)
     {
-        $this->bookingRepository = $bookingRepository;
     }
 
     /**
@@ -20,9 +17,7 @@ class UserSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents(): array
     {
-        return [
-            UserBannedEvent::class => 'cleanUserContent',
-        ];
+        return [UserBannedEvent::class => 'cleanUserContent'];
     }
 
     /**

@@ -1,22 +1,23 @@
 .skin-light {
-    color: #4b5563;
     background-color: #fafafa;
-    font-weight: 400;
-} 
+    color: #121c42;
+    font-family: "Inter", sans-serif;
+    font-weight: 400 !important;
+}
 
-.small-9 {
+.skin-light .small-9 {
     font-size: .9rem !important;
 }
 
-.small-8 {
+.skin-light .small-8 {
     font-size: .8rem !important;
 }
 
-.small-7 {
+.skin-light .small-7 {
     font-size: .7rem !important;
 }
 
-.small-6 {
+.skin-light .small-6 {
     font-size: .6rem !important;
 }
 
@@ -124,17 +125,6 @@
 .skin-light .bc .breadcrumb {
     background-color: transparent !important;
     font-size: 0.9rem !important;
-}
-
-@media (max-width: 767px) {
-   /* .skin-light .bc .breadcrumb {
-        background-color: transparent !important;
-        font-size: 0.9rem !important;
-    }*/
-
-    /*.skin-light .bc {
-        margin-top: 0.2px !important;
-    }*/
 }
 
 .skin-light .bc .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
@@ -1448,7 +1438,7 @@
 
 .skin-light .side-nav .sidenav-bg:after,
 .skin-light .side-nav .sidenav-bg.mask-strong:after {
-    background: rgba(48, 55, 55, .88)
+    background: rgba(48, 55, 55, 1)
 }
 
 .skin-light .side-nav {
@@ -1626,13 +1616,6 @@
     width: 130px;
 }
 
-
-/*@media (min-width: 768px) {
-    .skin-light .navbar {
-        min-height:70px;
-    }
-}*/
-
 @media (max-width: 767px) {
     .skin-light .navbar {
         background-color: #FFFFFF;
@@ -1788,6 +1771,57 @@
     display: none;
 }
 
+@media (max-width: 992px) {
+    .skin-light .navbar .navbar-collapse {
+        position: fixed;
+        top: 48px;
+        right: 0;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 15px;
+        width: 100%;
+        height: 100%;
+        z-index: 999;
+        background-color: #FFF;
+    }
+
+    .navbar-collapse.show {
+        right: 0;
+        transition: right 100ms ease-in-out;
+    }
+
+    .navbar-toggler.collapsed ~ .navbar-collapse {
+        transition: right 200ms ease-in-out;
+    }
+}
+
+.skin-light .navbar .navbar-nav .nav-item.mobile-user {
+    width: 100%;
+}
+
+.skin-light .navbar .navbar-nav .nav-item.mobile-user .menu a {
+    width: 48%;
+    margin-bottom: 0.7rem;
+    border-radius: 0.3rem;
+    background-color: #616161;
+    color: #FFFFFF;
+    padding: 15px 5px 8px 5px;
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+.skin-light .navbar .navbar-nav .nav-item.mobile-user .menu a:focus,
+.skin-light .navbar .navbar-nav .nav-item.mobile-user .menu a:hover,
+.skin-light .navbar .navbar-nav .nav-item.mobile-user .menu a:active,
+.skin-light .navbar .navbar-nav .nav-item.mobile-user .menu a.active {
+    background-color: #FF9A16;
+}
+
+.skin-light .navbar .navbar-nav .nav-item.mobile-user .menu a i {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
 @media (max-width: 767px) {
     .skin-light .navbar .navbar-nav {
         -webkit-box-align: start;
@@ -1797,12 +1831,21 @@
 
     .skin-light .navbar .navbar-nav {
         margin: 1rem 0 0 0;
-
     }
 
     .skin-light .navbar .navbar-nav .nav-item .nav-link i {
         display: inline-block;
     }
+
+    .skin-light .navbar .navbar-nav .nav-item {
+        display: block;
+        width: 100%;
+    }
+
+    .skin-light .navbar .navbar-nav .nav-item .nav-link {
+        padding-left: 0;
+    }
+
 
 
 
@@ -1819,9 +1862,18 @@
         display: inline-block;
     }
 
+    .skin-light .navbar .navbar-nav {
+        margin: 1rem 0 0 0;
+    }
 
+    .skin-light .navbar .navbar-collapse {
+        top: 55px;
+    }
 
-
+    .skin-light .navbar .navbar-nav .nav-item.mobile-user .menu a {
+        width: 49%;
+        margin-bottom: 0.9rem;
+    }
 }
 
 .skin-light .navbar.navbar-transparent:not(.top-nav-collapse) {
@@ -2006,6 +2058,10 @@
 }
 
 @media (max-width: 767px) {
+    .skin-light .mt-40 {
+        margin-top: 40px !important
+    }
+
     .skin-light .mt-50 {
         margin-top: 50px !important
     }
@@ -2028,6 +2084,10 @@
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
+    .skin-light .mt-md-6 {
+        margin-top: 4rem  !important
+    }
+
     .skin-light .mt-md-7 {
         margin-top: 5rem  !important
     }
@@ -2904,6 +2964,19 @@
 }
 
 /* Material select */
+.skin-light .multiple-select-dropdown li:first-child {
+    display: none;
+}
+
+.skin-light .multiple-select-dropdown li {
+    padding-right: 0.5rem !important;
+    padding-left: 0.5rem !important;
+}
+
+.skin-light .multiple-select-dropdown li [type="checkbox"]+label {
+    display: none;
+}
+
 .skin-light .dropdown-primary .dropdown-content li:hover,
 .skin-light .dropdown-primary .dropdown-content li.active,
 .skin-light .dropdown-primary .dropdown-content li.active span,
@@ -2980,20 +3053,17 @@
 
 .skin-light .fixed-action-btn {
     position: fixed;
-    height: 50px;
     z-index: 998;
-    right: 20px;
+    right: 50px;
     bottom: 75px;
-    margin:0;
-    padding: 0;
-    background-color: transparent;
+    margin-bottom:0;
+    padding-top: 0;
+    height: 70px;
 }
 
 .skin-light .fixed-action-btn a {
-    padding: 14px 16px !important;
-    background-color: rgba(255, 154, 22, .7) !important;
-    font-size: 1.08rem !important;
-    border-radius: 50% !important;
+    padding: 12px 16px !important;
+    font-size: 1.08rem;
     line-height: normal;
     box-shadow: none;
     -webkit-transition:all .3s linear;
@@ -3001,46 +3071,21 @@
     transition:all .3s linear
 }
 
-.skin-light .fixed-action-btn a:hover,
-.skin-light .fixed-action-btn a:focus {
-    background-color: rgba(255, 154, 22, 1) !important;
-    box-shadow: none;
-}
-
-.skin-light .fixed-action-btn i {
-    color: #ffffff !important;
-    font-size: 1.05rem !important
-}
-
 @media (max-width: 767px) {
     .skin-light .fixed-action-btn {
         position: fixed;
         z-index: 998;
-        right: 10px;
-        bottom: 80px;
-        margin-bottom:0;
-        padding-top:15px
+        right: 0;
+        bottom: 50px;
     }
+}
 
-    .skin-light .fixed-action-btn a {
-        padding: 12px !important;
-        background-color: rgba(255, 154, 22, .7) !important;
-        border-radius: 50% !important;
-        line-height: normal;
-        font-size: 1.08rem !important;
-        box-shadow: none;
-        -webkit-transition:all .3s linear;
-        -o-transition:all .3s linear;
-        transition:all .3s linear
-    }
-
-    .skin-light .fixed-action-btn a:hover,
-    .skin-light .fixed-action-btn a:focus {
-        background-color: rgba(255, 154, 22, 1) !important;
-    }
-
-    .skin-light .fixed-action-btn i {
-        color: #ffffff !important;
+@media (min-width: 768px) and (max-width: 1024px) {
+    .skin-light .fixed-action-btn {
+        position: fixed;
+        z-index: 998;
+        right: 0;
+        bottom: 50px;
     }
 }
 
@@ -3172,7 +3217,7 @@
     top: 6rem;
     right: 5.7rem;
     color: #FFFFFF;
-    background-color: rgba(33, 33, 33, .8); /*rgba(48, 55, 55, .9)*/
+    background-color: rgba(33, 33, 33, .8);
     padding: 10px 15px;
     border-radius: 0 0.3rem 0.3rem 0.3rem;
     font-size: .9rem;
@@ -3245,7 +3290,8 @@
     border-radius: 0.3rem;
 }
 
-.skin-light .booking-data-form .booking-form-bulk > div {
+.skin-light .booking-data-form .booking-form-bulk > div,
+.skin-light .booking-select-data-form .booking-form-bulk > div {
     padding: 0;
 }
 
@@ -3255,9 +3301,18 @@
     padding-bottom: 0.5rem;
 }
 
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk {
+    padding-left: 0;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin,
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout,
-.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user {
+.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user {
     cursor: pointer;
     padding: 3px 12px;
     border: 1.6px solid #FFFFFF;
@@ -3269,7 +3324,13 @@
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user.active,
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin:hover,
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout:hover,
-.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user:hover {
+.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user:hover,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin.active,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout.active,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user.active,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin:hover,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout:hover,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user:hover {
     border-color: #FF9A16;
     -webkit-box-shadow: 0 2px 5px 0 rgba(255, 154, 22, 0.16), 0 2px 10px 0 rgba(255, 154, 22, 0.12) !important;
     box-shadow: 0 2px 5px 0 rgba(255, 154, 22, 0.16), 0 2px 10px 0 rgba(255, 154, 22, 0.12) !important
@@ -3277,27 +3338,39 @@
 
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin .icon,
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout .icon,
-.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .icon {
+.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .icon,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin .icon,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout .icon,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user .icon {
     font-size: 1.3rem;
     padding-right: 15px;
 }
 
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin .icon i,
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout .icon i,
-.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .icon i {
+.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .icon i,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin .icon i,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout .icon i,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user .icon i {
     font-size: 1.3rem;
 }
 
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin .title,
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout .title,
-.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .title {
+.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .title,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin .title,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout .title,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user .title{
     font-weight: 600;
     font-size: 1.2rem;
 }
 
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin .date-content,
 .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout .date-content,
-.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .date-content {
+.skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .date-content,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin .date-content,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout .date-content,
+.skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user .date-content {
     font-size: 0.95rem;
     font-weight: 500;
 }
@@ -3308,6 +3381,11 @@
     padding: 1.8rem 2.4rem;
     margin-left: 0.5rem;
     border-radius: 0 0.3rem 0.3rem 0 !important;
+}
+
+.skin-light .booking-select-data-form .booking-form-bulk .booking-form-btn {
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
 }
 
 @media (max-width: 767px) {
@@ -3335,33 +3413,48 @@
 
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin,
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout,
-    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user {
+    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user {
         padding: 3px 5px;
         border: 1.6px solid #fafafa;
     }
 
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin .icon,
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout .icon,
-    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .icon {
+    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .icon,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin .icon,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout .icon,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user .icon {
         font-size: 1rem;
     }
 
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin .icon i,
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout .icon i,
-    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .icon i {
+    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .icon i,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin .icon i,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout .icon i,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user .icon i {
         font-size: 1rem;
     }
 
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin .title,
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout .title,
-    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .title {
+    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .title,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin .title,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout .title,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user .title {
         font-weight: 600;
         font-size: 0.9rem;
     }
 
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkin .date-content,
     .skin-light .booking-data-form .booking-form-bulk .booking-bulk .checkout .date-content,
-    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .date-content {
+    .skin-light .booking-data-form .booking-form-bulk .booking-bulk .user .date-content,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkin .date-content,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .checkout .date-content,
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-bulk .user .date-content {
         font-size: 0.75rem;
         font-weight: 500;
     }
@@ -3380,6 +3473,19 @@
         border-radius: 0.3rem !important;
     }
 
+    .skin-light .booking-select-data-form .booking-form-bulk .booking-form-btn {
+        font-size: 1rem !important;
+        font-weight: 500 !important;
+        padding: 0.6rem 2rem;
+    }
+
+    .skin-light .booking-data-modal h5 {
+        font-size: 110% !important;
+    }
+
+    .skin-light .booking-data-modal .modal-dialog .modal-body {
+        border-radius: 0.3rem !important;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
@@ -3425,7 +3531,9 @@
         padding: 1.6rem 1.55rem;
     }
 
-
+    .skin-light .booking-data-modal .modal-dialog .modal-body {
+        border-radius: 0.3rem !important;
+    }
 }
 
 .skin-light .view.intro.data {
@@ -3520,238 +3628,6 @@
         height: 90px !important;
     }
 }
-
-
-
-
-
-
-
-
-
-/*.skin-light .view .booking-form-bulk {
-    position: absolute;
-    top: 25rem;
-    left: 4.6rem;
-    width: 100%;
-}
-
-.skin-light .view .booking-form-bulk .booking-form {
-    background-color: rgba(255, 255, 255, 1);
-    width: 36%;
-    height: 60px;
-    border-radius: 0;
-    padding: 7px 3.5px 0 3.5px;
-}
-
-.skin-light .view .booking-form-bulk .booking-form-btn {
-    font-size: 1.1rem !important;
-    font-weight: 500 !important;
-    padding: 1.3rem 2.4rem;
-    -webkit-box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21) !important;
-    box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21) !important
-}
-
-.skin-light .view .booking-form-bulk .booking-form .checkin,
-.skin-light .view .booking-form-bulk .booking-form .checkout,
-.skin-light .view .booking-form-bulk .booking-form .user {
-    cursor: pointer;
-    padding-top: 3px;
-    padding-bottom: 2px;
-    padding-left: 12px;
-    padding-right: 12px;
-    border: 1.6px solid rgba(255, 255, 255, 1);
-}
-
-.skin-light .view .booking-form-bulk .booking-form .checkin.active,
-.skin-light .view .booking-form-bulk .booking-form .checkout.active,
-.skin-light .view .booking-form-bulk .booking-form .user.active,
-.skin-light .view .booking-form-bulk .booking-form .checkin:hover,
-.skin-light .view .booking-form-bulk .booking-form .checkout:hover,
-.skin-light .view .booking-form-bulk .booking-form .user:hover {
-    border: 1.6px solid #FF9A16;
-    -webkit-box-shadow: 0 2px 5px 0 rgba(255, 154, 22, 0.16), 0 2px 10px 0 rgba(255, 154, 22, 0.12) !important;
-    box-shadow: 0 2px 5px 0 rgba(255, 154, 22, 0.16), 0 2px 10px 0 rgba(255, 154, 22, 0.12) !important
-}
-
-.skin-light .view .booking-form-bulk .booking-form .checkin .icon,
-.skin-light .view .booking-form-bulk .booking-form .checkout .icon,
-.skin-light .view .booking-form-bulk .booking-form .user .icon {
-    font-size: 1rem;
-    padding-right: 15px;
-}
-
-.skin-light .view .booking-form-bulk .booking-form .checkin .icon i,
-.skin-light .view .booking-form-bulk .booking-form .checkout .icon i,
-.skin-light .view .booking-form-bulk .booking-form .user .icon i {
-    font-size: 1rem;
-}
-
-.skin-light .view .booking-form-bulk .booking-form .checkin .title,
-.skin-light .view .booking-form-bulk .booking-form .checkout .title,
-.skin-light .view .booking-form-bulk .booking-form .user .title {
-    font-weight: 600;
-    font-size: .9rem;
-}
-
-.skin-light .view .booking-form-bulk .booking-form .checkin .date-content,
-.skin-light .view .booking-form-bulk .booking-form .checkout .date-content,
-.skin-light .view .booking-form-bulk .booking-form .user .date-content {
-    font-size: .7rem;
-    font-weight: 500;
-}
-
-.skin-light .view .booking-form-bulk {
-
-}
-
-.intro-gradient-rgba {
-    background: linear-gradient(40deg, rgba(0, 0, 0, .5), rgba(238, 243, 243, .8)) !important
-}*/
-
-/*@media (max-width: 767px) {
-    .skin-light .view .h2-responsive.intro {
-        font-size: 180% !important;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form {
-        background-color: #FFFFFF;
-        width: 92%;
-        height: 11.5rem;
-        border-radius: 0;
-        padding: 15px 20px 15px 20px;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form-btn {
-        font-size: 1.2rem !important;
-        font-weight: 500 !important;
-        width: 92%;
-        padding: 1rem 4rem;
-        -webkit-box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21) !important;
-        box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21) !important
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout {
-        cursor: pointer;
-        padding-top: 3.3px;
-        padding-bottom: 2px;
-        padding-left: 12px;
-        padding-right: 12px;
-        border: 1.4px solid #FFFFFF;
-        height: 106px;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user {
-        cursor: pointer;
-        padding-top: 3px;
-        padding-bottom: 2px;
-        padding-left: 12px;
-        padding-right: 12px;
-        border: 1.4px solid #FFFFFF;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .icon,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .icon,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user .icon {
-        padding-right: 8px;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .icon i,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .icon i,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user .icon i {
-        font-size: .9rem;
-        position: relative;
-        bottom: 1.2px;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .title,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .title,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user .title {
-        font-weight: 600;
-        font-size: .95rem;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .date-content-number,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .date-content-number {
-        font-weight: 800 !important;
-        font-size: 4.5rem;
-        line-height: 3.5rem;
-        padding: 0 !important;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .date-content-title,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .date-content-title {
-        font-size: .7rem;
-        font-weight: 600;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user .date-content {
-        font-size: .75rem;
-        font-weight: 600;
-    }
-}*/
-
-/*@media (min-width: 768px) and (max-width: 1024px) {
-    .skin-light .view .h1-responsive.intro {
-        font-size: 310% !important
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form {
-        background-color: #FFFFFF;
-        width: 70%;
-        height: 2.95rem;
-        border-radius: 0;
-        padding: 2.5px 3px 0 3px;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user {
-        cursor: pointer;
-        padding-top: 3px;
-        padding-bottom: 2px;
-        padding-left: 12px;
-        padding-right: 12px;
-        border: 1.4px solid #FFFFFF;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .icon,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .icon,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user .icon {
-        font-size: 1rem;
-        padding-right: 15px;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .icon i,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .icon i,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user .icon i {
-        font-size: .85rem;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .title,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .title,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user .title {
-        font-weight: 600;
-        font-size: .75rem;
-    }
-
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkin .date-content,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .checkout .date-content,
-    .skin-light .view .booking-mobile-form-bulk .booking-form .user .date-content {
-        font-size: .68rem;
-        font-weight: 500;
-    }
-}*/
-
-
-
-
-
-
-
-
-
 
 #booking-booker-modal .modal-dialog.modal-sm {
     margin-top: 3.6rem !important;
@@ -3975,6 +3851,11 @@
     height: 280px;
 }
 
+.skin-light .hostel-facilities .content .carousel .carousel-inner img,
+.skin-light .room-facilities .content .carousel .carousel-inner img {
+    height: 280px;
+}
+
 .skin-light .hostel-facilities .content .carousel .carousel-indicators li.active,
 .skin-light .room-facilities .content .carousel .carousel-indicators li.active {
     background-color: #FF9A16;
@@ -4020,6 +3901,11 @@
         height: 170px;
     }
 
+    .skin-light .hostel-facilities .content .carousel .carousel-inner img,
+    .skin-light .room-facilities .content .carousel .carousel-inner img {
+        height: 170px;
+    }
+
     .skin-light .hostel-facilities .content .carousel a.controls,
     .skin-light .room-facilities .content .carousel a.controls {
         display: none !important;
@@ -4038,6 +3924,11 @@
     .skin-light .room-facilities .content .carousel .carousel-inner,
     .skin-light .room-facilities .content .carousel .carousel-inner .active,
     .skin-light .room-facilities .content .carousel .carousel-inner .carousel-item {
+        height: 220px;
+    }
+
+    .skin-light .hostel-facilities .content .carousel .carousel-inner img,
+    .skin-light .room-facilities .content .carousel .carousel-inner img {
         height: 220px;
     }
 
@@ -4149,29 +4040,11 @@
     height: 190px;
 }
 
-
-
-
-
-
-
-/*.skin-light .home-room-promotion .card.card-cascade .view,
-.skin-light .home-room-promotion .card.card-cascade .view img,
-.skin-light .home-room .card.card-cascade .view,
-.skin-light .home-room .card.card-cascade .view img {
-    border-radius: 0 !important;
-}*/
-
 .skin-light .home-room-promotion .card.card-cascade .view,
 .skin-light .home-room-promotion .card.card-cascade .view img {
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
 }
-
-
-/*.skin-light .home-room-promotion .card.card-cascade {
-    background-color: rgba(255, 255, 255, .85);
-}*/
 
 .skin-light .home-room-promotion .card.card-cascade .card-body .remise {
     position: absolute;
@@ -4355,90 +4228,6 @@
     right: -1.35rem !important;
 }
 
-/*.skin-light .home-room .card.card-cascade .card-body .dropdown-menu {
-    min-width: 17rem;
-}
-
-.skin-light .home-room .card.card-cascade .card-body .dropdown-menu .dropdown-header {
-    padding: 0.8rem 0.8rem !important;
-    font-size: 1rem;
-}
-
-
-.skin-light .home-room .card.card-cascade .card-body .dropdown-menu .dropdown-item {
-    background-color: transparent !important;
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-}
-
-.skin-light .home-room .card.card-cascade .card-body .dropdown-menu .dropdown-item:hover,
-.skin-light .home-room .card.card-cascade .card-body .dropdown-menu .dropdown-item:focus {
-    color: inherit !important;
-}
-
-.skin-light .home-room .card.card-cascade .card-body .dropdown-menu .dropdown-item .title,
-.skin-light .home-room .card.card-cascade .card-body .dropdown-menu .dropdown-item .price {
-    font-size: 0.95rem !important;
-}
-
-.skin-light .home-room .card.card-cascade .card-body .dropdown-menu .dropdown-item a.btn {
-    color: #fff !important;
-}*/
-
-/*.skin-light .home-room .card.card-cascade .card-body .booking-btn {
-    position: relative;
-    bottom: 6.5px;
-}*/
-
-/*.skin-light .app-newsletter form input {
-    width: 30rem;
-    border-bottom-right-radius: 0 !important;
-    border-top-right-radius: 0 !important;
-}
-
-.skin-light .app-newsletter form .btn.btn-lg {
-    position: relative;
-    padding: .98rem 2.4rem;
-    font-size: .94rem;
-    bottom: 4.5px;
-    right: 3px;
-    box-shadow: none;
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-}
-
-.skin-light .app-newsletter form .md-form.input-with-pre-icon .input-prefix {
-    top: 45%;
-}
-
-@media (max-width: 767px){
-    .skin-light .app-newsletter form input {
-        width: 12rem;
-    }
-
-    .skin-light .app-newsletter form input::placeholder,
-    .skin-light .app-newsletter form input::-webkit-input-placeholder,
-    .skin-light .app-newsletter form input::-moz-placeholder,
-    .skin-light .app-newsletter form input::-ms-input-placeholder {
-        font-size: 1.1rem;
-    }
-
-    .skin-light .app-newsletter form .btn.btn-lg {
-        position: relative;
-        padding: .98rem .8rem;
-        font-size: .94rem;
-        bottom: 4px;
-        right: 2px;
-        box-shadow: none;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-    .skin-light .app-newsletter form input {
-        width: 26rem;
-    }
-}*/
-
 .skin-light .app-newsletter form .md-form input.form-control {
     width: 30rem;
     height: calc(1.5em + 1rem + 5px);
@@ -4568,439 +4357,11 @@
     }
 }
 
-.btn-booking-floating {
-    position: fixed;
-    z-index: 9999 !important;
-    right: 20px;
-    top: 190px;
-    margin-bottom: 0;
-    padding-top: 15px;
-    -webkit-box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21) !important;
-    box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21) !important
-}
-
-.btn-booking-floating a.btn-lg {
-    font-size: 1rem !important;
-}
-
-.btn-booking-floating a i {
-    font-size: 1.1rem !important;
-}
-
-/*#app-room-booking-modal .modal-header {
-    font-size: 1.4rem !important;
-    line-height: normal;
-    !*border: 1px solid red;*!
-    padding-top: 10px;
-    padding-bottom: 5px;
-}
-
-#app-room-booking-modal .modal-header i {
-    font-size: 1rem !important;
-    position: absolute;
-    right: -10px;
-    top: 6px;
-}*/
-
-/*
-
-@media (min-width: 576px) {
-    #app-modal-booking-user .modal-sm {
-        max-width: 350px;
-    }
-}
-
-#app-modal-booking-user .modal-body .title {
-    font-size: .9rem;
-}
-
-#app-modal-booking-user .modal-body .data a {
-    margin: .375rem;
-    color: #FF9A16;
-    word-wrap: break-word;
-    white-space: normal;
-    cursor: pointer;
-    border: 1.4px solid #FF9A16;
-    border-radius: 0;
-    -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-    background-color: transparent;
-}
-
-#app-modal-booking-user .modal-body .data a.disabled {
-    color: #9e9e9e;
-    border: 1.4px solid #e0e0e0;
-    background-color: #e0e0e0;
-}
-
-#app-modal-booking-user .modal-body .data a.soustraction {
-    padding: 6px 16px 6px 16px;
-    font-size: 1.2rem
-}
-
-#app-modal-booking-user .modal-body .data a.addition {
-    font-size: 1rem;
-    padding: 7.9px 14px 7.9px 14px;
-}
-
-*/
-
-/*#booking-data-form .booking-form-bulk {
-    width: 100% !important;
-    background-color: rgba(255, 255, 255, 1);
-}*/
-
-
-
-/*
-#booking-data-form {
-    position: relative;
-    bottom: 2.3rem;
-    z-index: 1030 !important;
-    margin-bottom: -4rem !important;
-}
-
-#booking-data-form .booking-form-bulk .booking-form {
-    background-color: rgba(255, 255, 255, 1);
-    width: 35rem;
-    height: 70px;
-    border-radius: 0;
-    padding: 5.8px 6px;
-}
-
-#booking-data-form .booking-form-sticky .booking-form-bulk .booking-form .checkin,
-#booking-data-form .booking-form-sticky .booking-form-bulk .booking-form .checkout,
-#booking-data-form .booking-form-sticky .booking-form-bulk .booking-form .user {
-    cursor: pointer;
-    padding-top: 5px;
-    padding-bottom: 4px;
-    padding-left: 15px;
-    padding-right: 15px;
-    border: 1.6px solid rgba(255, 255, 255, 1);
-}
-
-#booking-data-form .booking-form-bulk .booking-form .checkin.active,
-#booking-data-form .booking-form-bulk .booking-form .checkout.active,
-#booking-data-form .booking-form-bulk .booking-form .user.active,
-#booking-data-form .booking-form-bulk .booking-form .checkin:hover,
-#booking-data-form .booking-form-bulk .booking-form .checkout:hover,
-#booking-data-form .booking-form-bulk .booking-form .user:hover {
-    border: 1.6px solid #FF9A16;
-}
-
-#booking-data-form .booking-form-bulk .booking-form .checkin .icon,
-#booking-data-form .booking-form-bulk .booking-form .checkout .icon,
-#booking-data-form .booking-form-bulk .booking-form .user .icon {
-    font-size: 1.1rem;
-    padding-right: 15px;
-}
-
-#booking-data-form .booking-form-bulk .booking-form .checkin .icon i,
-#booking-data-form .booking-form-bulk .booking-form .checkout .icon i,
-#booking-data-form .booking-form-bulk .booking-form .user .icon i {
-    font-size: 1.1rem;
-}
-
-#booking-data-form .booking-form-bulk .booking-form .checkin .title,
-#booking-data-form .booking-form-bulk .booking-form .checkout .title,
-#booking-data-form .booking-form-bulk .booking-form .user .title {
-    font-weight: 600;
-    font-size: 1.05rem;
-}
-
-#booking-data-form .booking-form-bulk .booking-form .checkin .date-content,
-#booking-data-form .booking-form-bulk .booking-form .checkout .date-content,
-#booking-data-form .booking-form-bulk .booking-form .user .date-content {
-    font-size: .85rem;
-    font-weight: 500;
-}
-
-#booking-data-form .booking-form-bulk .booking-form-btn {
-    font-size: 1.1rem !important;
-    font-weight: 500 !important;
-    padding: 1.63rem 2.4rem;
-}
-
-#booking-data-form .booking-form-sticky.active {
-    padding: 10px;
-}
-
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form {
-    background-color: rgba(255, 255, 255, 1);
-    width: 42rem;
-    height: 55px;
-    border-radius: 0;
-    padding: 3.5px 6px;
-}
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .user {
-    cursor: pointer;
-    padding-top: 2px;
-    padding-bottom: 1px;
-    padding-left: 15px;
-    padding-right: 15px;
-    border: 1.6px solid rgba(255, 255, 255, 1);
-}
-
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin.active,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout.active,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .user.active,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin:hover,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout:hover,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .user:hover {
-    border: 1.6px solid #FF9A16;
-}
-
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout {
-    padding-right: 4rem !important;
-}
-
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin .icon i,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout .icon i,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .user .icon i {
-    font-size: 1rem;
-}
-
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin .title,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout .title,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .user .title {
-    font-weight: 600;
-    font-size: .95rem;
-}
-
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin .date-content,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout .date-content,
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .user .date-content {
-    font-size: .75rem;
-    font-weight: 500;
-}
-
-
-#booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form-btn {
-    font-size: .95rem !important;
-    font-weight: 500 !important;
-    padding: 1.24rem 2.4rem !important;
-}
-
-
-@media (min-width: 768px) and (max-width: 1024px) {
-    #booking-data-form {
-        bottom: 1.75rem;
-        margin-bottom: -2rem !important;
-    }
-
-    #booking-data-form .booking-form-bulk .booking-form {
-        width: 28rem;
-        height: 58px;
-        padding: 2.8px 3px;
-    }
-
-    #booking-data-form .booking-form-sticky .booking-form-bulk .booking-form .checkin,
-    #booking-data-form .booking-form-sticky .booking-form-bulk .booking-form .checkout,
-    #booking-data-form .booking-form-sticky .booking-form-bulk .booking-form .user {
-        cursor: pointer;
-        padding-top: 5px;
-        padding-bottom: 4px;
-        padding-left: 5px;
-        padding-right: 5px;
-        border: 1.6px solid rgba(255, 255, 255, 1);
-    }
-
-    #booking-data-form .booking-form-bulk .booking-form .checkin .icon,
-    #booking-data-form .booking-form-bulk .booking-form .checkout .icon,
-    #booking-data-form .booking-form-bulk .booking-form .user .icon {
-        font-size: .95rem;
-        padding-right: 10px;
-    }
-
-    #booking-data-form .booking-form-bulk .booking-form .checkin .icon i,
-    #booking-data-form .booking-form-bulk .booking-form .checkout .icon i,
-    #booking-data-form .booking-form-bulk .booking-form .user .icon i {
-        font-size: .95rem;
-    }
-
-    #booking-data-form .booking-form-bulk .booking-form .checkin .title,
-    #booking-data-form .booking-form-bulk .booking-form .checkout .title,
-    #booking-data-form .booking-form-bulk .booking-form .user .title {
-        font-weight: 600;
-        font-size: .9rem;
-    }
-
-    #booking-data-form .booking-form-bulk .booking-form .checkin .date-content,
-    #booking-data-form .booking-form-bulk .booking-form .checkout .date-content,
-    #booking-data-form .booking-form-bulk .booking-form .user .date-content {
-        font-size: .75rem;
-        font-weight: 500;
-    }
-
-    #booking-data-form .booking-form-bulk .booking-form-btn {
-        font-size: .95rem !important;
-        font-weight: 500 !important;
-        padding: 1.35rem 2.4rem;
-    }
-
-    #booking-data-form .booking-form-sticky.active {
-        padding: 1px;
-    }
-
-    #booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form {
-        background-color: rgba(255, 255, 255, 1);
-        width: 31.5rem;
-        height: 53px;
-        padding: 2.8px 3px;
-        border-radius: 0;
-    }
-    #booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin,
-    #booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout,
-    #booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .user {
-        cursor: pointer;
-        padding-top: 2px;
-        padding-bottom: 1px;
-        padding-left: 10px;
-        padding-right: 10px;
-        border: 1.6px solid rgba(255, 255, 255, 1);
-    }
-
-    #booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkin,
-    #booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form .checkout {
-        padding-right: 0 !important;
-    }
-
-
-
-    #booking-data-form .booking-form-sticky.active .booking-form-bulk .booking-form-btn {
-        font-size: .95rem !important;
-        font-weight: 500 !important;
-        padding: 1.19rem 2rem !important;
-    }
-
-}
-*/
-
-
-
-
-
-
-/*#booking-select-data-form {
-    position: relative;
-    bottom: 4rem;
-    z-index: 999 !important;
-    margin-bottom: -3rem !important;
-}*/
-
-/*#booking-select-data-form .booking-form-bulk .booking-form {
-    border-radius: 0;
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkin {
-    margin-right: 8px;
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkout {
-    margin-left: 8px;
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkin,
-#booking-select-data-form .booking-form-bulk .booking-form .checkout {
-    display: inline-block;
-    width: 20rem !important;
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkin,
-#booking-select-data-form .booking-form-bulk .booking-form .checkout,
-#booking-select-data-form .booking-form-bulk .booking-form .user {
-    cursor: pointer;
-    padding-top: 8px;
-    padding-bottom: 7px;
-    padding-left: 20px;
-    padding-right: 20px;
-    border: 1.9px solid rgba(48, 55, 55, .3);
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkin.active,
-#booking-select-data-form .booking-form-bulk .booking-form .checkout.active,
-#booking-select-data-form .booking-form-bulk .booking-form .user.active,
-#booking-select-data-form .booking-form-bulk .booking-form .checkin:hover,
-#booking-select-data-form .booking-form-bulk .booking-form .checkout:hover,
-#booking-select-data-form .booking-form-bulk .booking-form .user:hover {
-    border: 1.9px solid #FF9A16;
-    -webkit-box-shadow: 0 2px 5px 0 rgba(255, 154, 22, 0.16), 0 2px 10px 0 rgba(255, 154, 22, 0.12) !important;
-    box-shadow: 0 2px 5px 0 rgba(255, 154, 22, 0.16), 0 2px 10px 0 rgba(255, 154, 22, 0.12) !important
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkin .icon,
-#booking-select-data-form .booking-form-bulk .booking-form .checkout .icon,
-#booking-select-data-form .booking-form-bulk .booking-form .user .icon {
-    font-size: 1.2rem;
-    padding-right: 15px;
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkin .icon i,
-#booking-select-data-form .booking-form-bulk .booking-form .checkout .icon i,
-#booking-select-data-form .booking-form-bulk .booking-form .user .icon i {
-    font-size: 1.2rem;
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkin .title,
-#booking-select-data-form .booking-form-bulk .booking-form .checkout .title,
-#booking-select-data-form .booking-form-bulk .booking-form .user .title {
-    font-weight: 600;
-    font-size: 1.15rem;
-}
-
-#booking-select-data-form .booking-form-bulk .booking-form .checkin .date-content,
-#booking-select-data-form .booking-form-bulk .booking-form .checkout .date-content,
-#booking-select-data-form .booking-form-bulk .booking-form .user .date-content {
-    font-size: .9rem;
-    font-weight: 500;
-}
-
-@media (max-width: 767px) {
-
-    #booking-select-data-form .booking-form-bulk .booking-form .checkin,
-    #booking-select-data-form .booking-form-bulk .booking-form .checkout {
-        display: inline-block;
-        width: 9.2rem !important;
-    }
-
-
-    #booking-select-data-form .booking-form-bulk .booking-form .checkin {
-        margin-right: 4px;
-    }
-
-    #booking-select-data-form .booking-form-bulk .booking-form .checkout {
-        margin-left: 4px;
-    }
-
-    #booking-select-data-form .booking-form-bulk .booking-form .checkin,
-    #booking-select-data-form .booking-form-bulk .booking-form .checkout,
-    #booking-select-data-form .booking-form-bulk .booking-form .user {
-        cursor: pointer;
-        padding-top: 7px;
-        padding-bottom: 7px;
-        padding-left: 10px;
-        padding-right: 10px;
-        border: 1.9px solid rgba(48, 55, 55, .3);
-    }
-}*/
-
-/*#booking-data-form .booking-form-bulk .booking-form-btn {
-    font-size: 1.1rem !important;
-    font-weight: 500 !important;
-    padding: 1.63rem 2.4rem;
-}*/
-
-/*.skin-light .booking-data-info .booking-detail h5,
+.skin-light .booking-data-info .booking-detail h5,
 .skin-light .booking-data-info .booking-price-detail h5 {
     font-size: 1rem;
-}*/
+}
 
-/*
 .skin-light .booking-data-info .booking-detail .checkin .title,
 .skin-light .booking-data-info .booking-detail .checkout .title {
     font-size: .88rem;
@@ -5108,91 +4469,78 @@
     color: #9933CC;
 }
 
-
-.mask.rgba-gradient7 {
-    background: linear-gradient(98deg, rgba( 255, 154, 22, .7), rgba(48, 55, 55, .7))
-}
-
-.rgba-black-strong,
-.rgba-black-strong:after {
-    background-color: rgba(0, 0, 0, 0.7)
-}
-
-#app-room-booking-sm-modal {
+#cookieConsent {
+    background-color: #2e2e2e;
+    opacity: .95;
+    color: #fff;
+    text-align: center;
+    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1030 !important;
+    z-index: 99000;
+    bottom: 0;
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 12px 10px 10px 10px;
 }
 
-#app-room-booking-sm-modal .modal-dialog {
-    max-width: 100% !important;
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    width: 400px;
-    height: auto;
-    min-height: 100%;
-    margin: 0;
+@media (max-width: 767px) {
+    #cookieConsent {
+        font-size: 0.8rem;
+    }
+
+    #cookieConsent div {
+        margin-top: 10px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    #cookieConsent {
+        font-size:.85rem;
+    }
+
+    #cookieConsent div {
+        margin-top: 10px;
+    }
 }
 
 
-#app-room-booking-sm-modal .booking-form .checkin,
-#app-room-booking-sm-modal .booking-form .checkout,
-#app-room-booking-sm-modal .booking-form .user {
-    cursor: pointer;
-    padding: 6px 10px 5px 10px;
-    border: 1.5px solid rgba(48, 55, 55, .3);
+.skin-light .btn-booking-floating {
+    position: fixed;
+    z-index: 9999 !important;
+    right: 20px;
+    top: 190px;
+    margin-bottom: 0;
+    padding-top: 15px;
+    -webkit-box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21) !important;
+    box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21) !important
 }
 
-#app-room-booking-sm-modal .booking-form .checkin:hover,
-#app-room-booking-sm-modal .booking-form .checkout:hover,
-#app-room-booking-sm-modal .booking-form .user:hover,
-#app-room-booking-sm-modal .booking-form .checkin.active,
-#app-room-booking-sm-modal .booking-form .checkout.active,
-#app-room-booking-sm-modal .booking-form .user.active {
-    border: 1.5px solid #FF9A16;
-    -webkit-box-shadow: 0 2px 5px 0 rgba(255, 154, 22, 0.16), 0 2px 10px 0 rgba(255, 154, 22, 0.12) !important;
-    box-shadow: 0 2px 5px 0 rgba(255, 154, 22, 0.16), 0 2px 10px 0 rgba(255, 154, 22, 0.12) !important
+.skin-light .btn-booking-floating a.btn-lg {
+    font-size: 1rem !important;
 }
 
-#app-room-booking-sm-modal .booking-form .checkin .icon,
-#app-room-booking-sm-modal .booking-form .checkout .icon,
-#app-room-booking-sm-modal .booking-form .user .icon {
-    font-size: 1.1rem;
-    padding-right: 13px;
+.btn-booking-floating a i {
+    font-size: 1.1rem !important;
 }
 
-#app-room-booking-sm-modal .booking-form .checkin .icon i,
-#app-room-booking-sm-modal .booking-form .checkout .icon i,
-#app-room-booking-sm-modal .booking-form .user .icon i {
-    font-size: 1.1rem;
+.card.card-cascade .view.gradient-card-header {
+    padding: 1.2rem 1rem;
 }
 
-#app-room-booking-sm-modal .booking-form .checkin .title,
-#app-room-booking-sm-modal .booking-form .checkout .title,
-#app-room-booking-sm-modal .booking-form .user .title {
-    font-weight: 600;
-    font-size: 1.2rem;
-}
-
-#app-room-booking-sm-modal .booking-form .checkin .date-content,
-#app-room-booking-sm-modal .booking-form .checkout .date-content,
-#app-room-booking-sm-modal .booking-form .user .date-content {
-    font-size: .9rem;
-    font-weight: 500;
-}
-
-.skin-light .app-room-info-bulk .price .number small s {
+.map-container{
+    overflow: hidden;
+    padding-bottom: 56.25%;
     position: relative;
-    top: 10px;
+    height: 0;
 }
-*/
 
-
+.map-container iframe {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
 
 
 

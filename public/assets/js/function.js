@@ -121,8 +121,8 @@ const tableCheckbox = function () {
     });
 }
 
-const modalSingleConfirmed = function () {
-    $('.entity-delete-btn').click(function (e) {
+const modalSingleConfirmed = function (element) {
+    element.click(function (e) {
         e.preventDefault();
 
         showLoading();
@@ -145,8 +145,8 @@ const modalSingleConfirmed = function () {
     });
 }
 
-const modalMultipleConfirmed = function () {
-    $('#entity-bulk-delete-btn').click(function (e) {
+const modalMultipleConfirmed = function (element) {
+    element.click(function (e) {
         e.preventDefault();
 
         const $this = $(this);
@@ -238,17 +238,16 @@ const newsletter = function (element) {
 }
 
 const readURL = function (input) {
-
-    let url = input.value;
-    let ext = url.substring(url.lastIndexOf('.')+1).toLowerCase();
+    const url = input.value;
+    const ext = url.substring(url.lastIndexOf('.')+1).toLowerCase();
 
     if (input.files && input.files[0] && (ext === 'gif' || ext === 'png' || ext === 'jpeg' || ext === 'jpg')) {
-        let reader = new FileReader();
+        const reader = new FileReader();
 
         reader.onload = function (e) {
-            $('#image-view').attr('src', e.target.result);
+            const $img = $(input).parents('.image-bulk-container').find('img.image-view');
+            $img.attr('src', e.target.result);
         };
-
         reader.readAsDataURL(input.files[0])
     }
 }
@@ -282,3 +281,77 @@ const silverCarousel = function () {
     });
 }
 
+const bookingSelectData = function () {
+    $('.booking-data-select-btn').click(function (e) {
+        e.preventDefault();
+
+        showLoading();
+
+        const $this = $(this);
+
+        $.ajax({
+            url: $this.attr('data-url'),
+            type: 'GET',
+            error: function () {
+                hideLoading();
+            },
+            success: function(data) {
+                hideLoading();
+
+                $('#modal-container').html(data.html);
+                $('#booking-data-modal' + $this.attr('data-id')).modal();
+            }
+        });
+    });
+}
+
+const bookingOccupantData = function () {
+    const $wrapper = $('#booking-form-occupant-wrapper'),
+        $nameTitle = '',
+        $emailTitle = '<small class="form-text text-primary" style="margin-top: -5px">Nous envoyons des e-mails uniquement pour communiquer des informations relatives aux reservations.</small>',
+        prototype = $wrapper.data('prototype');
+
+    for (let index = 0; index < window.hostel.DEFAULT_ROOM; index++) {
+
+        if (!$wrapper.length) {
+            return;
+        }
+
+        let newForm = prototype.replace(/__name__/g, index);
+
+        $wrapper.append(content(index))
+
+        let $booking_content = $('#booking_room_booker_info_' + index + ' .card-body');
+        $booking_content.append(newForm);
+
+        $('#booking_occupants_'+index).addClass('row');
+
+        let $booker_input = $('#booking_occupants_' + index + ' .md-form.md-outline');
+        $booker_input.wrap('<div class="col-12 col-md-6 booker-wrap" />');
+
+        $('#booking_occupants_' + index + ' .booker-wrap').each(function (i, e) {
+            (i === 0) ? $(e).append($nameTitle) : $(e).append($emailTitle);
+        })
+    }
+}
+ 
+const smoothScroll = function () {
+    $(window).scroll(function() {
+        let scroll = $(window).scrollTop();
+        let currScrollTop = $(this).scrollTop();
+
+        if (scroll >= 200) {
+            $('#btn-smooth-scroll').removeClass('d-none').addClass('animated fadeInRight');
+        } else {
+            $('#btn-smooth-scroll').addClass('d-none').removeClass('animated fadeInRight');
+        }
+
+        lastScrollTop = currScrollTop;
+    });
+}
+
+const password = function (element) {
+    element.click(function () {
+        passwordView($(this));
+    });
+}

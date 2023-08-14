@@ -8,25 +8,25 @@ use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/u')]
 class InvoiceController extends AbstractController
 {
     use ControllerTrait;
 
-    private PaymentRepository $paymentRepository;
-    private PaginatorInterface $paginator;
-
-    public function __construct(PaymentRepository $paymentRepository, PaginatorInterface $paginator)
+    public function __construct(
+        private PaymentRepository $paymentRepository,
+        private PaginatorInterface $paginator
+    )
     {
-        $this->paymentRepository = $paymentRepository;
-        $this->paginator = $paginator;
     }
 
-    #[Route(path: '/u/invoices', name: 'app_dashboard_invoice_index')]
     #[IsGranted('ROLE_USER')]
-    public function index(Request $request)
+    #[Route(path: '/invoices', name: 'app_user_invoice_index')]
+    public function index(Request $request): Response
     {
         $user = $this->getUserOrThrow();
 
@@ -39,9 +39,9 @@ class InvoiceController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/u/invoices/{id}', name: 'app_dashboard_invoice_show', requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_USER')]
-    public function show(int $id)
+    #[Route(path: '/invoices/{id}', name: 'app_user_invoice_show', requirements: ['id' => '\d+'])]
+    public function show(int $id): Response
     {
         $payment = $this->paymentRepository->findForId($id, $this->getUser());
 
@@ -49,9 +49,7 @@ class InvoiceController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        return $this->render('user/invoice/show.html.twig', [
-            'payment' => $payment,
-        ]);
+        return $this->render('user/invoice/show.html.twig', ['payment' => $payment]);
     }
 }
 

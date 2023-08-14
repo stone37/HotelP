@@ -4,7 +4,7 @@ twig:
         - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
     globals:
         config: '@App\Manager\SettingsManager'
-        booker: '@App\Storage\BookingSessionStorage'
+        booker: '@App\Storage\BookingStorage'
         roomService: '@App\Service\RoomService'
 
 when@test:

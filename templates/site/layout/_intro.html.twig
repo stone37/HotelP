@@ -1,6 +1,6 @@
-{% if galleries|length > 0 %}
-    <div id="carousel-home" class="carousel slide home" data-ride="carousel">
-        <div class="carousel-inner" role="listbox">
+<div id="carousel-home" class="carousel slide home" data-ride="carousel">
+    <div class="carousel-inner" role="listbox">
+        {% if galleries|length > 0 %}
             {% for gallery in galleries %}
                 <div class="carousel-item {% if loop.first %}active{% endif %}">
                     <div class="view" style="background-image: url({{ asset(gallery.webPath) }}); background-repeat: no-repeat; background-size: cover;">
@@ -8,11 +8,15 @@
                     </div>
                 </div>
             {% endfor %}
-        </div>
+        {% else %}
+            <div class="carousel-item active">
+                <div class="view" style="background-image: url({{ asset('assets/img/default.jpg') }}); background-repeat: no-repeat; background-size: cover;">
+                    <div class="mask rgba-black-light"></div>
+                </div>
+            </div>
+        {% endif %}
     </div>
-{% else %}
-
-{% endif %}
+</div>
 
 <section>
     <div class="view-content d-flex justify-content-start">

@@ -2,17 +2,16 @@
 
 namespace App\Form;
 
-use App\Entity\Promotion;
+use App\Data\PromotionCrudData;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Vich\UploaderBundle\Form\Type\VichFileType;
 
 class PromotionType extends AbstractType
 {
@@ -38,13 +37,13 @@ class PromotionType extends AbstractType
                 'label' => 'Hébergement',
                 'placeholder' => 'Hébergement'
             ])
-            ->add('file', VichFileType::class, ['required' => false]);
+            ->add('file', FileType::class, ['required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Promotion::class,
+            'data_class' => PromotionCrudData::class,
         ]);
     }
 }

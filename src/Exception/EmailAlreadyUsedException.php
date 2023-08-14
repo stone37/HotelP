@@ -3,6 +3,7 @@
 namespace App\Exception;
 
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Throwable;
 
 class EmailAlreadyUsedException extends CustomUserMessageAuthenticationException
 {
@@ -10,8 +11,9 @@ class EmailAlreadyUsedException extends CustomUserMessageAuthenticationException
         string $message = 'Un compte existe déjà avec cet email. Pour associer votre compte facebook à ce compte, connectez vous et rendez vous sur votre profil.',
         array $messageData = [],
         int $code = 0,
-        \Throwable $previous = null
-    ) {
+        Throwable $previous = null
+    )
+    {
         parent::__construct($message, $messageData, $code, $previous);
     }
 }

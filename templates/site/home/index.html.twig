@@ -25,10 +25,6 @@
 {% block javascripts %}
     {{ parent() }}
 
-    {#<script type="text/javascript">
-        $('.booking-form-sticky').sticky({topSpacing: 70, zIndex: 999, stopper: ".sticky-stopper", stickyClass: 'active'});
-    </script>#}
-
     {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/site/booking.js'}) }}
 {% endblock %}
 

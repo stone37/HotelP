@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Room;
+use App\Data\RoomCrudData;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -25,8 +25,8 @@ class RoomType extends AbstractType
                 'required' => false
             ])
             ->add('smoker', SmokerChoiceType::class, [
-                'label' => 'Fumeurs ou non-fumeurs (Facultatif)',
-                'placeholder' => 'Fumeurs ou non-fumeurs (Facultatif)',
+                'label' => 'Fumeurs ou non-fumeurs (facultatif)',
+                'placeholder' => 'Fumeurs ou non-fumeurs (facultatif)',
                 'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
                 'required' => false
             ])
@@ -35,7 +35,7 @@ class RoomType extends AbstractType
                 'help' => 'Indiquez le nombre de personnes maximum pouvant dormir dans cet hébergement.'
             ])
             ->add('area', IntegerType::class, [
-                'label' => 'Superficie (Facultatif)',
+                'label' => 'Superficie (facultatif)',
                 'help' => 'Indiquez la superficie de l\'hébergement en m²',
                 'required' => false
             ])
@@ -46,13 +46,13 @@ class RoomType extends AbstractType
                 'placeholder' => 'Activé'
             ])
             ->add('couchage', TextType::class, [
-                'label' => 'Couchage (Facultatif)',
+                'label' => 'Couchage (facultatif)',
                 'help' => 'Indiquez le type et le nombre lit de la chambre',
                 'required' => false,
             ])
             ->add('taxe',  TaxeChoiceType::class, [
-                'label' => 'Taxe (Facultatif)',
-                'placeholder' => 'Taxe (Facultatif)',
+                'label' => 'Taxe (facultatif)',
+                'placeholder' => 'Taxe (facultatif)',
                 'attr' => ['class' => 'mdb-select md-outline md-form dropdown-primary'],
                 'required' => false
             ])
@@ -60,7 +60,7 @@ class RoomType extends AbstractType
                 'choice_attr' => function() {
                     return ['class' => 'form-check-input filled-in'];
                 },
-                'label' => 'Équipements de chambre (Facultatif)',
+                'label' => 'Équipements de chambre (facultatif)',
                 'expanded' => true,
                 'multiple' => true,
                 'required' => false
@@ -69,7 +69,7 @@ class RoomType extends AbstractType
                 'choice_attr' => function() {
                     return ['class' => 'form-check-input filled-in'];
                 },
-                'label' => 'Suppléments (Facultatif)',
+                'label' => 'Suppléments (facultatif)',
                 'expanded' => true,
                 'multiple' => true,
                 'required' => false
@@ -80,7 +80,7 @@ class RoomType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Room::class,
+            'data_class' => RoomCrudData::class,
         ]);
     }
 }

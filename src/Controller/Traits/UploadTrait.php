@@ -40,7 +40,7 @@ Trait UploadTrait
 
         try {
             $finder->in($this->getFindPath($session))->files();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $finder->append([]);
         }
 

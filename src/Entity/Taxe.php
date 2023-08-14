@@ -7,7 +7,6 @@ use App\Entity\Traits\TimestampableTrait;
 use App\Repository\TaxeRepository;
 use Doctrine\DBAL\Types\Types;
 use JetBrains\PhpStorm\Pure;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TaxeRepository::class)]
@@ -21,11 +20,9 @@ class Taxe
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank]
     #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
-    #[Assert\NotBlank]
     #[ORM\Column(type: Types::FLOAT, nullable: true)]
     private ?float $value = 0.0;
 

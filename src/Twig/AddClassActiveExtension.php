@@ -8,21 +8,16 @@ use Twig\TwigFunction;
 
 class AddClassActiveExtension extends AbstractExtension
 {
-    private RequestStack $request;
-
-    public function __construct(RequestStack $request)
+    public function __construct(private RequestStack $request)
     {
-        $this->request = $request;
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
-        return array(
-            new TwigFunction('isActive', array($this, 'check'))
-        );
+        return [new TwigFunction('isActive', array($this, 'check'))];
     }
 
-    public function check($routesToCheck)
+    public function check($routesToCheck): bool
     {
         $currentRoute = $this->request->getMainRequest()->get('_route');
         

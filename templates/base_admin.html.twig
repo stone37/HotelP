@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head id="top-section">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>{% block title %}{% endblock %}</title>
-        <link rel="index" title="Balise Meta" href="{{ app.request.schemeAndHttpHost }}/" />
-        <link rel="canonical" href="{{ app.request.schemeAndHttpHost }}/" />
-        <link rel="shortcut icon" href="{{ app.request.relativeUriForPath(asset('assets/img/favicon/favicon.ico')) }}">
+        <meta name="turbolinks-cache-control" content="no-cache"/>
+        <link rel="shortcut icon" href="{{ app.request.relativeUriForPath(asset('favicon.ico')) }}">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,700,800,900&display=swap">
 
         {% block stylesheets %}
-            {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/bootstrap.css'}) }}
-            {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/mdb.css'}) }}
+            {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/bootstrap.min.css'}) }}
+            {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/app.min.css'}) }}
             {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/style.css'}) }}
+            {{ include('ui/_stylesheets.html.twig', {'path': 'assets/css/admin/admin.css'}) }}
+        {% endblock %}
+        {% block javascripts %}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/jquery.min.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/popper.min.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/bootstrap.min.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/app.min.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/function.js'}) }}
+            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/admin/admin.js'}) }}
         {% endblock %}
     </head>
     <body class="fixed-sn skin-light">
-        {{ include('ui/_flashes.html.twig') }}
-        {{ include('ui/_loading.html.twig') }}
-
         <header>
             {% block app_navbar %}{% endblock %}
         </header>
@@ -29,6 +34,7 @@
         </main>
 
         {{ include('ui/_confirmation.html.twig') }}
+        {{ include('ui/_loading.html.twig') }}
 
         <script>
             window.hostel = {
@@ -37,15 +43,6 @@
                 USER: {{ app.user ? app.user.id : 'null' }}
             }
         </script>
-        <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
-        <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
-        {% block javascripts %}
-            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/jquery.js'}) }}
-            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/popper.js'}) }}
-            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/bootstrap.js'}) }}
-            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/mdb.js'}) }}
-            {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/function.js'}) }}
-        {% endblock %}
     </body>
 </html>
 

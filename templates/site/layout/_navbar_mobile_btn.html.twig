@@ -1,5 +1,9 @@
 <div class="button-navbar d-lg-none d-flex ml-auto">
     <a href="tel:{{ settings.phone }}" class="btn btn-default btn-sm phone mr-3"><i class="fas fa-phone-alt"></i></a>
-    <a href="{{ path('app_login') }}" class="btn btn-primary btn-sm user mr-4"><i class="fas fa-user"></i></a>
+    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+        <a href="{{ path('app_user_index') }}" class="btn btn-grey-dark btn-sm user mr-3"><i class="fas fa-user"></i></a>
+    {% else %}
+        <a href="{{ path('app_login') }}" class="btn btn-primary btn-sm user mr-3"><i class="fas fa-user"></i></a>
+    {% endif %}
 </div>
 

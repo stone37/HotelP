@@ -8,11 +8,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class NewsletterSubscriptionHandler
 {
-    private EntityManagerInterface $em;
-
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->em = $em;
     }
 
     public function subscribe(string $email)

@@ -10,9 +10,7 @@ class TwigDateExtension extends AbstractExtension
 {
     public function getFilters(): array
     {
-        return [
-            new TwigFilter('date_french', [$this, 'ago']),
-        ];
+        return [new TwigFilter('date_french', [$this, 'ago'])];
     }
 
     public function ago(DateTimeInterface $date, bool $prefix = false, bool $days = false): string

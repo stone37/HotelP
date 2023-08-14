@@ -43,12 +43,4 @@ class DiscountRepository extends ServiceEntityRepository
     {
         $this->getEntityManager()->flush();
     }
-
-    public function getAdmin()
-    {
-        $qb = $this->createQueryBuilder('d')
-            ->orderBy('d.createdAt', 'desc');
-
-        return $qb;
-    }
 }

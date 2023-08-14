@@ -14,7 +14,7 @@ class UserOauthNotFoundException extends AuthenticationException
 
     public function __construct(ResourceOwnerInterface $resourceOwner)
     {
-        parent::__construct([]);
+        parent::__construct();
         $this->resourceOwner = $resourceOwner;
     }
 

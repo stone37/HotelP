@@ -6,11 +6,11 @@ use DateTime;
 
 class MaintenanceConfiguration
 {
-    private string $ipAddresses = '';
+    private ?string $ipAddresses = null;
 
     private bool $enabled = false;
 
-    private string $customMessage = '';
+    private ?string $customMessage = null;
 
     private ?DateTime $startDate;
 

@@ -10,6 +10,8 @@
     <meta property="og:description" content="{{ content }}" />
 {% endblock %}
 
+{% block app_flashes %}{% endblock %}
+
 {% block app_intro %}
     <div class="view intro data" style="background-image: url({{ asset('assets/img/nos_hebergement.jpg') }}); background-repeat: no-repeat; background-size: cover;">
         <div class="mask rgba-black-strong d-flex justify-content-center align-items-center">
@@ -52,8 +54,6 @@
     {{ parent() }}
 
     {{ include('ui/_javascripts.html.twig', {'path': 'assets/js/site/booking.js'}) }}
-    {% include 'Ui/_javascripts.html.twig' with {'path': 'assets/js/site/room.js'} %}
-
     <script>
         $("#mdb-lightbox-ui").load("/assets/mdb-addons/mdb-lightbox-ui.html");
     </script>

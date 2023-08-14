@@ -8,7 +8,7 @@ class UniqueNewsletterEmail extends Constraint
 {
     public $message = 'Vous êtes déjà inscrit sur notre newsletter.';
 
-    public function validatedBy()
+    public function validatedBy(): string
     {
         return static::class.'Validator';
     }

@@ -16,7 +16,7 @@ class UserAuthenticatedException extends AuthenticationException
 
     public function __construct(User $user, ResourceOwnerInterface $resourceOwner)
     {
-        parent::__construct([]);
+        parent::__construct();
 
         $this->user = $user;
         $this->resourceOwner = $resourceOwner;

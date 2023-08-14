@@ -41,9 +41,7 @@ class RoomController extends AbstractController
             $this->booker->roomAvailableForPeriod($this->repository->getFilter($filter)),
             $request->query->getInt('page', 1),15);
 
-        return $this->render('site/room/index.html.twig', [
-            'rooms' => $rooms
-        ]);
+        return $this->render('site/room/index.html.twig', ['rooms' => $rooms]);
     }
 
     #[Route(path: '/hebergements/{slug}', name: 'app_room_show')]
@@ -61,10 +59,7 @@ class RoomController extends AbstractController
 
         $equipments = $this->equipmentRepository->findAll();
 
-        return $this->render('site/room/show.html.twig', [
-            'room' => $room,
-            'equipments' => $equipments
-        ]);
+        return $this->render('site/room/show.html.twig', ['room' => $room, 'equipments' => $equipments]);
     }
 
     private function hydrate(Request $request, RoomFilter $filter): RoomFilter

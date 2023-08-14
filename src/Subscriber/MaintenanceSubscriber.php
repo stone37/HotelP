@@ -13,32 +13,23 @@ use Twig\Environment;
 
 final class MaintenanceSubscriber implements EventSubscriberInterface
 {
-    private RequestStack $requestStack;
-    private Environment $twig;
-    private MaintenanceConfigurationFactory $configurationFactory;
-
     public function __construct(
-        Environment $twig,
-        MaintenanceConfigurationFactory $configurationFactory,
-        RequestStack $request
-    ) {
-        $this->twig = $twig;
-        $this->configurationFactory = $configurationFactory;
-        $this->requestStack = $request;
+        private Environment $twig,
+        private MaintenanceConfigurationFactory $configurationFactory,
+        private RequestStack $request
+    )
+    {
     }
 
     public static function getSubscribedEvents(): array
     {
-        return [
-            RequestEvent::class => 'handle',
-        ];
+        return [RequestEvent::class => 'handle'];
     }
 
     public function handle(RequestEvent $event): void
     {
         $getRequestUri = $event->getRequest()->getRequestUri();
 
-        /** @var string $adminPrefix */
         $adminPrefix = 'admin';
 
         $ipUser = $event->getRequest()->getClientIp();
@@ -61,8 +52,8 @@ final class MaintenanceSubscriber implements EventSubscriberInterface
         }
 
         if (false !== mb_strpos($getRequestUri, $adminPrefix, 1)) {
-            if ($this->requestStack->getMainRequest() === $this->requestStack->getCurrentRequest()) {
-                $this->requestStack->getSession()->getFlashBag()->add('success', 'Le site est actuellement en maintenance.');
+            if ($this->request->getMainRequest() === $this->request->getCurrentRequest()) {
+                $this->request->getSession()->getFlashBag()->add('success', 'Le site est actuellement en maintenance.');
             }
 
             return;
@@ -71,7 +62,7 @@ final class MaintenanceSubscriber implements EventSubscriberInterface
         $responseContent = 'Site en maintenance';
 
         if ('' !== $maintenanceConfiguration->getCustomMessage()) {
-            $responseContent = $this->twig->render('Ui/_maintenance.html.twig', [
+            $responseContent = $this->twig->render('ui/_maintenance.html.twig', [
                 'custom_message' => $maintenanceConfiguration->getCustomMessage(),
             ]);
         }

@@ -12,7 +12,6 @@ use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -30,7 +29,6 @@ class Promotion
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank]
     #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
@@ -44,14 +42,12 @@ class Promotion
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $start = null;
 
-    #[Assert\GreaterThan(propertyPath: 'start')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $end = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $discount = null;
 
-    #[Assert\File(maxSize: '8M')]
     #[Vich\UploadableField(mapping: 'promotion', fileNameProperty: 'fileName', size: 'fileSize', mimeType: 'fileMimeType', originalName: 'fileOriginalName')]
     private ?File $file = null;
 

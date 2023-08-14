@@ -4,13 +4,13 @@ namespace App\Model;
 
 class UserSearch
 {
-    private ?string $email  = '';
+    private ?string $email  = null;
 
-    private ?string $phone  = '';
+    private ?string $phone  = null;
 
     private ?bool $enabled = false;
 
-    private ?string $city  = '';
+    private ?string $city  = null;
 
     public function getEmail(): ?string
     {

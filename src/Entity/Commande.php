@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\CommandeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
@@ -167,7 +168,7 @@ class Commande
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User|UserInterface|null $user): self
     {
         $this->user = $user;
 

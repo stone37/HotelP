@@ -15,13 +15,8 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 
 class AuthSubscriber implements EventSubscriberInterface
 {
-    private Mailer $mailer;
-    private SettingsManager $manager;
-
-    public function __construct(Mailer $mailer, SettingsManager $manager)
+    public function __construct(private Mailer $mailer, private SettingsManager $manager)
     {
-        $this->mailer = $mailer;
-        $this->manager = $manager;
     }
 
     /**
@@ -36,7 +31,7 @@ class AuthSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onApiRegister(ViewEvent $event)
+    public function onApiRegister(ViewEvent $event): void
     {
         $user = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
@@ -48,7 +43,7 @@ class AuthSubscriber implements EventSubscriberInterface
                 ->to($user->getEmail())
                 ->subject($this->manager->get()->getName().' | Confirmation du compte');
 
-            $this->mailer->sendNow($email);
+            $this->mailer->send($email);
         }
 
         if ($user instanceof User && Request::METHOD_PUT === $method && $user->getDeleteAt()) {
@@ -59,16 +54,10 @@ class AuthSubscriber implements EventSubscriberInterface
                 ->to($user->getEmail())
                 ->subject($this->manager->get()->getName().' | Suppression de votre compte');
 
-            $this->mailer->sendNow($email);
+            $this->mailer->send($email);
         }
     }
 
-    /**
-     * @param PasswordResetTokenCreatedEvent $event
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function onPasswordRequest(PasswordResetTokenCreatedEvent $event): void
     {
         $email = $this->mailer->createEmail('mails/auth/password_reset.twig', [
@@ -79,36 +68,22 @@ class AuthSubscriber implements EventSubscriberInterface
             ->to($event->getUser()->getEmail())
             ->subject($this->manager->get()->getName().' | Réinitialisation de votre mot de passe');
 
-        $this->mailer->sendNow($email);
+        $this->mailer->send($email);
     }
 
-    /**
-     * @param UserCreatedEvent $event
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function onRegister(UserCreatedEvent $event): void
     {
         if ($event->isUsingOauth()) {
             return;
         }
 
-        $email = $this->mailer->createEmail('mails/auth/register.twig', [
-            'user' => $event->getUser(),
-            ])
+        $email = $this->mailer->createEmail('mails/auth/register.twig', ['user' => $event->getUser()])
             ->to($event->getUser()->getEmail())
             ->subject($this->manager->get()->getName().' | Confirmation du compte');
 
-        $this->mailer->sendNow($email);
+        $this->mailer->send($email);
     }
 
-    /**
-     * @param UserDeleteRequestEvent $event
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function onDelete(UserDeleteRequestEvent $event): void
     {
         $email = $this->mailer->createEmail('mails/auth/delete.twig', [
@@ -118,6 +93,6 @@ class AuthSubscriber implements EventSubscriberInterface
             ->to($event->getUser()->getEmail())
             ->subject($this->manager->get()->getName().' | Suppression de votre compte');
 
-        $this->mailer->sendNow($email);
+        $this->mailer->send($email);
     }
 }

@@ -3,10 +3,11 @@
 namespace App\Service;
 
 use App\Entity\Room;
+use JetBrains\PhpStorm\Pure;
 
 class PromotionService
 {
-    public function has(Room $room): bool
+    #[Pure] public function has(Room $room): bool
     {
         if (!$room->getPromotions()) {return false;}
 

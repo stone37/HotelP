@@ -2,86 +2,98 @@
 
 namespace App\Service;
 
-use App\Entity\Option;
+use App\Calculator\PromotionPriceCalculator;
+use App\Calculator\SupplementPriceCalculator;
+use App\Calculator\TaxCalculator;
+use App\Checker\PromotionEligibilityChecker;
+use App\Entity\Promotion;
 use App\Entity\Room;
-use App\Manager\PromotionManager;
-use App\Repository\OptionRepository;
+use App\Repository\BookingRepository;
 use App\Repository\RoomRepository;
-use App\Util\PriceCalculator;
+use App\Storage\CartStorage;
+use DateTime;
+use JetBrains\PhpStorm\Pure;
 
 class RoomService
 {
-    private RoomRepository $repository;
-    private OptionRepository $optionRepository;
-    private CartService $service;
-    private PriceCalculator $calculator;
-    private PromotionManager $manager;
-
     public function __construct(
-        RoomRepository $repository,
-        CartService $service,
-        PriceCalculator $calculator,
-        PromotionManager $manager
+        private RoomRepository $repository,
+        private BookingRepository $bookingRepository,
+        private CartStorage $storage,
+        private TaxCalculator $taxCalculator,
+        private PromotionPriceCalculator $promotionPriceCalculator,
+        private SupplementPriceCalculator $supplementPriceCalculator,
+        private PromotionEligibilityChecker $promotionEligibilityChecker
     )
     {
-        $this->repository = $repository;
-        $this->service = $service;
-        $this->calculator = $calculator;
-        $this->manager = $manager;
     }
 
-    public function getMaxAdult(): int
+    public function getRoom(): ?Room
     {
-        $result = $this->repository->getMaximumAdult();
+        $cart = $this->storage->get();
 
-        return $result ? (int) $result['maximumAdults'] : 0;
+        return $this->repository->findOneBy(['id' => $cart['_room_id'], 'enabled' => true]);
     }
 
-    public function getMaxChildren(): int
+    #[Pure] public function hasPromotion(Room $room, DateTime $start, DateTime $end): bool
     {
-        $result = $this->repository->getMaximumChildren();
+        $response = false;
 
-        return $result ?  (int) $result['maximumOfChildren'] : 0;
-    }
-
-    public function getSelectRoom(): ?Room
-    {
-        $cart = $this->service->get();
-
-        if (!$cart) {
-            return null;
+        foreach ($room->getPromotions() as $promotion) {
+            $response = $this->promotionEligibilityChecker->isPromotionEligible($promotion, $start, $end);
         }
 
-        return $this->repository->find($cart['room_id']);
+        return $response;
     }
 
-    public function getSelectOption(): ?Option
+    #[Pure] public function getPromotion(Room $room, DateTime $start, DateTime $end): ?Promotion
     {
-        $cart = $this->service->get();
+        $response = null;
 
-        if (!$cart) {
-            return null;
+        foreach ($room->getPromotions() as $promotion) {
+            if ($this->promotionEligibilityChecker->isPromotionEligible($promotion, $start, $end)) {
+                $response = $promotion;
+            }
         }
 
-        if (!array_key_exists('option_id', $cart)) {
-            return null;
+        return $response;
+    }
+
+    #[Pure] public function getPrice(Room $room, DateTime $start, DateTime $end): int
+    {
+        $promotion = $this->getPromotion($room, $start, $end);
+
+        $price = $room->getPrice();
+
+        if ($promotion) {
+            $price = $this->promotionPriceCalculator->calculate($room->getPrice(), $promotion->getDiscount());
         }
 
-        return $this->optionRepository->find($cart['option_id']);
+        return $price;
     }
 
-   public function getRoomPrice(Room $room, Option $option = null): int
+    public function getTaxe(Room $room): int
     {
-        return $this->calculator->getPriceByBooking($room, $option);
+        if (!$room->getTaxe()) {
+            return 0;
+        }
+
+        return $this->taxCalculator->calculate($room->getPrice(), $room->getTaxe());
     }
 
-    public function getTaxePrice(Room $room, Option $option = null): int
+    public function getSupplement(Room $room): int
     {
-        return ($this->calculator->getPriceTotalByBooking($room, $option) - $this->calculator->getPriceByBooking($room, $option));
+        $price = 0;
+
+        if (!$room->getSupplements()->isEmpty()) {
+            $price = $this->supplementPriceCalculator->calculate($room->getSupplements()->toArray());
+        }
+
+        return $price;
     }
 
-    public function getDiscount(Room $room): int
+    public function availableForPeriod(Room $room, DateTime $start, DateTime $end): int
     {
-       return $this->manager->getRoomPromotion($room);
+        return $this->bookingRepository->availableForPeriod($room, $start, $end);
     }
 }

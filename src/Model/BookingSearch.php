@@ -8,7 +8,7 @@ class BookingSearch
 {
     private ?Room $room = null;
 
-    private ?string $code = "";
+    private ?string $code = null;
 
     public function getCode(): ?string
     {

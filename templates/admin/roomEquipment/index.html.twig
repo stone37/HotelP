@@ -1,17 +1,11 @@
 {% extends 'admin/layout.html.twig' %}
 
-{% block title %}Équipments d'hébergement | {{ parent() }}{% endblock %}
+{% block title %}Équipements d'hébergement | {{ parent() }}{% endblock %}
 
 {% block app_body %}
     {{ include('admin/roomEquipment/index/_header.html.twig') }}
 
+    {{ include('ui/_flashes_message.html.twig') }}
+
     {{ include('admin/roomEquipment/index/_content.html.twig') }}
-{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
 {% endblock %}

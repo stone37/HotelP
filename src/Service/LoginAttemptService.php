@@ -6,20 +6,18 @@ use App\Entity\LoginAttempt;
 use App\Repository\LoginAttemptRepository;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 class LoginAttemptService
 {
     const ATTEMPTS = 3;
 
-    private LoginAttemptRepository $repository;
-    private EntityManagerInterface $em;
-
     public function __construct(
-        LoginAttemptRepository $repository,
-        EntityManagerInterface $em
-    ) {
-        $this->repository = $repository;
-        $this->em = $em;
+        private LoginAttemptRepository $repository,
+        private EntityManagerInterface $em
+    )
+    {
     }
 
     public function addAttempt(User $user): void
@@ -33,8 +31,8 @@ class LoginAttemptService
     /**
      * @param User $user
      * @return bool
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function limitReachedFor(User $user): bool
     {

@@ -17,22 +17,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+#[Route('/u')]
 class AccountDeletionController extends AbstractController
 {
     use ControllerTrait;
 
-    private DeleteAccountService $service;
-    private UserPasswordHasherInterface $passwordHasher;
-
-    public function __construct(DeleteAccountService $service, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(
+        private DeleteAccountService $service,
+        private UserPasswordHasherInterface $passwordHasher
+    )
     {
-        $this->service = $service;
-        $this->passwordHasher = $passwordHasher;
     }
 
-    #[Route(path: '/u/profil/delete', name: 'app_user_delete')]
     #[IsGranted('ROLE_USER')]
+    #[Route(path: '/profil/delete', name: 'app_user_delete')]
     public function delete(Request $request): Response
     {
         $user = $this->getUserOrThrow();
@@ -66,10 +64,10 @@ class AccountDeletionController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/u/profil/delete', name: 'app_user_delete_ajax', options: ['expose' => true])]
     #[IsGranted('ROLE_USER')]
-    public function deleteAjax(Request $request): JsonResponse {
-
+    #[Route(path: '/profil/delete', name: 'app_user_delete_ajax', options: ['expose' => true])]
+    public function deleteAjax(Request $request): JsonResponse
+    {
         /** @var User $user */
         $user = $this->getUser();
 
@@ -91,12 +89,12 @@ class AccountDeletionController extends AbstractController
 
         return new JsonResponse([
             'message' => 'Votre demande de suppression de compte a bien été prise en compte. 
-            Votre compte sera supprimé automatiquement au bout de '.DeleteAccountService::DAYS.' jours',
+            Votre compte sera supprimé automatiquement au bout de ' . DeleteAccountService::DAYS . ' jours',
         ]);
     }
 
-    #[Route(path: '/u/profil/cancel-delete', name: 'app_user_cancel_delete', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
+    #[Route(path: '/profil/cancel-delete', name: 'app_user_cancel_delete', methods: ['POST'])]
     public function cancelDelete(EntityManagerInterface $em): RedirectResponse
     {
         /** @var User $user */
@@ -115,9 +113,7 @@ class AccountDeletionController extends AbstractController
         return $this->createFormBuilder([])
             ->setAction($this->generateUrl('app_user_delete'))
             ->setMethod('DELETE')
-            ->add('password', PasswordType::class, [
-                'attr' => ['placeholder' => 'Entrez votre mot de passer pour confirmer']
-            ])
+            ->add('password', PasswordType::class, ['attr' => ['placeholder' => 'Entrez votre mot de passer pour confirmer']])
             ->getForm();
     }
 }

@@ -66,7 +66,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-7">
+    <div class="col-12 col-lg-7">
         <div class="row app-admin-performance mt-lg-5">
             <div class="col-12 col-md-4">
                 <div class="data revenu text-center d-flex justify-content-center align-items-center">
@@ -79,7 +79,7 @@
             <div class="col-12 col-md-4">
                 <div class="data reduction text-center d-flex justify-content-center align-items-center">
                     <div>
-                        <div class="font-weight-bold text-dark title mb-1">Reduction</div>
+                        <div class="font-weight-bold text-dark title mb-1">Réduction</div>
                         <div class="content">{{ reduction|format_currency('XOF') }}</div>
                     </div>
                 </div>
@@ -143,11 +143,11 @@
     </div>
     <div class="col-12 col-lg-6">
         <div class="card mb-4">
-            <div class="card-body">
+            <div class="card-body px-3 pt-3 pb-1">
                 <h5 class="card-title h5-responsive text-center font-weight-bold text-dark">Nouveaux clients</h5>
                 <div class="">
                    {% if lastClients|length > 0 %}
-                        <ul class="list-group list-group-flush px-0">
+                        <ul class="list-group list-group-flush px-0 mb-0">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <div class="font-weight-stone-600 dark-grey-text">Nom</div>
                                 <div></div>
@@ -177,11 +177,11 @@
 
     <div class="col-12 col-lg-6">
         <div class="card mb-4">
-            <div class="card-body">
+            <div class="card-body px-3 pt-3 pb-1">
                 <h5 class="card-title h5-responsive text-center font-weight-bold text-dark">Nouvelles commandes validées</h5>
 
                 {% if lastOrders|length > 0 %}
-                    <table class="table table-responsive-md btn-table">
+                    <table class="table table-responsive-md btn-table mb-0">
                         <thead>
                             <tr>
                                 <th class="font-weight-stone-600 dark-grey-text">Commande</th>
@@ -191,21 +191,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {% for payment in lastOrders %}
-                            <tr>
-                                <th scope="row">
-                                    <div class="">{{ payment.commande.user }}</div>
-                                    <div class="small-8 dark-grey-text font-weight-stone-500">{{ payment.commande.user.email }}</div>
-                                </th>
-                                <td>{{ payment.commande.booking|length }}</td>
-                                <td>{{ payment.price|format_currency('XOF') }}</td>
-                                <td>
-                                    <a href="{{ path('app_admin_commande_show', {'id': payment.commande.id}) }}" class="btn btn-grey btn-sm m-0">
-                                        <i class="fas fa-eye mr-1"></i> Lister
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
+                            {% for payment in lastOrders %}
+                                <tr>
+                                    <th scope="row">
+                                        <div class="">{{ payment.commande.user }}</div>
+                                        <div class="small-8 dark-grey-text font-weight-stone-500">{{ payment.commande.user.email }}</div>
+                                    </th>
+                                    <td>{{ payment.commande.booking|length }}</td>
+                                    <td>{{ payment.price|format_currency('XOF') }}</td>
+                                    <td class="text-right">
+                                        <a href="{{ path('app_admin_commande_show', {'id': payment.commande.id}) }}" class="btn btn-grey btn-sm m-0">
+                                            <i class="fas fa-eye mr-1"></i> Lister
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 {% else %}
@@ -217,9 +217,9 @@
     </div>
     <div class="col-12 col-lg-6">
         <div class="card mb-4">
-            <div class="card-body">
+            <div class="card-body p-3">
                 <h5 class="card-title h5-responsive text-center font-weight-bold text-dark">Commandes validées 30 derniers jours</h5>
-                <div class="my-4 px-2">
+                <div>
                     <canvas id="orderDailyLineChart" style="width: 100% !important; height: 375px;"></canvas>
                 </div>
             </div>
@@ -227,9 +227,9 @@
     </div>
     <div class="col-12 col-lg-6">
         <div class="card mb-4">
-            <div class="card-body">
+            <div class="card-body p-3">
                 <h5 class="card-title h5-responsive text-center font-weight-bold text-dark">Commandes validées 24 derniers mois</h5>
-                <div class="my-4 px-2">
+                <div>
                     <canvas id="orderMonthlyLineChart" style="width: 100% !important; height: 375px;"></canvas>
                 </div>
             </div>
@@ -241,7 +241,7 @@
     <div class="row">
         <div class="col-12 col-lg-6">
             <div class="card mb-4">
-                <div class="card-body text-center">
+                <div class="card-body text-center p-3">
                     <h5 class="card-title h5-responsive font-weight-bold text-dark text-center mb-4">Actions</h5>
                     <div class="mt-3">
                         <form action="{{ path('app_admin_cache_clean') }}" method="post">
@@ -253,7 +253,7 @@
         </div>
         <div class="col-12 col-lg-6">
             <div class="card mb-4">
-                <div class="card-body text-center">
+                <div class="card-body text-center p-3">
                     <h5 class="card-title h5-responsive font-weight-bold text-dark text-center mb-4">
                         <a href="https://www.mail-tester.com/" rel="noreferrer" class="card-link">Tester les emails</a>
                     </h5>

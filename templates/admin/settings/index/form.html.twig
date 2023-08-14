@@ -53,12 +53,12 @@
         <div class="file-field">
             <div class="btn btn-mdb-color btn-md float-left">
                 <span>Choisir un logo</span>
-                <input type="file" name="{{ form.file.children.file.vars.full_name }}" id="entity-image" />
+                <input type="file" name="{{ form.file.vars.full_name }}" id="entity-image" />
             </div>
         </div>
     </div>
     <div class="col-4 col-md-3 col-lg-2">
-        <img src="{{ vich_uploader_asset(settings, 'file') }}" alt="" class="img-fluid img-thumbnail" id="image-view" />
+        <img src="{{ vich_uploader_asset(entity, 'file') }}" alt="" class="img-fluid img-thumbnail" id="image-view" />
     </div>
 </div>
 

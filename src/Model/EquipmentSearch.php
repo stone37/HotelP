@@ -4,7 +4,7 @@ namespace App\Model;
 
 class EquipmentSearch
 {
-    private ?string $name = "";
+    private ?string $name = null;
 
     public function getName(): ?string
     {

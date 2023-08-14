@@ -7,11 +7,8 @@ use App\Entity\Payment;
 
 class PaymentRefundedEvent
 {
-    private Payment $payment;
-
-    public function __construct(Payment $payment)
+    public function __construct(private Payment $payment)
     {
-        $this->payment = $payment;
     }
 
     public function getPayment(): Payment

@@ -11,11 +11,8 @@ class TwigEmailExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('markdown_email', [$this, 'markdownEmail'], [
-                'needs_context' => true,
-                'is_safe' => ['html'],
-            ]),
-            new TwigFilter('text_email', [$this, 'formatText']),
+            new TwigFilter('markdown_email', [$this, 'markdownEmail'], ['needs_context' => true, 'is_safe' => ['html']]),
+            new TwigFilter('text_email', [$this, 'formatText'])
         ];
     }
 

@@ -1,4 +1,4 @@
-{% import 'Ui/Macro/buttons.html.twig' as buttons %}
+{% import 'ui/macro/buttons.html.twig' as buttons %}
 
 <div class="row app-user mt-5">
     <div class="col-12">
@@ -6,20 +6,20 @@
             <tbody>
             <tr>
                 <td class="table-dark text-center font-weight-normal">Id</td>
-                <td class="text-center font-weight-normal">{{ order.id }}</td>
+                <td class="text-center font-weight-normal">{{ commande.id }}</td>
                 <td class="table-dark text-center font-weight-normal">Date</td>
-                <td class="text-center font-weight-normal">{{ order.createdAt|date('d/m/Y H:i:s') }}</td>
+                <td class="text-center font-weight-normal">{{ commande.createdAt|date('d/m/Y H:i:s') }}</td>
                 <td class="table-dark text-center font-weight-normal">Reference</td>
                 <td class="text-center font-weight-normal">
-                    {% if order.number %}
-                        {{ order.number }}
+                    {% if commande.number %}
+                        {{ commande.number }}
                     {% else %}
                         <span class="badge badge-grey">Aucun</span>
                     {% endif %}
                 </td>
                 <td class="table-dark text-center font-weight-normal">État du paiement</td>
                 <td class="text-center font-weight-normal">
-                    {% if order.validated %}
+                    {% if commande.validated %}
                         <span class="badge badge-success font-weight-stone-500">
                             <i class="fas fa-check mr-1"></i> Payée
                         </span>
@@ -31,38 +31,38 @@
                 </td>
             </tr>
             <tr>
-                {% if order.user %}
+                {% if commande.user %}
                     <td class="table-dark text-center font-weight-normal">Client</td>
                     <td class="text-left font-weight-normal px-2" colspan="7">
                         <ul class="list-unstyled list-inline mb-0">
-                            <li class="list-inline-item">Nom et prénom: {{ order.user.firstname }} {{ order.user.lastName }}</li>
-                            <li class="list-inline-item">Email: <a href="mailto::{{ order.user.email }}" class="card-link" data-toggle="tooltip" title="Envoyer un mail">{{ order.user.email }}</a></li>
-                            <li class="list-inline-item">Telephone: {{ order.user.phone }}</li>
+                            <li class="list-inline-item">Nom et prénom: {{ commande.user.firstname }} {{ commande.user.lastName }}</li>
+                            <li class="list-inline-item">Email: <a href="mailto::{{ commande.user.email }}" class="card-link" data-toggle="tooltip" title="Envoyer un mail">{{ order.user.email }}</a></li>
+                            <li class="list-inline-item">Telephone: {{ commande.user.phone }}</li>
                         </ul>
                     </td>
                 {% else %}
                     <td class="table-dark text-center font-weight-normal">Client</td>
                     <td class="text-left font-weight-normal px-2" colspan="7">
                         <ul class="list-unstyled list-inline mb-0">
-                            <li class="list-inline-item">Nom et prénom: {{ order.booking.firstname }} {{ order.booking.lastName }}</li>
-                            <li class="list-inline-item">Email: <a href="mailto::{{ order.booking.email }}" class="card-link" data-toggle="tooltip" title="Envoyer un mail">{{ order.booking.email }}</a></li>
-                            <li class="list-inline-item">Telephone: {{ order.booking.phone }}</li>
+                            <li class="list-inline-item">Nom et prénom: {{ commande.booking.firstname }} {{ commande.booking.lastName }}</li>
+                            <li class="list-inline-item">Email: <a href="mailto::{{ commande.booking.email }}" class="card-link" data-toggle="tooltip" title="Envoyer un mail">{{ order.booking.email }}</a></li>
+                            <li class="list-inline-item">Telephone: {{ commande.booking.phone }}</li>
                         </ul>
                     </td>
                 {% endif %}
             </tr>
             <tr>
                 <td class="table-dark text-center font-weight-normal">Montant</td>
-                <td class="text-center font-weight-normal">{{ order.amount|format_currency('XOF') }}</td>
+                <td class="text-center font-weight-normal">{{ commande.amount|format_currency('XOF') }}</td>
                 <td class="table-dark text-center font-weight-normal">Taxe</td>
-                <td class="text-center font-weight-normal">{{ order.taxeAmount|format_currency('XOF') }}</td>
+                <td class="text-center font-weight-normal">{{ commande.taxeAmount|format_currency('XOF') }}</td>
                 <td class="table-dark text-center font-weight-normal">Montant total</td>
-                <td class="text-center font-weight-normal">{{ order.amountTotal|format_currency('XOF') }}</td>
+                <td class="text-center font-weight-normal">{{ commande.amountTotal|format_currency('XOF') }}</td>
                 <td class="table-dark text-center font-weight-normal">Remise</td>
                 <td class="text-center font-weight-normal">
-                    {% if order.discountAmount %}
+                    {% if commande.discountAmount %}
                         <span class="badge badge-success font-weight-stone-500">
-                                {{ order.discountAmount }} %
+                                {{ commande.discountAmount }} %
                             </span>
                     {% else %}
                         <span class="badge badge-warning font-weight-stone-500">Non</span>

@@ -10,7 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RoomEquipmentRepository::class)]
 class RoomEquipment
@@ -23,8 +22,6 @@ class RoomEquipment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 2, max: 100)]
     #[ORM\Column(nullable: true)]
     private ?string $name = null;
 

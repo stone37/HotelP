@@ -8,8 +8,8 @@ use App\Repository\EquipmentValueRepository;
 use App\Repository\GalleryRepository;
 use App\Repository\RoomEquipmentRepository;
 use App\Repository\RoomRepository;
-use App\Service\CartService;
-use App\Storage\BookingSessionStorage;
+use App\Storage\BookingStorage;
+use App\Storage\CartStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,8 +23,8 @@ class HomeController extends AbstractController
         private RoomGalleryRepository $roomGalleryRepository,
         private EquipmentValueRepository $equipmentValueRepository,
         private RoomEquipmentRepository $roomEquipmentRepository,
-        private BookingSessionStorage $storage,
-        private CartService $cartService
+        private BookingStorage $storage,
+        private CartStorage $cartStorage
     )
     {
     }
@@ -33,7 +33,7 @@ class HomeController extends AbstractController
     public function index(): Response
     {
         $this->storage->remove();
-        $this->cartService->init();
+        $this->cartStorage->init();
 
         return $this->render('site/home/index.html.twig', [
             'galleries' => $this->galleryRepository->getGalleries(5),

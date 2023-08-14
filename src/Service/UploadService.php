@@ -9,11 +9,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class UploadService
 {
-    private ParameterBagInterface $parameter;
-
-    public function __construct(ParameterBagInterface $parameter)
+    public function __construct(private ParameterBagInterface $parameter)
     {
-        $this->parameter = $parameter;
     }
 
     public function getFilesUpload(SessionInterface $session): Finder
@@ -22,7 +19,7 @@ class UploadService
 
         try {
             $finder->in($this->getFindPath($session))->files();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $finder->append([]);
         }
 
@@ -31,9 +28,7 @@ class UploadService
 
     private function getFindPath(SessionInterface $session): string
     {
-        return sprintf('%s/%s',
-            $this->parameter->get('app.path.image_orphanage'),
-            $this->getPath($session));
+        return sprintf('%s/%s', $this->parameter->get('app.path.image_orphanage'), $this->getPath($session));
     }
 
     private function getPath(SessionInterface $session): string

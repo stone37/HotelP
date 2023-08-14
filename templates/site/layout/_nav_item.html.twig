@@ -6,6 +6,46 @@
 {% set promotion_index = isActive('app_promotion_index') %}
 {% set promotion_show = isActive('app_promotion_show') %}
 
+{% set dashboard = isActive('app_user_index') %}
+{% set booking_index = isActive('app_user_booking_index') %}
+{% set booking_confirm = isActive('app_user_booking_confirmed_index') %}
+{% set booking_cancel = isActive('app_user_booking_cancel_index') %}
+{% set invoice = isActive('app_user_invoice_index') %}
+{% set profil_edit = isActive('app_user_profil_edit') %}
+{% set profil_pw = isActive('app_user_change_password') %}
+{% set profil_delete = isActive('app_user_delete') %}
+ 
+{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+    <li class="nav-item mobile-user d-block d-lg-none px-md-2">
+        <div class="menu mb-2">
+            <div class="d-flex justify-content-between">
+                <a href="{{ path('app_user_index') }}" class="d-block text-center
+                        {% if dashboard %}active{% endif %}">
+                    <div class="icon"><i class="fas fa-th-large"></i></div>
+                    <div class="title">Tableau de bord</div>
+                </a>
+                <a href="{{ path('app_user_booking_index') }}" class="d-block text-center
+                        {% if booking_index or booking_confirm or booking_cancel %}active{% endif %}">
+                    <div class="icon"><i class="fas fa-calendar"></i></div>
+                    <div class="title">Mes reservations</div>
+                </a>
+            </div>
+            <div class="d-flex justify-content-between">
+                <a href="{{ path('app_user_invoice_index') }}" class="d-block text-center
+                        {% if invoice %}active{% endif %}">
+                    <div class="icon"><i class="fas fa-file-invoice"></i></div>
+                    <div class="title">Mes factures</div>
+                </a>
+                <a href="{{ path('app_user_profil_edit') }}" class="d-block text-center
+                        {% if profil_edit or profil_pw or profil_delete %}active{% endif %}">
+                    <div class="icon"><i class="fas fa-user-circle"></i></div>
+                    <div class="title">Profil</div>
+                </a>
+            </div>
+        </div>
+    </li>
+{% endif %}
+
 <li class="nav-item {% if home %}active{% endif %}">
     <a class="nav-link" href="{{ path('app_home') }}">
         <i class="fas fa-home mr-1"></i> Accueil

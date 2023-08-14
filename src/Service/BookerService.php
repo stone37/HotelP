@@ -2,16 +2,16 @@
 
 namespace App\Service;
 
+use App\Calculator\PriceCalculator;
+use App\Calculator\SupplementPriceCalculator;
 use App\Data\BookingData;
-use App\Entity\Option;
 use App\Entity\Room;
 use App\Entity\User;
 use App\Repository\BookingRepository;
-use App\Storage\BookingSessionStorage;
+use App\Storage\BookingStorage;
 use App\Util\BookingDaysCalculator;
-use App\Util\PromotionPriceCalculator;
 use DateTime;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class BookerService
@@ -20,45 +20,37 @@ class BookerService
     public const INIT_CHILDREN = 0;
     public const INIT_ROOM = 1;
 
-    private BookingRepository $repository;
-    private Security $security;
-    private BookingSessionStorage $storage;
-    private BookingDaysCalculator $daysCalculator;
-    private RoomService $roomService;
-    private PromotionPriceCalculator $promotionPriceCalculator;
-
     public function __construct(
-        BookingRepository $repository,
-        BookingSessionStorage $storage,
-        Security $security,
-        BookingDaysCalculator $daysCalculator,
-        RoomService $roomService,
-        PromotionPriceCalculator $promotionPriceCalculator
+        private BookingRepository $repository,
+        private BookingStorage $storage,
+        private Security $security,
+        private RoomService $roomService,
+        private BookingDaysCalculator $daysCalculator,
+        private PriceCalculator $priceCalculator,
+        private SupplementPriceCalculator $supplementPriceCalculator
     ) {
-        $this->repository = $repository;
-        $this->storage = $storage;
-        $this->security = $security;
-        $this->daysCalculator = $daysCalculator;
-        $this->roomService = $roomService;
-        $this->promotionPriceCalculator = $promotionPriceCalculator;
     }
 
-    public function createData(Room $room, Option $option = null): BookingData
+    public function createData(Room $room): BookingData
     {
         $data = $this->storage->getBookingData();
+        $night = $this->daysCalculator->getDays($data->checkin, $data->checkout);
+        $totalPrice = $this->roomService->getPrice($room, $data->checkin, $data->checkout);
+        $reduced = $room->getPrice() - ($totalPrice - $this->roomService->getTaxe($room));
+        $supplementAmount = $this->supplementPriceCalculator->calculate($room->getSupplements()->toArray());
+
         $data->roomId = $room->getId();
-        $data->optionId = ($option) ? $option->getId() : null;
-        $data->days = $this->daysCalculator->getDays($data->checkin, $data->checkout);
-        $data->amount = $this->roomPrice($room, $option);
-        $data->taxeAmount = $this->roomTaxe($room, $option);
-        $data->discountAmount = $data->amount - $this->discountCalculate($data->amount, $this->roomDiscount($room));
+        $data->night = $night;
+        $data->amount = ($this->priceCalculator->calculate($room) * $night * $data->roomNumber) + $supplementAmount;
+        $data->taxeAmount = $this->roomService->getTaxe($room) * $night * $data->roomNumber;
+        $data->discountAmount = $reduced * $night * $data->roomNumber;
 
         if ($this->security->getUser()) {
             /** @var User|UserInterface $user */
             $user = $this->security->getUser();
 
-            $data->firstname = (string) $user->getFirstName();
-            $data->lastname = (string) $user->getLastName();
+            $data->firstname = (string) $user->getFirstname();
+            $data->lastname = (string) $user->getLastname();
             $data->email = (string) $user->getEmail();
             $data->phone = (string) $user->getPhone();
             $data->country = (string) $user->getCountry();
@@ -73,7 +65,7 @@ class BookerService
         $this->storage->set($bookingData);
     }
 
-    public function roomAvailableForPeriod(array $rooms)
+    public function roomAvailableForPeriod(array $rooms): array
     {
         $data = $this->storage->init();
 
@@ -93,13 +85,11 @@ class BookerService
         return $results;
     }
 
-    public function isAvailableForPeriod(Room $room, DateTime $start, DateTime $end)
+    public function isAvailableForPeriod(Room $room, DateTime $start, DateTime $end): bool
     {
-        $results = $this->repository->availableForPeriod($room, $start, $end);
+        $available = $this->repository->availableForPeriod($room, $start, $end);
 
-        //return count($results) === 0;
-
-        return ($room->getRoomNumber() > $results);
+        return ($room->getRoomNumber() > $available);
     }
 
     public function today(): DateTime
@@ -118,26 +108,6 @@ class BookerService
         $data->checkout->modify("+{$this->storage->getCheckoutMin()} minutes");
 
         return $data;
-    }
-
-    private function roomPrice(Room $room, Option $option = null): int
-    {
-        return $this->roomService->getRoomPrice($room, $option);
-    }
-
-    private function roomTaxe(Room $room, Option $option = null): int
-    {
-        return $this->roomService->getTaxePrice($room, $option);
-    }
-
-    private function roomDiscount(Room $room): int
-    {
-        return $this->roomService->getDiscount($room);
-    }
-
-    private function discountCalculate(int $amount, int $discount)
-    {
-        return $this->promotionPriceCalculator->calculate($amount, $discount);
     }
 }
 

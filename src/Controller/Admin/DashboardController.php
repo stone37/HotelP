@@ -62,8 +62,6 @@ class DashboardController extends AbstractController
             'newsletterData' => $this->newsletterDataRepository->getNumber(),
             'months' => $this->paymentRepository->getMonthlyRevenues(),
             'days' => $this->paymentRepository->getDailyRevenues(),
-            /*'taxMonths' => $this->paymentRepository->getMonthlyTaxRevenues(),
-            'taxDays' => $this->paymentRepository->getDailyTaxRevenues(),*/
             'orders' => $this->paymentRepository->getNumber(),
             'revenus' => ($revenus - $taxe),
             'reduction' => $reduction,
@@ -81,16 +79,15 @@ class DashboardController extends AbstractController
     #[Route(path: '/admin/mailtester', name: 'app_admin_mailtest', methods: ['POST'])]
     public function testMail(Request $request, Mailer $mailer): RedirectResponse
     {
-        $email = $mailer->createEmail('mails/auth/register.twig', [
-            'user' => $this->getUserOrThrow(),
-        ])
+        $email = $mailer->createEmail('mails/auth/register.twig', ['user' => $this->getUserOrThrow()])
             ->to($request->get('email'))
             ->subject('Hotel particulier | Confirmation du compte');
-        $mailer->sendNow($email);
+
+        $mailer->send($email);
 
         $this->addFlash('success', "L'email de test a bien été envoyé");
 
-        return $this->redirectToRoute('app_admin_dashboard');
+        return $this->redirectToRoute('app_admin_index');
     }
 
     private function getUserOrThrow(): User

@@ -11,24 +11,19 @@ final class ConfigurationFileManager
 {
     private const MAINTENANCE_FILE = 'maintenance.yaml';
 
-    private Filesystem $filesystem;
-
-    private string $maintenanceDirectory;
-
-    public function __construct(Filesystem $filesystem, KernelInterface $kernel, string $maintenanceDirectory)
+    public function __construct(private Filesystem $filesystem, KernelInterface $kernel, private string $maintenanceDirectory)
     {
-        $this->filesystem = $filesystem;
         $this->maintenanceDirectory = $kernel->getProjectDir() . '/' . $maintenanceDirectory;
     }
 
     public function hasMaintenanceFile(): bool
     {
-        return $this->filesystem->exists($this->getPathToFile(self::MAINTENANCE_FILE));
+        return $this->filesystem->exists($this->getPathToFile());
     }
 
     public function createMaintenanceFile(array $data): void
     {
-        $maintenanceFilePath = $this->getPathToFile(self::MAINTENANCE_FILE);
+        $maintenanceFilePath = $this->getPathToFile();
         if (!$this->filesystem->exists($maintenanceFilePath)) {
             $this->filesystem->touch($maintenanceFilePath);
         }
@@ -43,21 +38,21 @@ final class ConfigurationFileManager
 
     public function deleteMaintenanceFile(): void
     {
-        $this->filesystem->remove($this->getPathToFile(self::MAINTENANCE_FILE));
+        $this->filesystem->remove($this->getPathToFile());
     }
 
     public function parseMaintenanceYaml(): ?array
     {
         try {
-            return Yaml::parseFile($this->getPathToFile(self::MAINTENANCE_FILE));
-        } catch (ParseException $exception) {
+            return Yaml::parseFile($this->getPathToFile());
+        } catch (ParseException) {
             return null;
         }
     }
 
-    private function getPathToFile(string $filename): string
+    private function getPathToFile(): string
     {
-        return $this->maintenanceDirectory . '/' . $filename;
+        return $this->maintenanceDirectory . '/' . self::MAINTENANCE_FILE;
     }
 }
 

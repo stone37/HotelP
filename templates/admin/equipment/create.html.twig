@@ -1,6 +1,6 @@
 {% extends 'admin/layout.html.twig' %}
 
-{% block title %} Nouveau équipement | Equipements | {{ parent() }}{% endblock %}
+{% block title %} Nouveau équipement | Équipements | {{ parent() }}{% endblock %}
 
 {% block app_body %}
     {{ include('admin/equipment/create/_header.html.twig') }}
@@ -8,10 +8,3 @@
     {{ include('admin/equipment/create/_content.html.twig') }}
 {% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-{% endblock %}

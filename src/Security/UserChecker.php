@@ -7,6 +7,8 @@ use App\Exception\UserBannedException;
 use App\Exception\UserNotFoundException;
 use App\Service\LoginAttemptService;
 use App\Entity\User;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -15,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserChecker implements UserCheckerInterface
 {
-    private $loginAttemptService;
+    private LoginAttemptService $loginAttemptService;
 
     public function __construct(LoginAttemptService $loginAttemptService)
     {
@@ -26,8 +28,8 @@ class UserChecker implements UserCheckerInterface
      * Vérifie que l'utilisateur a le droit de se connecter.
      *
      * @param UserInterface $user
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function checkPreAuth(UserInterface $user): void
     {
@@ -52,7 +54,5 @@ class UserChecker implements UserCheckerInterface
         if ($user instanceof User && null !== $user->getConfirmationToken()) {
             throw new UserNotFoundException();
         }
-
-        return;
     }
 }

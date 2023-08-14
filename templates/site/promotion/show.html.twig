@@ -8,6 +8,8 @@
     <meta property="og:description" content="{{ content }}" />
 {% endblock %}
 
+{% block app_flashes %}{% endblock %}
+
 {% block app_intro %}
     <div class="view intro data" style="background-image: url({{ vich_uploader_asset(promotion, 'file') }}); background-repeat: no-repeat; background-size: cover;">
         <div class="mask rgba-black-strong d-flex justify-content-center align-items-center">
@@ -44,6 +46,12 @@
 
 {% block javascripts %}
     {{ parent() }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            bookingSelectData();
+        });
+    </script>
 {% endblock %}
 
 

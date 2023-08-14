@@ -12,25 +12,26 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class AuthenticationEntryPoint implements AuthenticationEntryPointInterface
 {
-    private $urlGenerator;
-    private $accessDeniedHandler;
-
-    public function __construct(UrlGeneratorInterface $urlGenerator, AccessDeniedHandler $accessDeniedHandler)
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+        private AccessDeniedHandler $accessDeniedHandler
+    )
     {
-        $this->urlGenerator = $urlGenerator;
-        $this->accessDeniedHandler = $accessDeniedHandler;
     }
 
     /**
      * @param Request $request
      * @param AuthenticationException|null $authException
      * @return Response
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function start(Request $request, AuthenticationException $authException = null): Response
     {

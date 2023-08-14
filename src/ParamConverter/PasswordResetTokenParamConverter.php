@@ -4,17 +4,15 @@ namespace App\ParamConverter;
 
 use App\Entity\PasswordResetToken;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\Pure;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class PasswordResetTokenParamConverter implements ParamConverterInterface
 {
-    private EntityManagerInterface $em;
-
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->em = $em;
     }
 
     /**
@@ -34,7 +32,7 @@ class PasswordResetTokenParamConverter implements ParamConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(ParamConverter $configuration)
+    #[Pure] public function supports(ParamConverter $configuration): bool
     {
         return PasswordResetToken::class === $configuration->getClass() && 'token' === $configuration->getName();
     }

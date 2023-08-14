@@ -11,25 +11,23 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Authorization\AccessDeniedHandlerInterface;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class AccessDeniedHandler implements AccessDeniedHandlerInterface
 {
-    private UrlGeneratorInterface $urlGenerator;
-    private Environment $twig;
-
-    public function __construct(UrlGeneratorInterface $urlGenerator, Environment $twig)
+    public function __construct(private UrlGeneratorInterface $urlGenerator, private Environment $twig)
     {
-        $this->urlGenerator = $urlGenerator;
-        $this->twig = $twig;
     }
 
     /**
      * @param Request $request
      * @param AccessDeniedException $accessDeniedException
      * @return Response
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function handle(Request $request, AccessDeniedException $accessDeniedException): Response
     {

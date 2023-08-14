@@ -62,8 +62,7 @@
                                     <a href="{{ path('app_admin_emailing_resend', {'id': email.id, 'type': type}) }}" class="dropdown-item">
                                         <i class="fas fa-sync mr-1"></i> Renvoyer
                                     </a>
-                                    <a class="dropdown-item entity-delete-btn" data-id="{{ email.id }}"
-                                       data-url="{{ path('app_admin_emailing_index', {'id': email.id}) }}" >
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ email.id }}" data-url="{{ path('app_admin_emailing_index', {'id': email.id}) }}" >
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -75,7 +74,7 @@
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ emailings.totalItemCount }} résultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ emailings.totalItemCount > 1 ? emailings.totalItemCount ~ ' résultats' : emailings.totalItemCount ~ ' résultat' }}</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
             {{ knp_pagination_render(emailings, 'ui/_pagination.html.twig') }}

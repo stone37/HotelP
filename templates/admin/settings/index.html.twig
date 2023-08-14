@@ -5,11 +5,9 @@
 {% block app_body %}
     {{ include('admin/settings/index/_header.html.twig') }}
 
-    {{ include('admin/settings/index/_content.html.twig') }}
-{% endblock %}
+    {{ include('ui/_flashes_message.html.twig') }}
 
-{% block stylesheets %}
-    {{ parent() }}
+    {{ include('admin/settings/index/_content.html.twig') }}
 {% endblock %}
 
 {% block javascripts %}

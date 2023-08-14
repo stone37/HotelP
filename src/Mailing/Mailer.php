@@ -2,35 +2,33 @@
 
 namespace App\Mailing;
 
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Crypto\DkimSigner;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Message;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class Mailer
 {
-    private Environment $twig;
-    private MailerInterface $mailer;
-    private $dkimKey;
-
     public function __construct(
-        Environment $twig,
-        MailerInterface $mailer,
-        ?string $dkimKey = null
-    ) {
-        $this->twig = $twig;
-        $this->mailer = $mailer;
-        $this->dkimKey = $dkimKey;
+        private Environment $twig,
+        private MailerInterface $mailer,
+        private ?string $dkimKey = null
+    )
+    {
     }
 
     /**
      * @param string $template
      * @param array $data
      * @return Email
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function createEmail(string $template, array $data = []): Email
     {
@@ -47,17 +45,9 @@ class Mailer
 
     /**
      * @param Email $email
-
-    public function send(Email $email): void
-    {
-        $this->enqueue->enqueue(self::class, 'sendNow', [$email]);
-    }*/
-
-    /**
-     * @param Email $email
-     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     * @throws TransportExceptionInterface
      */
-    public function sendNow(Email $email): void
+    public function send(Email $email): void
     {
         if ($this->dkimKey) {
             $dkimSigner = new DkimSigner("file://{$this->dkimKey}", 'hostel.com', 'default');

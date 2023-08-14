@@ -32,29 +32,17 @@ class Authenticator extends AbstractLoginFormAuthenticator
     use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'app_login';
-
-    private UrlGeneratorInterface $urlGenerator;
-    private CsrfTokenManagerInterface $csrfTokenManager;
-    private UserPasswordHasherInterface $passwordHasher;
-    private EventDispatcherInterface $eventDispatcher;
-    private UserRepository $userRepository;
-    private UrlMatcherInterface $urlMatcher;
-    private $user = null;
+    private ?User $user = null;
 
     public function __construct(
-        UserRepository $userRepository,
-        UrlGeneratorInterface $urlGenerator,
-        CsrfTokenManagerInterface $csrfTokenManager,
-        UserPasswordHasherInterface $passwordHasher,
-        EventDispatcherInterface $eventDispatcher,
-        UrlMatcherInterface $urlMatcher
-    ) {
-        $this->urlGenerator = $urlGenerator;
-        $this->csrfTokenManager = $csrfTokenManager;
-        $this->passwordHasher = $passwordHasher;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->userRepository = $userRepository;
-        $this->urlMatcher = $urlMatcher;
+        private UserRepository $userRepository,
+        private UrlGeneratorInterface $urlGenerator,
+        private CsrfTokenManagerInterface $csrfTokenManager,
+        private UserPasswordHasherInterface $passwordHasher,
+        private EventDispatcherInterface $eventDispatcher,
+        private UrlMatcherInterface $urlMatcher
+    )
+    {
     }
 
     public function authenticate(Request $request): Passport

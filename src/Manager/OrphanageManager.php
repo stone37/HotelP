@@ -11,11 +11,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class OrphanageManager
 {
-    private ParameterBagInterface $parameterBag;
-
-    public function __construct(ParameterBagInterface $parameterBag)
+    public function __construct(private ParameterBagInterface $parameterBag)
     {
-        $this->parameterBag = $parameterBag;
     }
 
     public function clear(): void

@@ -5,77 +5,41 @@ namespace App\Controller;
 use App\Data\BookingData;
 use App\Event\PaymentEvent;
 use App\Manager\OrderManager;
-use App\Storage\CommandeSessionStorage;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\CommandeRepository;
+use App\Storage\CommandeStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommandeController extends AbstractController
 {
-    private OrderManager $manager;
-    private CommandeSessionStorage $storage;
-    private EntityManagerInterface $em;
-    private EventDispatcherInterface $dispatcher;
-
     public function __construct(
-        OrderManager $manager,
-        CommandeSessionStorage $storage,
-        EntityManagerInterface $em,
-        EventDispatcherInterface $dispatcher
+        private OrderManager $manager,
+        private CommandeRepository $repository,
+        private CommandeStorage $storage,
+        private EventDispatcherInterface $dispatcher
     )
     {
-        $this->manager = $manager;
-        $this->storage = $storage;
-        $this->em = $em;
-        $this->dispatcher = $dispatcher;
     }
 
-    public function prepareCommande(BookingData $data)
+    public function prepareCommande(BookingData $data): Response
     {
-
-        /*$products = $this->em->getRepository(Product::class)
-                        ->findArray(array_values($this->session->get('app_cart')));
-
-        foreach ($products as $product) {
-            $priceTTC = ((($product->getPrice() * $product->getTva()->getValue())/100)+$product->getPrice());
-
-            $this->manager->addItem($product, $priceTTC);
-
-            $totalHT += $product->getPrice();
-            $totalTVA += $priceTTC - $product->getPrice();
-        }*/
-
-
-        //$this->manager->clearItems();
-        //$this->manager->addItem($booking);
-
-       /* $totalHT = ($data->discountAmount) ?
-            $this->promotionPriceCalculator->calculate($data->amount, $data->discountAmount) : $data->amount;
-
-        $totalTVA = $data->taxeAmount;*/
-
-        /*$totalHT = ($booking->getRoomDiscount()) ?
-            $this->promotionPriceCalculator->calculate($booking->getRoomPrice(), $booking->getRoomDiscount()) :
-            $booking->getRoomPrice();
-        $totalTVA = $booking->getTaxePrice();*/
-
         $commande = ($this->manager->getCurrent())
                 ->setValidated(false)
-                ->setReference(null)
-                ->setAmount($data->amount)
+                ->setNumber(null)
+                ->setAmount($data->amount - $data->taxeAmount)
                 ->setTaxeAmount($data->taxeAmount)
                 ->setDiscountAmount($data->discountAmount)
-                ->setAmountTotal($data->amount+$data->taxeAmount-$data->discountAmount);
-
+                ->setAmountTotal($data->amount - $data->discountAmount);
 
         if (!$this->storage->has()) {
-            $this->em->persist($commande);
+            $this->repository->add($commande);
         }
 
-        $this->em->flush();
+        $this->repository->flush();
 
         $this->storage->set($commande->getId());
 
@@ -83,7 +47,7 @@ class CommandeController extends AbstractController
     }
 
     #[Route(path: '/commande/payment', name: 'app_commande_pay')]
-    public function payment(Request $request)
+    public function payment(Request $request): RedirectResponse
     {
         $commande = $this->manager->getCurrent();
 
@@ -104,41 +68,10 @@ class CommandeController extends AbstractController
         $request->getSession()->remove('booking');
 
         return $this->redirectToRoute('app_commande_validated');
-
-
-       /* $commande = $this->manager->getCurrent();
-
-        if (!$commande || $commande->getValidated())
-            throw $this->createNotFoundException('La commande n\'existe pas...');
-
-        $commande->setValidated(true);
-        $commande->setReference($this->generator->generate(10, false));
-        $summary = $this->manager->summary();
-
-        $payment = (new Payment())
-            ->setCommande($commande)
-            ->setPrice($summary->amountPaid())
-            ->setDiscount($summary->getDiscount())
-            ->setTaxe($summary->getTvaPriceTotal())
-            ->setEnabled(true);
-
-        $this->em->persist($payment);
-        $this->em->flush();
-
-        $this->dispatcher->dispatch(new PaymentEvent($payment, $commande));
-
-        $this->session->remove('orderId');
-        $this->session->remove('app_cart');
-        $this->session->remove('app_advert');
-        $this->session->remove('app_vignette');
-
-        $this->addFlash('success', 'Felicitation, votre paiement a été effectué avec succès');
-
-        return $this->redirectToRoute('app_home');*/
     }
 
     #[Route(path: '/commande/validate/success', name: 'app_commande_validated')]
-    public function success()
+    public function success(): Response
     {
         return $this->render('site/commande/success.html.twig');
     }

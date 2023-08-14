@@ -17,21 +17,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class PaymentSubscriber implements EventSubscriberInterface
 {
-    private EntityManagerInterface $em;
-    private UniqueNumberGenerator $generator;
-    private RequestStack $request;
-    private EventDispatcherInterface $dispatcher;
-
     public function __construct(
-        RequestStack $request,
-        EntityManagerInterface $em,
-        UniqueNumberGenerator $generator,
-        EventDispatcherInterface $dispatcher)
+        private RequestStack $request,
+        private EntityManagerInterface $em,
+        private UniqueNumberGenerator $generator,
+        private EventDispatcherInterface $dispatcher
+    )
     {
-        $this->request = $request;
-        $this->em = $em;
-        $this->generator = $generator;
-        $this->dispatcher = $dispatcher;
     }
 
     public static function getSubscribedEvents(): array
@@ -53,12 +45,10 @@ class PaymentSubscriber implements EventSubscriberInterface
             ->setCheckout($data->checkout)
             ->setAdult($data->adult)
             ->setChildren($data->children)
-            ->setDays($data->days)
+            ->setDays($data->night)
             ->setAmount($data->amount)
-            ->setTaxeAmount($data->taxeAmount)
-            ->setDiscountAmount($data->discountAmount)
             ->setRoomNumber($data->roomNumber)
-            ->setReference($this->generator->generate(6))
+            ->setNumber($this->generator->generate(6))
             ->setUser($commande->getUser())
             ->setIp($this->request->getMainRequest()->getClientIp())
             ->setFirstname($data->firstname)
@@ -72,7 +62,7 @@ class PaymentSubscriber implements EventSubscriberInterface
 
         $commande->setBooking($booking)
             ->setValidated(true)
-            ->setReference($this->generator->generate(10, false));
+            ->setNumber($this->generator->generate(10, false));
 
         $summary = new Summary($commande);
 

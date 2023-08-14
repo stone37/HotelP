@@ -14,6 +14,7 @@ use App\Repository\PasswordResetTokenRepository;
 use App\Security\TokenGeneratorService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -21,27 +22,15 @@ class PasswordService
 {
     const EXPIRE_IN = 30; // Temps d'expiration d'un token
 
-    private UserRepository $userRepository;
-    private PasswordResetTokenRepository $tokenRepository;
-    private $em;
-    private TokenGeneratorService $generator;
-    private EventDispatcherInterface $dispatcher;
-    private UserPasswordHasherInterface $passwordHasher;
-
     public function __construct(
-        UserRepository $userRepository,
-        PasswordResetTokenRepository $tokenRepository,
-        TokenGeneratorService $generator,
-        EntityManagerInterface $em,
-        EventDispatcherInterface $dispatcher,
-        UserPasswordHasherInterface $passwordHasher
-    ) {
-        $this->userRepository = $userRepository;
-        $this->tokenRepository = $tokenRepository;
-        $this->em = $em;
-        $this->generator = $generator;
-        $this->dispatcher = $dispatcher;
-        $this->passwordHasher = $passwordHasher;
+        private UserRepository $userRepository,
+        private PasswordResetTokenRepository $tokenRepository,
+        private TokenGeneratorService $generator,
+        private EntityManagerInterface $em,
+        private EventDispatcherInterface $dispatcher,
+        private UserPasswordHasherInterface $passwordHasher
+    )
+    {
     }
 
     /**
@@ -49,7 +38,7 @@ class PasswordService
      *
      * @throws OngoingPasswordResetException
      * @throws UserNotFoundException
-     * @throws \Exception
+     * @throws Exception
      */
     public function resetPassword(PasswordResetRequestData $data): void
     {
@@ -84,7 +73,7 @@ class PasswordService
     /**
      * @param PasswordResetToken $token
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function isExpired(PasswordResetToken $token): bool
     {

@@ -13,11 +13,11 @@ class PriceCalculator
     public function calculate(Room $room): int
     {
         if (!$room->getTaxe()) {
-            return $room->getTotalPrice();
+            return $room->getPrice();
         }
 
         $taxe = $this->taxCalculator->calculate($room->getPrice(), $room->getTaxe());
 
-        return $room->getTotalPrice() + $taxe;
+        return $room->getPrice() + $taxe;
     }
 }

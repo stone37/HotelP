@@ -4,42 +4,40 @@ namespace App\Service;
 
 use App\Entity\Commande;
 use App\Entity\Discount;
+use JetBrains\PhpStorm\Pure;
 
 class Summary
 {
-    private Commande $commande;
-
-    public function __construct(Commande $commande)
+    public function __construct(private Commande $commande)
     {
-        $this->commande = $commande;
     }
 
-    public function getBooking()
+    #[Pure] public function getBooking()
     {
         return $this->commande->getBooking();
     }
 
-    public function getAmountTotal(): int
+    #[Pure] public function getAmountTotal(): int
     {
         return $this->commande->getAmountTotal();
     }
 
-    public function getAmountBeforeDiscount(): int
+    #[Pure] public function getAmountBeforeDiscount(): int
     {
         return $this->commande->getAmount();
     }
 
-    public function getTaxeAmount(): int
+    #[Pure] public function getTaxeAmount(): int
     {
         return $this->commande->getTaxeAmount();
     }
 
-    public function amountPaid()
+    #[Pure] public function amountPaid(): ?int
     {
         return ($this->commande->getAmountTotal() - $this->getDiscount());
     }
 
-    public function getDiscount(): int
+    #[Pure] public function getDiscount(): int
     {
         $price = 0;
         $discount = $this->commande->getDiscount();
@@ -55,7 +53,7 @@ class Summary
         return $price;
     }
 
-    public function hasDiscount(): bool
+    #[Pure] public function hasDiscount(): bool
     {
         return (bool) $this->commande->getDiscount();
     }

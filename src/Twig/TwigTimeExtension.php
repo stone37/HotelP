@@ -15,7 +15,7 @@ class TwigTimeExtension extends AbstractExtension
             new TwigFilter('duration', [$this, 'duration']),
             new TwigFilter('ago', [$this, 'ago'], ['is_safe' => ['html']]),
             new TwigFilter('countdown', [$this, 'countdown'], ['is_safe' => ['html']]),
-            new TwigFilter('duration_short', [$this, 'shortDuration'], ['is_safe' => ['html']]),
+            new TwigFilter('duration_short', [$this, 'shortDuration'], ['is_safe' => ['html']])
         ];
     }
 

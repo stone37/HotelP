@@ -3,6 +3,7 @@
 namespace App\Exception;
 
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Throwable;
 
 class NotVerifiedEmailException extends CustomUserMessageAuthenticationException
 {
@@ -10,8 +11,9 @@ class NotVerifiedEmailException extends CustomUserMessageAuthenticationException
         string $message = "Ce compte ne semble pas posséder d'email vérifié :(",
         array $messageData = [],
         int $code = 0,
-        \Throwable $previous = null
-    ) {
+        Throwable $previous = null
+    )
+    {
         parent::__construct($message, $messageData, $code, $previous);
     }
 }

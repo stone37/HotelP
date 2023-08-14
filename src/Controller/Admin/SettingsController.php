@@ -2,46 +2,32 @@
 
 namespace App\Controller\Admin;
 
+use App\Data\SettingsCrudData;
 use App\Entity\Settings;
-use App\Form\SettingsType;
 use App\Repository\SettingsRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin')]
-class SettingsController extends AbstractController
+class SettingsController extends CrudController
 {
-    public function __construct(private SettingsRepository $repository)
-    {
-    }
+    protected string $entity = Settings::class;
+    protected string $templatePath = 'settings';
+    protected string $routePrefix = 'app_admin_settings';
+    protected string $hybridIndexFlashMessage = 'Les paramètres du site ont été mise à jour';
 
     #[Route(path: '/settings', name: 'app_admin_settings_index')]
-    public function index(Request $request): Response
+    public function index(SettingsRepository $repository): Response
     {
-        $settings = $this->repository->getSettings();
+        $settings = $repository->getSettings();
 
         if (null === $settings) {
             $settings = new Settings();
         }
 
-        $form = $this->createForm(SettingsType::class, $settings);
-        $form->handleRequest($request);
+        $data = new SettingsCrudData($settings);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $this->repository->add($settings, true);
-
-            $this->addFlash('success', 'Les paramètres du site ont été mise à jour');
-
-            return $this->redirectToRoute('app_admin_settings_index');
-        }
-
-        return $this->render('admin/settings/index.html.twig', [
-            'form' => $form->createView(),
-            'settings' => $settings,
-        ]);
+        return $this->crudHybridIndex($data);
     }
 }
 

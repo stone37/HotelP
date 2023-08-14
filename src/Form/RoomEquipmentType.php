@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\RoomEquipment;
+use App\Data\RoomEquipmentCrudData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -16,7 +16,7 @@ class RoomEquipmentType extends AbstractType
         $builder
             ->add('name', TextType::class, ['label' => 'Nom'])
             ->add('description', TextareaType::class, [
-                'label' => 'Description (Facultatif)',
+                'label' => 'Description (facultatif)',
                 'attr'  => ['class' => 'form-control md-textarea', 'rows'  => 4],
                 'required' => false
             ]);
@@ -25,7 +25,7 @@ class RoomEquipmentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => RoomEquipment::class,
+            'data_class' => RoomEquipmentCrudData::class,
         ]);
     }
 }

@@ -9,29 +9,25 @@ use App\Exception\TooManyEmailChangeException;
 use App\Repository\EmailVerificationRepository;
 use App\Security\TokenGeneratorService;
 use DateTime;
+use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ProfileService
 {
-    private TokenGeneratorService $tokenGeneratorService;
-    private EmailVerificationRepository $emailVerificationRepository;
-    private EventDispatcherInterface $dispatcher;
-
     public function __construct(
-        TokenGeneratorService $tokenGeneratorService,
-        EmailVerificationRepository $emailVerificationRepository,
-        EventDispatcherInterface $dispatcher
-    ) {
-        $this->tokenGeneratorService = $tokenGeneratorService;
-        $this->emailVerificationRepository = $emailVerificationRepository;
-        $this->dispatcher = $dispatcher;
+        private TokenGeneratorService $tokenGeneratorService,
+        private EmailVerificationRepository $emailVerificationRepository,
+        private EventDispatcherInterface $dispatcher
+    )
+    {
     }
 
     /**
      * @param ProfileUpdateDto $data
      * @throws TooManyEmailChangeException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Exception
+     * @throws NonUniqueResultException
+     * @throws Exception
      */
     public function updateProfile(ProfileUpdateDto $data): void
     {

@@ -2,16 +2,17 @@ $(document).ready(function() {
     let $ordPhoto = [];
     const $body = $('body');
     const $btnPhotos = $('.btn-photos');
+    const $add_container = $('#photosAnnonce');
 
     $btnPhotos.on('click', function(){
         $('input[type="file"].input-photo').trigger('click');
     });
 
-    $("#photosAnnonce").dmUploader({
+    $add_container.dmUploader({
         allowedTypes: 'image/*',
         maxFileSize: 8388608, // 8 Megs max
         extFilter: ['jpg', 'jpeg','png','gif'],
-        url: Routing.generate('app_image_upload_add'),
+        url: $add_container.attr('data-add-url'),
         onFallbackMode: function() {},
         onDragEnter: function(){
             this.addClass('active');
@@ -160,7 +161,7 @@ const uploadRemove = function (id, ordPhoto) {
     }
 
     $.ajax({
-        url: Routing.generate('app_image_upload_delete', {'pos': pos}),
+        url: '/admin/upload/image/' + pos + '/delete',
         success: function() {
             $('#'+id).addClass('fade-out-bck');
             setTimeout(function(){ $('#'+id).remove(); }, 400);

@@ -5,24 +5,20 @@ namespace App\Service;
 use App\Entity\User;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class SocialLoginService
 {
     public const SESSION_KEY = 'oauth_login';
 
-    private RequestStack $request;
-    private NormalizerInterface $normalizer;
-
-    public function __construct(RequestStack $request, NormalizerInterface $normalizer)
+    public function __construct(private RequestStack $request, private NormalizerInterface $normalizer)
     {
-        $this->request = $request;
-        $this->normalizer = $normalizer;
     }
 
     /**
      * @param ResourceOwnerInterface $resourceOwner
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     public function persist(ResourceOwnerInterface $resourceOwner): void
     {

@@ -2,6 +2,8 @@
 
 namespace App\Security;
 
+use Exception;
+
 class TokenGeneratorService
 {
     /**
@@ -9,7 +11,7 @@ class TokenGeneratorService
      *
      * @param int $length
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function generate(int $length = 25): string
     {

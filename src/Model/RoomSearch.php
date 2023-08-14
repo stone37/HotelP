@@ -4,7 +4,7 @@ namespace App\Model;
 
 class RoomSearch
 {
-    private ?string $name = "";
+    private ?string $name = null;
 
     private ?bool $enabled = null;
 

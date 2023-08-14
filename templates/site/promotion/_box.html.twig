@@ -1,8 +1,11 @@
+{% set session = app.session.has('_app_booking') %}
 {% set room = promotion.room %}
 {% set data = booker.bookingData %}
 {% set night = app_booking_days(data.checkin, data.checkout) %}
 {% set room_nbr = data.roomNumber %}
-{% set priceReduced = promotion.discount %}
+{% set booking_room_nbr = app_booking_room_nbr(room) %}
+{% set room_available = room.roomNumber - booking_room_nbr %}
+{% set priceReduced = app_room_promotion(room) %}
 
 <div id="promotion_{{ promotion.id }}" class="card card-cascade z-depth-4 mb-4 wow fadeInRight">
     <div class="view view-cascade overlay">
@@ -14,7 +17,7 @@
         <a><div class="mask rgba-black-light"></div></a>
     </div>
     <div class="card-body card-body-cascade text-left px-3 pt-3 pb-2">
-        <div class="remise pink darken-1 z-depth-3 small-9">Remise de {{ priceReduced }}%</div>
+        <div class="remise pink darken-1 z-depth-3 small-9">Remise de {{ priceReduced.discount }}%</div>
         <div class="promotion-date blue darken-1 z-depth-3 small-9">
             Du {{ promotion.start|format_datetime('medium', 'none', locale='fr') }} au {{ promotion.end|format_datetime('medium', 'none', locale='fr') }}
         </div>
@@ -28,19 +31,16 @@
                 <li><i class="fas fa-bed mr-1 my-2"></i> {{ room.couchage }}</li>
             {% endif %}
             <li><i class="fas fa-wifi mr-1 my-2"></i> Accès Wi-Fi gratuit</li>
-            {% if room.smoker %}
-                {% if room.smoker == 'Non-fumeurs' %}
-                    <li><i class="fas fa-smoking-ban mr-1 mt-2"></i> Non-fumeurs</li>
-                {% elseif room.smoker == 'Fumeurs' %}
-                    <li><i class="fas fa-smoking mr-1 mt-2"></i> Fumeurs</li>
-                {% elseif room.smoker == 'Cet hébergement est fumeurs et non-fumeurs' %}
-                    <li>
-                        <i class="fas fa-smoking-ban mr-1 mt-2"></i>
-                        <i class="fas fa-smoking mr-1"></i> Fumeurs et non-fumeurs
-                    </li>
-                {% endif %}
-            {% endif %}
         </ul>
+
+        {% if booking_room_nbr %}
+            {% if room_available >= 1 and room_available <= 3 %}
+                <div class="small-8 font-weight-stone-500 text-default mb-2">
+                    Il reste plus que {{ room_available > 1 ? room_available ~ ' hébergements' : room_available ~ ' hébergement' }} de ce type.
+                </div>
+            {% endif %}
+        {% endif %}
+
         <div class="detail mb-2">
             <a href="{{ path('app_promotion_show', {'slug': promotion.slug}) }}" class="card-link">Détail sur la promotion <i class="fas fa-angle-right ml-2"></i></a>
         </div>
@@ -49,27 +49,36 @@
         </div>
         <div class="d-flex justify-content-between">
             <div class="price">
+                {% set supplement = app_room_supplement(room) %}
+
                 <div class="text-danger number mb-1">
-                    {% set price = app_calculate_price(room) * night * room_nbr %}
+                    {% set price = room.price + app_room_taxe(room) %}
 
                     <div class="grey-text">
                         <small>
-                            <s>{{ price|format_currency('XOF') }}</s>
+                            <s>{{ ((price * night * room_nbr) + supplement)|format_currency('XOF') }}</s>
                         </small>
                     </div>
                     <div>
-                        {% set reduce = ((price * priceReduced) / 100) %}
-                        <strong>{{ (price - reduce)|format_currency('XOF') }}</strong>
+                        <strong>{{ ((app_room_total_price(room) * night * room_nbr) + supplement)|format_currency('XOF') }}</strong>
                     </div>
                 </div>
-
                 <div class="dark-grey-text info font-weight-stone-500">Taxes et frais compris</div>
             </div>
         </div>
         <div class="booking-btn mt-2 mb-0">
-            <a href="" class="btn btn-primary btn-md btn-block">
-                <i class="fas fa-calendar-day mr-1"></i> Réserver
-            </a>
+            {% set btn_state = room_available <= 0 ? false : true %}
+
+            {% if session %}
+                <a href="{{ path('app_booking_check', {'id': room.id}) }}" class="btn btn-primary btn-md btn-block {% if not btn_state %}disabled{% endif %}">
+                    <i class="fas fa-calendar-day mr-1"></i> {% if btn_state %}Réserver{% else %}Complet{% endif %}
+                </a>
+            {% else %}
+                <a class="btn btn-primary btn-md btn-block booking-data-select-btn {% if not btn_state %}disabled{% endif %}"
+                   data-id="{{ room.id }}" data-url="{{ path('app_booking_select', {'id': room.id}) }}">
+                    <i class="fas fa-calendar-day mr-1"></i> {% if btn_state %}Réserver{% else %}Complet{% endif %}
+                </a>
+            {% endif %}
         </div>
     </div>
 </div>

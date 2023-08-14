@@ -8,7 +8,7 @@ final class PasswordResetRequestData
 {
     #[Assert\NotBlank]
     #[Assert\Email]
-    public $email = '';
+    public ?string $email = null;
 
     public function getEmail(): string
     {

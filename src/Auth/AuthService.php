@@ -15,13 +15,11 @@ use function is_object;
  */
 class AuthService
 {
-    private TokenStorageInterface $tokenStorage;
-    private EventDispatcherInterface $eventDispatcher;
-
-    public function __construct(TokenStorageInterface $tokenStorage, EventDispatcherInterface $eventDispatcher)
+    public function __construct(
+        private TokenStorageInterface $tokenStorage,
+        private EventDispatcherInterface $eventDispatcher
+    )
     {
-        $this->tokenStorage = $tokenStorage;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function getUser(): User

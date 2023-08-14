@@ -10,7 +10,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
@@ -25,8 +24,6 @@ class Room
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 2)]
     #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
@@ -37,17 +34,12 @@ class Room
     #[ORM\Column(nullable: true)]
     private ?string $smoker = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 0)]
     #[ORM\Column(nullable: true)]
     private ?int $roomNumber = null;
 
-    #[Assert\NotBlank]
     #[ORM\Column(nullable: true)]
     private ?int $price = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 1)]
     #[ORM\Column(nullable: true)]
     private ?int $occupant = null;
 
@@ -73,7 +65,7 @@ class Room
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $galleries;
 
-    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Booking::class)]
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Booking::class, cascade: ['remove'])]
     private Collection $bookings;
 
     #[ORM\ManyToMany(targetEntity: RoomEquipment::class, inversedBy: 'rooms')]

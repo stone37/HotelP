@@ -12,27 +12,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/u')]
 class EmailChangeController extends AbstractController
 {
     use ControllerTrait;
 
-    private ProfileService $service;
-    private EntityManagerInterface $em;
-    private UserRepository $userRepository;
-
     public function __construct(
-        ProfileService $service,
-        EntityManagerInterface $em,
-        UserRepository $userRepository
+        private ProfileService $service,
+        private EntityManagerInterface $em,
+        private UserRepository $userRepository
     )
     {
-        $this->service = $service;
-        $this->em = $em;
-        $this->userRepository = $userRepository;
     }
 
-    #[Route(path: '/u/email-confirm/{token}', name: 'app_user_email_confirm')]
     #[IsGranted('ROLE_USER')]
+    #[Route(path: '/email-confirm/{token}', name: 'app_user_email_confirm')]
     public function confirm(EmailVerification $emailVerification): Response
     {
         if ($emailVerification->isExpired()) {
@@ -55,3 +49,4 @@ class EmailChangeController extends AbstractController
         return $this->redirectToRoute('app_user_profil_edit');
     }
 }
+

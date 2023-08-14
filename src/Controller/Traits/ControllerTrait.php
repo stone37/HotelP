@@ -8,9 +8,9 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 Trait ControllerTrait
 {
-    private function breadcrumb(Breadcrumbs $breadcrumbs)
+    private function breadcrumb(Breadcrumbs $breadcrumbs): Breadcrumbs
     {
-        $breadcrumbs->addItem('Acceuil', $this->generateUrl('app_home'));
+        $breadcrumbs->addItem('Accueil', $this->generateUrl('app_home'));
 
         return $breadcrumbs;
     }

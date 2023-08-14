@@ -7,11 +7,8 @@ use App\Entity\Commande;
 
 class OrderEvent
 {
-    private Commande $commande;
-
-    public function __construct(Commande $Commande)
+    public function __construct(private Commande $commande)
     {
-        $this->commande = $Commande;
     }
 
     public function getCommande(): Commande

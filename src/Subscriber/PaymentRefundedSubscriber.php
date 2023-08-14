@@ -9,20 +9,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PaymentRefundedSubscriber
 {
-    private EventDispatcherInterface $dispatcher;
-    private EntityManagerInterface $em;
-
-    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em)
+    public function __construct(private EventDispatcherInterface $dispatcher, private EntityManagerInterface $em)
     {
-        $this->dispatcher = $dispatcher;
-        $this->em = $em;
     }
 
     public static function getSubscribedEvents(): array
     {
-        return [
-            PaymentRefundedEvent::class => 'onPaymentReimbursed',
-        ];
+        return [PaymentRefundedEvent::class => 'onPaymentReimbursed'];
     }
 
     public function onPaymentReimbursed(PaymentRefundedEvent $event): void

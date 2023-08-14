@@ -296,14 +296,13 @@ class BookingRepository extends ServiceEntityRepository
             ->addSelect('room')
             ->orderBy('b.createdAt', 'desc');
 
-        if ($search->getCode())
-            $qb->andWhere('b.reference = :reference')->setParameter('reference', $search->getCode());
+        if ($search->getCode()) {
+            $qb->andWhere('b.number = :number')->setParameter('number', $search->getCode());
+        }
 
-        if ($search->getUser())
-            $qb->andWhere('b.user = :user')->setParameter('user', (int)$search->getUser());
-
-        if ($search->getRoom())
-            $qb->andWhere('b.room = :room')->setParameter('room', (int)$search->getRoom());
+        if ($search->getRoom()) {
+            $qb->andWhere('b.room = :room')->setParameter('room', (int) $search->getRoom());
+        }
 
         return $qb;
     }
@@ -325,30 +324,31 @@ class BookingRepository extends ServiceEntityRepository
 
         if ($state === Booking::NEW) {
             $qb->andWhere($qb->expr()->isNull('b.confirmedAt'))
-                ->andWhere('b.checkin >= :date')
-                ->andWhere('b.status = :status')
-                ->setParameter('date', new DateTime())
-                ->setParameter('status', Booking::NEW);
+                ->andWhere('b.checkout >= :date')
+                ->setParameter('date', new DateTime());
         } elseif ($state === Booking::CONFIRMED) {
             $qb->andWhere($qb->expr()->isNotNull('b.confirmedAt'))
-                ->andWhere('b.status = :status')
-                ->setParameter('status', Booking::CONFIRMED);
+                ->andWhere('b.checkout > :date')
+                ->setParameter('date', new DateTime());
         }  elseif ($state === Booking::CANCELLED) {
-            $qb->andWhere($qb->expr()->isNotNull('b.cancelledAt'))
-                ->andWhere('b.status = :status')
-                ->setParameter('status', Booking::CANCELLED);
+            $qb->andWhere($qb->expr()->isNotNull('b.cancelledAt'));
         } else {
-            $qb->andWhere($qb->expr()->isNull('b.cancelledAt'))
-                ->andWhere('b.checkin <= :date')
+            $qb->andWhere($qb->expr()->isNotNull('b.confirmedAt'))
+                ->andWhere('b.checkout < :date')
                 ->setParameter('date', new DateTime());
         }
 
-        if ($search->getCode())
-            $qb->andWhere('b.reference = :reference')->setParameter('reference', $search->getCode());
+        if ($search->getCode()) {
+            $qb->andWhere('b.number = :number')->setParameter('number', $search->getCode());
+        }
 
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function countUserEnabled(User $user)
     {
         $qb = $this->createQueryBuilder('b')
@@ -370,7 +370,7 @@ class BookingRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function availableForPeriod(Room $room, DateTime $start, DateTime $end)
+    public function availableForPeriod(Room $room, DateTime $start, DateTime $end): int
     {
         $qb = $this->createQueryBuilder('b');
         $query = $qb->select('SUM(b.roomNumber)')
@@ -421,17 +421,20 @@ class BookingRepository extends ServiceEntityRepository
             ->setParameter('date', new DateTime());
     }
 
-    public function getConfirmedByUserNumber(User $user)
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getConfirmedByUserNumber(User $user): int
     {
         $qb = $this->createQueryBuilder('b')
             ->select('count(b.id)');
 
         $qb->where($qb->expr()->isNotNull('b.confirmedAt'))
-            ->andWhere('b.user = :user')
             ->andWhere('b.checkout > :date')
-            ->setParameter('user', $user)
-            ->setParameter('date', new DateTime());
-
+            ->andWhere('b.user = :user')
+            ->setParameter('date', new DateTime())
+            ->setParameter('user', $user);
 
         return $qb->getQuery()->getSingleScalarResult();
     }

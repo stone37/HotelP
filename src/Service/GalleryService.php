@@ -11,25 +11,16 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class GalleryService
 {
-    private OrphanageManager $orphanageManager;
-    private UploadService $uploadService;
-    private RequestStack $request;
-    private EntityManagerInterface $em;
-
     public function __construct(
-        OrphanageManager $orphanageManager,
-        UploadService $uploadService,
-        EntityManagerInterface $em,
-        RequestStack $request
+        private OrphanageManager $orphanageManager,
+        private UploadService $uploadService,
+        private EntityManagerInterface $em,
+        private RequestStack $request
     )
     {
-        $this->orphanageManager = $orphanageManager;
-        $this->uploadService = $uploadService;
-        $this->request = $request;
-        $this->em = $em;
     }
 
-    public function add()
+    public function add(): bool
     {
         $files = $this->uploadService->getFilesUpload($this->request->getSession());
 

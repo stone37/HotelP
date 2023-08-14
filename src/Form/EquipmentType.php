@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Equipment;
+use App\Data\EquipmentCrudData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -33,7 +33,7 @@ class EquipmentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Equipment::class,
+            'data_class' => EquipmentCrudData::class,
         ]);
     }
 }

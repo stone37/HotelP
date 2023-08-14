@@ -1,21 +1,13 @@
 {% extends 'admin/layout.html.twig' %}
 
 {% block title %}
-    Nouveau envoie d'email aux utilisateurs |
-    Email envoyés aux utilisateurs |
-    {{ parent() }}
+    Nouveau envoie d'email aux utilisateurs | Email envoyés aux utilisateurs | {{ parent() }}
 {% endblock %}
 
 {% block app_body %}
     {{ include('admin/emailing/user/_header.html.twig') }}
 
+    {{ include('ui/_flashes_message.html.twig') }}
+
     {{ include('admin/emailing/user/_content.html.twig') }}
-{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
 {% endblock %}

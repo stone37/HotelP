@@ -65,10 +65,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->add($user, true);
     }
 
-    /**
-     * @param UserSearch $search
-     * @return QueryBuilder|null
-     */
     public function getAdmins(UserSearch $search): ?QueryBuilder
     {
         $qb = $this->createQueryBuilder('u');
@@ -78,22 +74,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('roles', '%'."ROLE_ADMIN".'%')
             ->orderBy('u.createdAt', 'desc');
 
-        if ($search->getEmail())
+        if ($search->getEmail()) {
             $qb->andWhere('u.email LIKE :email')->setParameter('email', '%'.$search->getEmail().'%');
+        }
 
-        if ($search->getPhone())
+        if ($search->getPhone()) {
             $qb->andWhere('u.phone LIKE :phone')->setParameter('phone', '%'.$search->getPhone().'%');
+        }
 
-        if ($search->isEnabled())
+        if ($search->isEnabled()) {
             $qb->andWhere('u.deleteAt IS NULL')->andWhere('u.confirmationToken IS NULL');
+        }
 
         return $qb;
     }
- 
-    /**
-     * @param UserSearch $search
-     * @return QueryBuilder|null
-     */
+
     public function getAdminUsers(UserSearch $search): ?QueryBuilder
     {
         $qb = $this->createQueryBuilder('u')

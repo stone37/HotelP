@@ -9,31 +9,26 @@ use App\Repository\ContactRequestRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
 class ContactService
 {
-    private ContactRequestRepository $repository;
-    private EntityManagerInterface $em;
-    private MailerInterface $mailer;
-
     public function __construct(
-        ContactRequestRepository $repository,
-        EntityManagerInterface $em,
-        MailerInterface $mailer
-    ) {
-        $this->repository = $repository;
-        $this->em = $em;
-        $this->mailer = $mailer;
+        private ContactRequestRepository $repository,
+        private EntityManagerInterface $em,
+        private MailerInterface $mailer
+    )
+    {
     }
 
     /**
      * @param ContactData $data
      * @param Request $request
      * @throws TooManyContactException
-     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function send(ContactData $data, Request $request): void
     {

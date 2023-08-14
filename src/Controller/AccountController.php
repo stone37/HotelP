@@ -52,10 +52,7 @@ class AccountController extends AbstractController
                 $this->repository->flush();
 
                 if ($user->getEmail() !== $data->email) {
-                    $this->addFlash(
-                        'success',
-                        'Votre profil a bien été mis à jour, un email a été envoyé à {$data->email} pour confirmer votre changement'
-                    );
+                    $this->addFlash('success', "Votre profil a bien été mis à jour, un email a été envoyé à $data->email pour confirmer votre changement");
                 } else {
                     $this->addFlash('success', 'Votre profil a bien été mis à jour');
                 }

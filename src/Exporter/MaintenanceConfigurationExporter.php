@@ -8,11 +8,8 @@ use DateTimeInterface;
 
 final class MaintenanceConfigurationExporter
 {
-    private ConfigurationFileManager $configurationFileManager;
-
-    public function __construct(ConfigurationFileManager $configurationFileManager)
+    public function __construct(private ConfigurationFileManager $configurationFileManager)
     {
-        $this->configurationFileManager = $configurationFileManager;
     }
 
     public function export(MaintenanceConfiguration $configuration): void

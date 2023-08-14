@@ -15,9 +15,7 @@ class BookingDaysExtension extends AbstractExtension
 
     public function getFunctions()
     {
-        return [
-            new TwigFunction('app_booking_days', [$this, 'getDays']),
-        ];
+        return [new TwigFunction('app_booking_days', [$this, 'getDays'])];
     }
 
     public function getDays(DateTime $checkin, DateTime $checkout): int

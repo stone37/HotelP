@@ -4,20 +4,22 @@ namespace App\Controller;
 
 use App\Controller\Traits\ControllerTrait;
 use App\Data\BookingData;
-use App\Entity\Commande;
 use App\Entity\Room;
 use App\Form\BookingDataType;
 use App\Form\BookingType;
 use App\Form\DiscountType;
 use App\Manager\OrderManager;
-use App\Repository\OptionRepository;
+use App\Repository\CommandeRepository;
 use App\Service\BookerService;
-use App\Service\CartService;
 use App\Service\RoomService;
 use App\Service\Summary;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Storage\BookingStorage;
+use App\Storage\CartStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
@@ -25,46 +27,32 @@ class BookingController extends AbstractController
 {
     use ControllerTrait;
 
-    private BookerService $booker;
-    private CartService $cartService;
-    private RoomService $roomService;
-    private OptionRepository $optionRepository;
-    private EntityManagerInterface $em;
-    private OrderManager $manager;
-    private Breadcrumbs $breadcrumbs;
-
     public function __construct(
-        BookerService $booker,
-        CartService $cartService,
-        RoomService $roomService,
-        EntityManagerInterface $em,
-        OrderManager $orderManager,
-        Breadcrumbs $breadcrumbs
-    ) {
-        $this->booker = $booker;
-        $this->cartService = $cartService;
-        $this->roomService = $roomService;
-        $this->em = $em;
-        $this->manager = $orderManager;
-        $this->breadcrumbs = $breadcrumbs;
+        private BookerService $booker,
+        private RoomService $roomService,
+        private OrderManager $manager,
+        private Breadcrumbs $breadcrumbs,
+        private BookingStorage $storage,
+        private CommandeRepository $commandeRepository,
+        private BookingStorage $bookingStorage,
+        private CartStorage $cartStorage
+    )
+    {
     }
 
     #[Route(path: '/reservation', name: 'app_booking_index')]
-    public function index(Request $request)
+    public function index(Request $request): RedirectResponse|Response
     {
         $this->breadcrumb($this->breadcrumbs)
             ->addItem('Hébergements', $this->generateUrl('app_room_index'))
             ->addItem('Réservation');
 
-        $room = $this->roomService->getSelectRoom();
-        $option = $this->roomService->getSelectOption();
-        $booking = $this->booker->createData($room, $option);
+        $room = $this->roomService->getRoom();
+        $booking = $this->booker->createData($room);
 
-        $prepareCommande = $this->forward('App\Controller\CommandeController::prepareCommande', [
-            'data' => $booking
-        ]);
+        $prepareCommande = $this->forward('App\Controller\CommandeController::prepareCommande', ['data' => $booking]);
 
-        $commande = $this->em->getRepository(Commande::class)->find($prepareCommande->getContent());
+        $commande = $this->commandeRepository->find($prepareCommande->getContent());
         $summary = new Summary($commande);
 
         $bookingForm = $this->createForm(BookingType::class, $booking);
@@ -73,14 +61,7 @@ class BookingController extends AbstractController
         $bookingForm->handleRequest($request);
 
         if ($bookingForm->isSubmitted() && $bookingForm->isValid()) {
-
-            $request->getSession()->set('booking', $this->booker->adjustDate($booking));
-            //dd($this->session->get('booking'));
-            // active le paiement
-
-            //$this->manager->addItem($booking);
-            //$this->em->persist($booking);
-            //$this->em->flush();
+            $this->storage->set($booking);
 
             return $this->redirectToRoute('app_commande_pay');
         } else if ($bookingForm->isSubmitted()) {
@@ -92,12 +73,12 @@ class BookingController extends AbstractController
             'discount_form' => $discountForm->createView(),
             'commande' => $summary,
             'booking' => $booking,
-            'room' => $room,
+            'room' => $room
         ]);
     }
 
     #[Route(path: '/reservation/search', name: 'app_booking_search')]
-    public function search(Request $request)
+    public function search(Request $request): RedirectResponse|Response
     {
         $data = new BookingData();
 
@@ -110,10 +91,7 @@ class BookingController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->booker->add($data);
 
-            return $this->redirectToRoute('app_room_index', [
-                'adult' => $data->adult,
-                'children' => $data->children
-            ]);
+            return $this->redirectToRoute('app_room_index', ['adult' => $data->adult, 'children' => $data->children]);
         } else if ($form->isSubmitted()) {
             return $this->redirectToRoute('app_room_index');
         }
@@ -123,45 +101,50 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/reservation/select', name: 'app_booking_select')]
-    public function select(Request $request)
+    #[Route(path: '/reservation/{id}/select', name: 'app_booking_select', requirements: ['id' => '\d+'])]
+    public function select(Request $request, Room $room): RedirectResponse|JsonResponse
     {
-        $data = new BookingData();
+        $data = $this->bookingStorage->getBookingData();
 
-        $form = $this->createForm(BookingDataType::class, $data);
+        $form = $this->createForm(BookingDataType::class, $data, [
+            'action' => $this->generateUrl('app_booking_select', ['id' => $room->getId()])
+        ]);
 
-        $form->handleRequest($request);
+        if ($request->getMethod() == 'POST') {
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->booker->add($data);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->booker->add($data);
+                $this->cartStorage->add($room);
 
-            if ($this->booker->isAvailableForPeriod($this->roomService->getSelectRoom(), $data->checkin, $data->checkin)) {
-                return $this->redirectToRoute('app_booking_index');
-            } else {
-                $this->addFlash('error', "L'hébergement que vous aviez choisis est complet pour cette periode.");
+                if ($this->booker->isAvailableForPeriod($room, $data->checkin, $data->checkin)) {
+                    return $this->redirectToRoute('app_booking_index');
+                } else {
+                    $this->addFlash('error', "L'hébergement que vous aviez choisis est complet sur cette période.");
 
-                return $this->redirectToRoute('app_booking_select');
+                    $url = $request->request->get('referer');
+
+                    return new RedirectResponse($url);
+                }
             }
-
         }
 
-        return $this->render('site/booking/select.html.twig', [
+        $render = $this->render('site/booking/select.html.twig', [
             'form' => $form->createView(),
-            'room' => $this->roomService->getSelectRoom()
+            'room' => $room,
+            'state' => $request->query->get('state')
         ]);
+
+        $response['html'] = $render->getContent();
+
+        return new JsonResponse($response);
     }
 
     #[Route(path: '/reservation/{id}/check', name: 'app_booking_check', requirements: ['id' => '\d+'])]
-    public function check(Request $request, Room $room)
+    public function check(Room $room): RedirectResponse
     {
-        if ($request->query->has('option_id')) {
-            $this->cartService->add($room, $this->optionRepository->find($request->query->get('option_id')));
-        } else {
-            $this->cartService->add($room);
-        }
+        $this->cartStorage->add($room);
 
-        return ($request->getSession()->has('booking_data')) ?
-            $this->redirectToRoute('app_booking_index') :
-            $this->redirectToRoute('app_booking_select');
+        return $this->redirectToRoute('app_booking_index');
     }
 }

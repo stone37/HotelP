@@ -119,8 +119,7 @@ class RoomRepository extends ServiceEntityRepository
             ->orderBy('r.position', 'asc');
 
         if ($filter->adult || $filter->children) {
-            $qb->andWhere($qb->expr()->gte('r.occupant', ':occupant'))
-                ->setParameter('occupant', $occupant);
+            $qb->andWhere($qb->expr()->gte('r.occupant', ':occupant'))->setParameter('occupant', $occupant);
         }
 
         return $qb->getQuery()->getResult();

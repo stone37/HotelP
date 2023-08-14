@@ -2,39 +2,32 @@
 
 namespace App\Controller\Admin;
 
+use App\Data\BookingCrudData;
 use App\Entity\Booking;
 use App\Entity\Room;
 use App\Entity\User;
-use App\Event\AdminCRUDEvent;
 use App\Event\BookingCancelledEvent;
 use App\Event\BookingConfirmedEvent;
 use App\Form\Filter\AdminBookingType;
 use App\Manager\BookingManager;
 use App\Model\BookingSearch;
-use App\Repository\BookingRepository;
 use JetBrains\PhpStorm\ArrayShape;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin')]
-class BookingController extends AbstractController
+class BookingController extends CrudController
 {
-    public function __construct(
-        private BookingRepository $repository,
-        private PaginatorInterface $paginator,
-        private EventDispatcherInterface $dispatcher,
-        private BookingManager $manager,
-        private BookingRepository $bookingRepository
-    )
-    {
-    }
+    protected string $entity = Booking::class;
+    protected string $templatePath = 'booking';
+    protected string $routePrefix = 'app_admin_booking';
+    protected string $deleteFlashMessage = 'Une reservation a été supprimé';
+    protected string $deleteMultiFlashMessage = 'Les reservations ont été supprimés';
+    protected string $deleteErrorFlashMessage = 'Désolé, les reservations n\'a pas pu être supprimé !';
 
     #[Route(path: '/bookings', name: 'app_admin_booking_index')]
     public function index(Request $request): Response
@@ -42,18 +35,11 @@ class BookingController extends AbstractController
         $search = new BookingSearch();
 
         $form = $this->createForm(AdminBookingType::class, $search);
-
         $form->handleRequest($request);
 
-        $qb = $this->repository->getAdmins($search);
+        $query = $this->getRepository()->getAdmins($search);
 
-        $bookings = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/booking/index.html.twig', [
-            'bookings' => $bookings,
-            'searchForm' => $form->createView(),
-            'type' => '1'
-        ]);
+        return $this->crudIndex($query, $form, 1);
     }
 
     #[Route(path: '/bookings/confirmed', name: 'app_admin_booking_confirmed_index')]
@@ -62,22 +48,15 @@ class BookingController extends AbstractController
         $search = new BookingSearch();
 
         $form = $this->createForm(AdminBookingType::class, $search);
-
         $form->handleRequest($request);
 
-        $qb = $this->repository->getConfirmAdmins($search);
+        $query = $this->getRepository()->getConfirmAdmins($search);
 
-        $bookings = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/booking/index.html.twig', [
-            'bookings' => $bookings,
-            'searchForm' => $form->createView(),
-            'type' => '2'
-        ]);
+        return $this->crudIndex($query, $form, 2);
     }
 
     #[Route(path: '/bookings/cancelled', name: 'app_admin_booking_cancel_index')]
-    public function cancel(Request $request): Response
+    public function cancel(Request $request, BookingManager $manager): Response
     {
         $search = new BookingSearch();
 
@@ -85,17 +64,11 @@ class BookingController extends AbstractController
 
         $form->handleRequest($request);
 
-        $this->manager->cancelledAjustement($this->bookingRepository->getCancel());
+        $manager->cancelledAjustement($this->getRepository()->getCancel());
 
-        $qb = $this->repository->getCancelAdmins($search);
+        $query = $this->getRepository()->getCancelAdmins($search);
 
-        $bookings = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/booking/index.html.twig', [
-            'bookings' => $bookings,
-            'searchForm' => $form->createView(),
-            'type' => '3'
-        ]);
+        return $this->crudIndex($query, $form, 3);
     }
 
     #[Route(path: '/bookings/archive', name: 'app_admin_booking_archive_index')]
@@ -107,24 +80,15 @@ class BookingController extends AbstractController
 
         $form->handleRequest($request);
 
-        $qb = $this->repository->getArchiveAdmins($search);
+        $query = $this->getRepository()->getArchiveAdmins($search);
 
-        $bookings = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/booking/index.html.twig', [
-            'bookings' => $bookings,
-            'searchForm' => $form->createView(),
-            'type' => '4'
-        ]);
+        return $this->crudIndex($query, $form, 4);
     }
 
     #[Route(path: '/bookings/{id}/show/{type}', name: 'app_admin_booking_show', requirements: ['id' => '\d+'])]
     public function show(Booking $booking, $type): Response
     {
-        return $this->render('admin/booking/show.html.twig', [
-            'booking' => $booking,
-            'type' => $type,
-        ]);
+        return $this->render('admin/booking/show.html.twig', ['booking' => $booking, 'type' => $type]);
     }
 
     #[Route(path: '/bookings/{id}/user', name: 'app_admin_booking_user', requirements: ['id' => '\d+'])]
@@ -135,15 +99,9 @@ class BookingController extends AbstractController
         $form = $this->createForm(AdminBookingType::class, $search);
         $form->handleRequest($request);
 
-        $qb = $this->repository->getAdminByUser($user, $search);
+        $query = $this->getRepository()->getAdminByUser($user, $search);
 
-        $bookings = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/booking/index.html.twig', [
-            'bookings' => $bookings,
-            'searchForm' => $form->createView(),
-            'user' => $user
-        ]);
+        return $this->crudIndex($query, $form);
     }
 
     #[Route(path: '/bookings/{id}/room', name: 'app_admin_booking_room', requirements: ['id' => '\d+'])]
@@ -154,19 +112,13 @@ class BookingController extends AbstractController
         $form = $this->createForm(AdminBookingType::class, $search);
         $form->handleRequest($request);
 
-        $qb = $this->repository->getAdminByRoom($room, $search);
+        $query = $this->getRepository()->getAdminByRoom($room, $search);
 
-        $bookings = $this->paginator->paginate($qb, $request->query->getInt('page', 1), 25);
-
-        return $this->render('admin/booking/index.html.twig', [
-            'bookings' => $bookings,
-            'searchForm' => $form->createView(),
-            'room' => $room
-        ]);
+        return $this->crudIndex($query, $form);
     }
 
     #[Route(path: '/bookings/{id}/confirmed', name: 'app_admin_booking_confirmed', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function confirmed(Request $request, Booking $booking): RedirectResponse|JsonResponse
+    public function confirmed(Request $request, BookingManager $manager, Booking $booking): RedirectResponse|JsonResponse
     {
         $form = $this->confirmedForm($booking);
 
@@ -175,7 +127,7 @@ class BookingController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
 
-                $this->manager->confirm($booking);
+                $manager->confirm($booking);
 
                 $this->dispatcher->dispatch(new BookingConfirmedEvent($booking));
 
@@ -191,11 +143,11 @@ class BookingController extends AbstractController
 
         $message = 'Être vous sur de vouloir confirmer cette reservation ?';
 
-        $render = $this->render('Ui/Modal/_confirm.html.twig', [
+        $render = $this->render('ui/modal/_confirm.html.twig', [
             'form' => $form->createView(),
             'data' => $booking,
             'message' => $message,
-            'configuration' => $this->configuration(),
+            'configuration' => $this->getConfiguration()
         ]);
 
         $response['html'] = $render->getContent();
@@ -204,7 +156,7 @@ class BookingController extends AbstractController
     }
 
     #[Route(path: '/bookings/bulk/confirmed', name: 'app_admin_booking_bulk_confirmed', options: ['expose' => true])]
-    public function confirmedBulk(Request $request): RedirectResponse|JsonResponse
+    public function confirmedBulk(Request $request, BookingManager $manager): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
@@ -223,9 +175,9 @@ class BookingController extends AbstractController
                 $request->getSession()->remove('data');
 
                 foreach ($ids as $id) {
-                    $booking = $this->bookingRepository->find($id);
+                    $booking = $this->getRepository()->find($id);
 
-                    $this->manager->confirm($booking);
+                    $manager->confirm($booking);
 
                     $this->dispatcher->dispatch(new BookingConfirmedEvent($booking));
                 }
@@ -246,11 +198,11 @@ class BookingController extends AbstractController
             $message = 'Être vous sur de vouloir confirmer cette reservation ?';
         }
 
-        $render = $this->render('ui/Modal/_confirm_multi.html.twig', [
+        $render = $this->render('ui/modal/_confirm_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
-            'configuration' => $this->configuration(),
+            'configuration' => $this->getConfiguration()
         ]);
 
         $response['html'] = $render->getContent();
@@ -259,7 +211,7 @@ class BookingController extends AbstractController
     }
 
     #[Route(path: '/bookings/{id}/cancelled', name: 'app_admin_booking_cancelled', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function cancelled(Request $request, Booking $booking): RedirectResponse|JsonResponse
+    public function cancelled(Request $request, BookingManager $manager, Booking $booking): RedirectResponse|JsonResponse
     {
         $form = $this->cancelledForm($booking);
 
@@ -268,7 +220,7 @@ class BookingController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
 
-                $this->manager->cancel($booking);
+                $manager->cancel($booking);
 
                 $this->dispatcher->dispatch(new BookingCancelledEvent($booking));
 
@@ -284,11 +236,11 @@ class BookingController extends AbstractController
 
         $message = 'Être vous sur de vouloir annuler cette reservation ?';
 
-        $render = $this->render('ui/Modal/_cancel.html.twig', [
+        $render = $this->render('ui/modal/_cancel.html.twig', [
             'form' => $form->createView(),
             'data' => $booking,
             'message' => $message,
-            'configuration' => $this->configuration(),
+            'configuration' => $this->getConfiguration()
         ]);
 
         $response['html'] = $render->getContent();
@@ -297,7 +249,7 @@ class BookingController extends AbstractController
     }
 
     #[Route(path: '/bookings/bulk/cancelled', name: 'app_admin_booking_bulk_cancelled', options: ['expose' => true])]
-    public function cancelledBulk(Request $request): RedirectResponse|JsonResponse
+    public function cancelledBulk(Request $request, BookingManager $manager): RedirectResponse|JsonResponse
     {
         $ids = (array) json_decode($request->query->get('data'));
 
@@ -316,9 +268,9 @@ class BookingController extends AbstractController
                 $request->getSession()->remove('data');
 
                 foreach ($ids as $id) {
-                    $booking = $this->bookingRepository->find($id);
+                    $booking = $this->getRepository()->find($id);
 
-                    $this->manager->cancel($booking);
+                    $manager->cancel($booking);
 
                     $this->dispatcher->dispatch(new BookingCancelledEvent($booking));
                 }
@@ -339,11 +291,11 @@ class BookingController extends AbstractController
             $message = 'Être vous sur de vouloir annuler cette reservation ?';
         }
 
-        $render = $this->render('Ui/Modal/_cancel_multi.html.twig', [
+        $render = $this->render('ui/modal/_cancel_multi.html.twig', [
             'form' => $form->createView(),
             'data' => $ids,
             'message' => $message,
-            'configuration' => $this->configuration(),
+            'configuration' => $this->getConfiguration()
         ]);
 
         $response['html'] = $render->getContent();
@@ -352,100 +304,17 @@ class BookingController extends AbstractController
     }
 
     #[Route(path: '/bookings/{id}/delete', name: 'app_admin_booking_delete', requirements: ['id' => '\d+'], options: ['expose' => true])]
-    public function delete(Request $request, Booking $booking): RedirectResponse|JsonResponse
+    public function delete(Booking $booking): RedirectResponse|JsonResponse
     {
-        $form = $this->deleteForm($booking);
+        $data = new BookingCrudData($booking);
 
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $event = new AdminCRUDEvent($booking);
-
-                $this->dispatcher->dispatch($event, AdminCRUDEvent::PRE_DELETE);
-
-                $this->repository->remove($booking, true);
-
-                $this->dispatcher->dispatch($event, AdminCRUDEvent::POST_DELETE);
-
-                $this->addFlash('success', 'La reservation a été supprimé');
-            } else {
-                $this->addFlash('error', 'Désolé, la reservation n\'a pas pu être supprimée !');
-            }
-
-            $url = $request->request->get('referer');
-
-            $response = new RedirectResponse($url);
-
-            return $response;
-        }
-
-        $message = 'Être vous sur de vouloir supprimer cette reservation ?';
-
-        $render = $this->render('Ui/Modal/_delete.html.twig', [
-            'form' => $form->createView(),
-            'data' => $booking,
-            'message' => $message,
-            'configuration' => $this->configuration(),
-        ]);
-
-        $response['html'] = $render->getContent();
-
-        return new JsonResponse($response);
+        return $this->crudDelete($data);
     }
 
     #[Route(path: '/admin/bookings/bulk/delete', name: 'app_admin_booking_bulk_delete', options: ['expose' => true])]
-    public function deleteBulk(Request $request): RedirectResponse|JsonResponse
+    public function deleteBulk(): RedirectResponse|JsonResponse
     {
-        $ids = (array) json_decode($request->query->get('data'));
-
-        if ($request->query->has('data'))
-            $request->getSession()->set('data', $ids);
-
-        $form = $this->deleteMultiForm();
-
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $ids = $request->getSession()->get('data');
-                $request->getSession()->remove('data');
-
-                foreach ($ids as $id) {
-                    $booking = $this->repository->find($id);
-                    $this->dispatcher->dispatch(new AdminCRUDEvent($booking), AdminCRUDEvent::PRE_DELETE);
-
-                    $this->repository->remove($booking, false);
-                }
-
-                $this->repository->flush();
-
-                $this->addFlash('success', 'Les reservations ont été supprimé');
-            } else {
-                $this->addFlash('error', 'Désolé, les reservations n\'ont pas pu être supprimée !');
-            }
-
-            $url = $request->request->get('referer');
-
-            return new RedirectResponse($url);
-        }
-
-        if (count($ids) > 1)
-            $message = 'Être vous sur de vouloir supprimer ces '.count($ids).' reservations ?';
-        else
-            $message = 'Être vous sur de vouloir supprimer cette reservation ?';
-
-        $render = $this->render('Ui/Modal/_delete_multi.html.twig', [
-            'form' => $form->createView(),
-            'data' => $ids,
-            'message' => $message,
-            'configuration' => $this->configuration(),
-        ]);
-
-        $response['html'] = $render->getContent();
-
-        return new JsonResponse($response);
+        return $this->crudMultiDelete();
     }
 
     private function confirmedForm(Booking $booking): FormInterface
@@ -476,21 +345,17 @@ class BookingController extends AbstractController
             ->getForm();
     }
 
-    private function deleteForm(Booking $booking): FormInterface
+    public function getDeleteMessage(): string
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('app_admin_booking_delete', ['id' => $booking->getId()]))
-            ->getForm();
+        return 'Être vous sur de vouloir supprimer cette reservation ?';
     }
 
-    private function deleteMultiForm(): FormInterface
+    public function getDeleteMultiMessage(int $number): string
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('app_admin_booking_bulk_delete'))
-            ->getForm();
+        return 'Être vous sur de vouloir supprimer ces ' . $number . ' reservations ?';
     }
 
-    #[ArrayShape(['modal' => "\string[][]"])] private function configuration(): array
+    #[ArrayShape(['modal' => "\string[][]"])] protected function getConfiguration(): array
     {
         return [
             'modal' => [

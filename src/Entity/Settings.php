@@ -10,11 +10,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\Timestampable;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-#[ORM\Entity(repositoryClass: SettingsRepository::class)]
 #[Vich\Uploadable]
+#[ORM\Entity(repositoryClass: SettingsRepository::class)]
 class Settings
 {
     use MediaTrait;
@@ -25,16 +24,12 @@ class Settings
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank]
     #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Email]
     #[ORM\Column(nullable: true)]
     private ?string $email = null;
 
-    #[Assert\NotBlank]
     #[ORM\Column(nullable: true)]
     private ?string $phone = null;
 

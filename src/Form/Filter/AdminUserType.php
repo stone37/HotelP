@@ -13,7 +13,7 @@ class AdminUserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', TextType::class, ['label' => 'Email', 'required' => false])
+            ->add('email', TextType::class, ['label' => 'Adresse e-mail', 'required' => false])
             ->add('phone', TextType::class, ['label' => 'Téléphone', 'required' => false])
             ->add('city', TextType::class, ['label' => 'Ville', 'required' => false]);
     }

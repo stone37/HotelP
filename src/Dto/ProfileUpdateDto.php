@@ -4,6 +4,7 @@ namespace App\Dto;
 
 use App\Entity\User;
 use App\Validator\Unique;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -18,32 +19,32 @@ class ProfileUpdateDto
     #[Assert\NotBlank]
     #[Assert\Length(min: 5, max: 100)]
     #[Assert\Email]
-    public ?string $email;
+    public ?string $email = null;
 
     #[Assert\NotBlank]
-    public ?string $username = '';
+    public ?string $username = null;
 
-    #[Assert\NotBlank(normalizer: 'trim', message: 'Entrez un prénom s\'il vous plait.')]
+    #[Assert\NotBlank(message: 'Entrez un prénom s\'il vous plait.', normalizer: 'trim')]
     #[Assert\Length(min: 2, max: 180, minMessage: 'Le prénom est trop court.', maxMessage: 'Le prénom est trop long.')]
-    public ?string $firstname;
+    public ?string $firstname = null;
 
     #[Assert\NotBlank(message: 'Entrez un prénom s\'il vous plait.')]
     #[Assert\Length(min: 2, max: 180, minMessage: 'Le prénom est trop court.', maxMessage: 'Le prénom est trop long.')]
-    public ?string $lastname;
+    public ?string $lastname = null;
 
     #[Assert\NotBlank(message: 'Entrez un numéro de téléphone s\'il vous plait.')]
     #[Assert\Length(min: 10, max: 180, minMessage: 'Le numéro de téléphone est trop court.', maxMessage: 'Le numéro de téléphone est trop long.')]
-    public ?string $phone;
+    public ?string $phone = null;
 
-    public ?string $address;
+    public ?string $address = null;
 
-    public ?string $country;
+    public ?string $country = null;
 
-    public ?string $city;
+    public ?string $city = null;
 
-    public $user;
+    public ?User $user = null;
 
-    public function __construct(User $user)
+    #[Pure] public function __construct(User $user)
     {
         $this->email = $user->getEmail();
         $this->username = $user->getUsername();
@@ -55,7 +56,7 @@ class ProfileUpdateDto
         $this->user = $user;
     }
 
-    public function getId(): int
+    #[Pure] public function getId(): int
     {
         return $this->user->getId() ?: 0;
     }

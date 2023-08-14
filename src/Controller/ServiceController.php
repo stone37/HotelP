@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Controller\Traits\ControllerTrait;
-use App\Repository\EquipmentRepository;
 use App\Repository\EquipmentValueRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

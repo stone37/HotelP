@@ -7,11 +7,8 @@ use App\Model\MaintenanceConfiguration;
 
 final class MaintenanceConfigurationFactory
 {
-    private ConfigurationFileManager $configurationFileManager;
-
-    public function __construct(ConfigurationFileManager $configurationFileManager)
+    public function __construct(private ConfigurationFileManager $configurationFileManager)
     {
-        $this->configurationFileManager = $configurationFileManager;
     }
 
     public function get(): MaintenanceConfiguration
@@ -23,9 +20,7 @@ final class MaintenanceConfigurationFactory
         }
 
         $maintenanceConfiguration->setEnabled(true);
-        $maintenanceConfiguration = $maintenanceConfiguration->map($this->configurationFileManager->parseMaintenanceYaml());
-
-        return $maintenanceConfiguration;
+        return $maintenanceConfiguration->map($this->configurationFileManager->parseMaintenanceYaml());
     }
 }
 

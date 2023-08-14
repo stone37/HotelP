@@ -9,20 +9,13 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class BreadcrumbExtension extends AbstractExtension
 {
-    private Breadcrumbs $breadcrumbs;
-    private RouterInterface $router;
-
-    public function __construct(Breadcrumbs $breadcrumbs, RouterInterface $router)
+    public function __construct(private Breadcrumbs $breadcrumbs, private RouterInterface $router)
     {
-        $this->breadcrumbs = $breadcrumbs;
-        $this->router = $router;
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
-        return array(
-            new TwigFunction('breadcrumb', array($this, 'addBreadcrumb'))
-        );
+        return [new TwigFunction('breadcrumb', array($this, 'addBreadcrumb'))];
     }
 
     public function addBreadcrumb($label, $url = '', array $translationParameters = array())

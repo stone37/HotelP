@@ -1,4 +1,4 @@
-{% import 'Ui/Macro/buttons.html.twig' as buttons %}
+{% import 'ui/macro/buttons.html.twig' as buttons %}
 
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-center justify-content-md-between">
@@ -16,7 +16,7 @@
     </div>
 </div>
 
-{% if galleries|length > 0 %}
+{% if rows|length > 0 %}
     <div class="row app-user mb-5">
         <div class="col-12">
             <table class="table table-responsive-sm">
@@ -26,8 +26,7 @@
                         <div class="" style="position: relative; right: 10px; top: 2px">
                             <input type="checkbox" name="principal" class="form-check-input filled-in"
                                    id="principal-checkbox" value="" style="margin: 0 !important;" />
-                            <label class="form-check-label" for="principal-checkbox"
-                                   style="padding-left: 0!important; "></label>
+                            <label class="form-check-label" for="principal-checkbox" style="padding-left: 0!important; "></label>
                         </div>
                     </th>
 
@@ -38,34 +37,33 @@
                 </tr>
                 </thead>
                 <tbody id="list-checkbook-container">
-                {% for gallery in galleries %}
+                {% for row in rows %}
                     <tr>
                         <td class="text-center">
                             <div class="" style="position: relative; right: 10px; top: 2px">
                                 <input type="checkbox" name="checkbox{{ loop.index }}" class="form-check-input filled-in list-checkbook"
-                                       id="checkbox{{ loop.index }}" value="{{ gallery.id }}" style="margin: 0 !important;" />
+                                       id="checkbox{{ loop.index }}" value="{{ row.id }}" style="margin: 0 !important;" />
                                 <label class="form-check-label" for="checkbox{{ loop.index }}" style="padding-left: 0!important; "></label>
                             </div>
                         </td>
                         <td class="text-center">
-                            <a href="{{ asset(gallery.webPath) }}" class="" target="_blank">
-                                <img src="{{ asset(gallery.webPath) }}" class="img-fluid table-img" alt="" />
+                            <a href="{{ asset(row.webPath) }}" class="" target="_blank">
+                                <img src="{{ asset(row.webPath) }}" class="img-fluid table-img" alt="" />
                             </a>
                         </td>
-                        <td class="text-center">{{ gallery.createdAt|date('d/m/Y') }}</td>
+                        <td class="text-center">{{ row.createdAt|date('d/m/Y') }}</td>
                         <td class="text-center"><span class="badge badge-grey">{{ loop.index }}</span></td>
                         <td class="text-center">
                             <div class="dropdown">
                                 <a class="dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-ellipsis-h text-primary"></i></a>
                                 <div class="dropdown-menu dropdown-primary dropdown-menu-right mt-0">
-                                    <a href="{{ path('app_admin_room_gallery_move', {'id': gallery.id, 'pos': -1, 'room_id': room.id}) }}" class="dropdown-item">
+                                    <a href="{{ path('app_admin_room_gallery_move', {'id': row.id, 'pos': -1, 'room_id': type}) }}" class="dropdown-item">
                                         <i class="fas fa-arrow-up mr-1"></i> Monter
                                     </a>
-                                    <a href="{{ path('app_admin_room_gallery_move', {'id': gallery.id, 'pos': 1, 'room_id': room.id}) }}" class="dropdown-item">
+                                    <a href="{{ path('app_admin_room_gallery_move', {'id': row.id, 'pos': 1, 'room_id': type}) }}" class="dropdown-item">
                                         <i class="fas fa-arrow-down mr-1"></i> Descendre
                                     </a>
-                                    <a class="dropdown-item entity-delete-btn" data-id="{{ gallery.id }}"
-                                       data-url="{{ path('app_admin_room_gallery_delete', {'id': gallery.id}) }}">
+                                    <a class="dropdown-item entity-delete-btn" data-id="{{ row.id }}" data-url="{{ path('app_admin_room_gallery_delete', {'id': row.id}) }}">
                                         <i class="fas fa-trash mr-1 text-danger"></i> Supprimer
                                     </a>
                                 </div>
@@ -77,10 +75,10 @@
             </table>
         </div>
         <div class="col-12 d-flex justify-content-start mt-2">
-            <div class="font-weight-stone-500 text-secondary">{{ galleries.totalItemCount }} resultats</div>
+            <div class="font-weight-stone-500 text-secondary">{{ rows.totalItemCount > 1 ? rows.totalItemCount ~ ' résultats' : rows.totalItemCount ~ ' résultat' }}</div>
         </div>
         <div class="col-12 d-flex justify-content-center mt-2 mb-5">
-            {{ knp_pagination_render(galleries, 'Ui/_pagination.html.twig') }}
+            {{ knp_pagination_render(rows, 'ui/_pagination.html.twig') }}
         </div>
     </div>
 {% else %}

@@ -93,7 +93,7 @@ class RegistrationController extends AbstractController
             'errors' => $rootErrors,
             'menu' => 'register',
             'oauth_registration' => $request->get('oauth'),
-            'oauth_type' => $this->socialLoginService->getOauthType(),
+            'oauth_type' => $this->socialLoginService->getOauthType()
         ]);
     }
 

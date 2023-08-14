@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Data\DiscountCrudData;
 use App\Entity\Discount;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -40,7 +41,7 @@ class DiscountAdminType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Discount::class
+            'data_class' => DiscountCrudData::class
         ]);
     }
 }

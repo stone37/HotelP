@@ -2,21 +2,23 @@
 
 namespace App\Subscriber;
 
+use App\Entity\Settings;
 use App\Event\BookingPaymentEvent;
 use App\Mailing\Mailer;
 use App\Manager\SettingsManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class BookingPaymentSubscriber implements EventSubscriberInterface
 {
-    private Mailer $mailer;
-    private SettingsManager $manager;
+    private ?Settings $settings;
 
-    public function __construct(Mailer $mailer, SettingsManager $manager)
+    public function __construct(private Mailer $mailer, SettingsManager $manager)
     {
-        $this->mailer = $mailer;
-        $this->manager = $manager;
+        $this->settings = $manager->get();
     }
 
     public static function getSubscribedEvents(): array
@@ -24,15 +26,18 @@ class BookingPaymentSubscriber implements EventSubscriberInterface
         return [BookingPaymentEvent::class => 'onValidate'];
     }
 
-    public function onValidate(BookingPaymentEvent $event)
+    /**
+     * @throws SyntaxError
+     * @throws TransportExceptionInterface
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function onValidate(BookingPaymentEvent $event): void
     {
         $email = $this->mailer->createEmail('mails/commande/validate.twig', ['booking' => $event->getBooking()])
             ->to($event->getBooking()->getEmail())
-            ->subject($this->manager->get()->getName().' | Validation de votre commande');
+            ->subject($this->settings->getName() . ' | Validation de votre commande');
 
-        $this->mailer->sendNow($email);
+        $this->mailer->send($email);
     }
 }
-
-
-

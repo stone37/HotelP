@@ -6,32 +6,23 @@ use App\Entity\Commande;
 use App\Entity\Discount;
 use App\Event\OrderEvent;
 use App\Service\Summary;
-use App\Storage\CommandeSessionStorage;
+use App\Storage\CommandeStorage;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Security\Core\Security;
 
 class OrderManager
 {
-    private Security $security;
-    private EventDispatcherInterface $dispatcher;
-    private EntityManagerInterface $em;
-    private CommandeSessionStorage $storage;
-
     private Commande $commande;
 
     public function __construct(
-        Security $security,
-        EventDispatcherInterface $dispatcher,
-        EntityManagerInterface $em,
-        CommandeSessionStorage $storage
+        private Security $security,
+        private EventDispatcherInterface $dispatcher,
+        private EntityManagerInterface $em,
+        private CommandeStorage $storage
     )
     {
-        $this->security = $security;
-        $this->dispatcher = $dispatcher;
-        $this->em = $em;
-        $this->storage = $storage;
-
         $this->commande = $this->getCurrent();
     }
 
@@ -64,7 +55,7 @@ class OrderManager
         }
     }
 
-    public function summary(): Summary
+    #[Pure] public function summary(): Summary
     {
         return new Summary($this->commande);
     }
